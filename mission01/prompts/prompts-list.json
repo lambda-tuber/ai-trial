@@ -1,0 +1,7 @@
+[
+  {
+    "name": "A3_journal_prompt",
+    "description": "AI Accounting Administrator（AI会計責任者）として、取引内容を分析し、適切な仕訳を作成してjournal_entryツールで登録するためのプロンプト。勘定科目の選択、借方・貸方の判定、消費税処理、REMARK設定などの会計処理手順を体系的に指示し、journal_entryツールの仕様に従った正確な引数を生成する。",
+    "arguments": []
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "journal_entry",
+    "description": "指定された借方・貸方勘定科目と金額で、仕訳ファイルを作成します。REMARK（備考）、年月日、時分秒はすべてオプションで、省略時は現在日時が使われます。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "仕訳の引数をスペース区切りで指定します。形式: [DR_ACCOUNT] [CR_ACCOUNT] [AMOUNT] [REMARK] [YEAR] [MONTH] [DAY] [HOUR] [MIN] [SEC]。\n\n例: '現金 売上 100000 売上入金 2023 05 12 14 30 45' または '仕入 現金 20000 仕入代金支払'。\n\n- DR_ACCOUNT: 借方勘定科目\n- CR_ACCOUNT: 貸方勘定科目\n- AMOUNT: 金額（整数）\n- REMARK: オプションの備考文字列。仕訳意図を簡潔に記述し、ファイル名に付与されます（例: '開業資金入金', '仕入代金支払'）\n- YEAR, MONTH, DAY, HOUR, MIN, SEC: すべてオプション。省略時は現在日時が自動使用されます"
+        }
+      },
+      "required": ["arguments"]
+    }
+  }
+]
+

@@ -1,0 +1,8 @@
+[
+  {
+    "name": "勘定マスタ",
+    "uri": "file:///journal_master.md",
+    "description": "使用可能な勘定の一覧を記載したマスタファイル。",
+    "mimeType": "text/markdown"
+  }
+]
