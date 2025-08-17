@@ -7,21 +7,29 @@ if "%~3"=="" (
 )
 
 set "YEAR=%~1"
-set "MONTH=%~2"
+set "MONTH_RAW=%~2"
 set "ACCOUNT=%~3"
 
 set "JOURNAL_DIR=C:\Users\lambda-tuber\Desktop\data"
+
+set "MM=0%MONTH_RAW%"
+set "MM=%MM:~-2%"
+
 set /a sum_dr=0
 set /a sum_cr=0
 
-set "target_dir=%JOURNAL_DIR%\%YEAR%\%MONTH%\%ACCOUNT%"
+set "dir_dr=%JOURNAL_DIR%\%YEAR%\%MM%\%ACCOUNT%\dr"
+set "dir_cr=%JOURNAL_DIR%\%YEAR%\%MM%\%ACCOUNT%\cr"
 
-if exist "%target_dir%" (
-    if exist "%target_dir%\dr" (
-        for /f "tokens=3" %%A in ('dir /s /-c "%target_dir%\dr" ^| find "File(s)"') do set /a sum_dr=%%A
+if exist "%dir_dr%" (
+    for /f "tokens=3" %%A in ('dir /s /-c "%dir_dr%" ^| find "File(s)"') do (
+        set /a sum_dr=%%A
     )
-    if exist "%target_dir%\cr" (
-        for /f "tokens=3" %%A in ('dir /s /-c "%target_dir%\cr" ^| find "File(s)"') do set /a sum_cr=%%A
+)
+
+if exist "%dir_cr%" (
+    for /f "tokens=3" %%A in ('dir /s /-c "%dir_cr%" ^| find "File(s)"') do (
+        set /a sum_cr=%%A
     )
 )
 

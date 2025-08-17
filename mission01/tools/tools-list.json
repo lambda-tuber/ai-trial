@@ -12,6 +12,21 @@
       },
       "required": ["arguments"]
     }
+  },
+  {
+    "name": "account_balance",
+    "description": "指定した勘定科目について、指定した年・月の仕訳データを集計し、借方・貸方の合計および差引残高を計算します。年・月・勘定科目はいずれも必須です。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "検索対象の年・月・勘定科目をスペース区切りで指定します。形式: [YEAR] [MONTH] [ACCOUNT]。例: '2025 04 現金'"
+        }
+      },
+      "required": ["arguments"]
+    }
   }
+
 ]
 
