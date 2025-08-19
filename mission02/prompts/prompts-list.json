@@ -1,0 +1,7 @@
+[
+  {
+    "name": "linux_admin_prompt",
+    "description": "経験豊富なLinuxシステム管理者として、SSH経由でサーバーの構築・運用・保守を行うための実行ルールと責務を定義したプロンプト。システム仕様書に記載された要件と制約を遵守し、指定のMCPツール(proc-ssh, proc-message, proc-terminate)を用いて安全かつ確実に操作を行う。コマンド実行結果でプロンプトが表示されない場合の復帰手順(--More--/q, clear/cls)も含む。",
+    "arguments": []
+  }
+]
