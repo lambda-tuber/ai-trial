@@ -21,6 +21,7 @@ from openai import AsyncOpenAI
 import logging
 import sys
 
+#-----------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO, 
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -29,6 +30,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+#-----------------------------------------------------------------
 class CustomModelProvider(ModelProvider):
     def __init__(self, client: AsyncOpenAI):
         self.client = client
@@ -56,10 +58,10 @@ def approval_callback(request: MCPToolApprovalRequest) -> MCPToolApprovalFunctio
         result["reason"] = "User denied"
     return result
 
+#-----------------------------------------------------------------
 async def main():
 
     lm_studio_provider = CustomModelProvider(client = AsyncOpenAI(
-        # base_url="http://localhost:11434/v1",
         base_url="http://localhost:1234/v1",
         api_key="dummy"
     ))
@@ -74,8 +76,6 @@ async def main():
     set_default_openai_key(key="lmstudio", use_for_tracing=False)
     # enable_verbose_stdout_logging()
 
-
-    # MCPサーバーの設定
     mcp_server = ExtendedMCPServerStdio(
         params={
             "command": "C:\\tools\\cabal\\bin\\pty-mcp-server.exe",
@@ -130,14 +130,14 @@ async def main():
     logger.info("")
 
     context_prompt = f"""
-(必ず日本語で回答してください。)
+        (必ず日本語で回答してください。)
 
-{linux_prompt_text}
+        {linux_prompt_text}
 
---- システム仕様書 ---
-{spec_text}
+        --- システム仕様書 ---
+        {spec_text}
 
-"""
+    """
     logger.info('=========================================')
     logger.info('context_prompt')
     logger.info('=========================================')
@@ -154,7 +154,6 @@ async def main():
     logger.info(instruction_prompt)
     logger.info("")
 
-    # エージェントの作成（ローカルOllama指定）
     agent = Agent(
         name="Assistant",
         instructions=context_prompt,
@@ -172,6 +171,7 @@ async def main():
 
     await mcp_server.cleanup()
 
+#-----------------------------------------------------------------
 asyncio.run(main())
 
 # MEMO
