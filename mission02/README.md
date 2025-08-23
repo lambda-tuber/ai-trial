@@ -38,3 +38,6 @@ AIはこれを用いてResourcesとPromptsに基づいた操作を実現しま�
 
 [![No.1](https://img.youtube.com/vi/EsHkvVj5Uis/maxresdefault.jpg)](https://youtube.com/shorts/EsHkvVj5Uis)
 
+### No.2 [AI] Claudeの挨拶
+
+[![No.2](https://img.youtube.com/vi/3RhB2aQ5IWU/maxresdefault.jpg)](https://youtube.com/shorts/3RhB2aQ5IWU)
