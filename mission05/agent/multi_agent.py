@@ -111,7 +111,7 @@ async def create_mcp_based_agent(agent_name: str, sub_agent_list: [Agent]):
     """
     
     yaml_path = f"C:\\work\\lambda-tuber\\ai-trial\\mission05\\{agent_name}-mcp-server.yaml"
-
+    logger.info(yaml_path)
     # MCPサーバの初期化
     mcp_server = ExtendedMCPServerStdio(
         params={
@@ -131,21 +131,31 @@ async def create_mcp_based_agent(agent_name: str, sub_agent_list: [Agent]):
     # リソース取得
     core_spec = await mcp_server.get_resource("file:///agent_core_specification.md")
     core_spec_text = "\n".join(item.text for item in core_spec)
+    logger.info('=========================================')
+    logger.info(core_spec)
 
     # コンテキスト作成
-    context_prompt = f"{core_prompt_text}\n{core_spec_text}"
+    context_prompt = f"""
+{core_prompt_text}
+{core_spec_text}
+"""
 
     # モデル設定（固定）
     model_settings = ModelSettings(
         tool_choice="auto",
         extra_body={"max_tokens": 8000, "num_ctx": 8000}
     )
+    
+    logger.info('=========================================')
+    logger.info('context_prompt')
+    logger.info('=========================================')
+    logger.info(context_prompt)
 
     # Agent作成
     agent = Agent(
         name=agent_name,
         instructions=context_prompt,
-        model="gpt-oss:20b",
+        model="gpt-oss-20b",
         model_settings=model_settings,
         mcp_servers=[mcp_server],
         handoffs=sub_agent_list
@@ -164,7 +174,7 @@ async def main():
         base_url="http://localhost:11434/v1",
         api_key="dummy"
     ))
-    provider = ollama_provider
+    provider = lm_studio_provider
 
     set_default_openai_api("chat_completions")
     set_tracing_disabled(True)
