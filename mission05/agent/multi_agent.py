@@ -103,6 +103,56 @@ async def summarize_memory(session, agent, run_config, max_memory_items=10, max_
 
     return conversation_summary
 
+
+async def create_mcp_based_agent(agent_name: str, sub_agent_list: [Agent]):
+    """
+    MCPサーバを起動して、プロンプト・リソースを取得し、Agentを生成する。
+    引数は yaml_path のみで、他の設定は固定。
+    """
+    
+    yaml_path = f"C:\\work\\lambda-tuber\\ai-trial\\mission05\\{agent_name}-mcp-server.yaml"
+
+    # MCPサーバの初期化
+    mcp_server = ExtendedMCPServerStdio(
+        params={
+            "command": "C:\\tools\\cabal\\bin\\pty-mcp-server.exe",
+            "args": ["-y", yaml_path],
+        },
+        client_session_timeout_seconds=30
+    )
+    await mcp_server.connect()
+
+    # プロンプト取得
+    core_prompt = await mcp_server.get_prompt("agent_core_prompt", {})
+    core_prompt_text = "\n".join(
+        m.content.text for m in core_prompt.messages if hasattr(m.content, "text")
+    )
+
+    # リソース取得
+    core_spec = await mcp_server.get_resource("file:///agent_core_specification.md")
+    core_spec_text = "\n".join(item.text for item in core_spec)
+
+    # コンテキスト作成
+    context_prompt = f"{core_prompt_text}\n{core_spec_text}"
+
+    # モデル設定（固定）
+    model_settings = ModelSettings(
+        tool_choice="auto",
+        extra_body={"max_tokens": 8000, "num_ctx": 8000}
+    )
+
+    # Agent作成
+    agent = Agent(
+        name=agent_name,
+        instructions=context_prompt,
+        model="gpt-oss:20b",
+        model_settings=model_settings,
+        mcp_servers=[mcp_server],
+        handoffs=sub_agent_list
+    )
+
+    return agent, mcp_server
+
 #-----------------------------------------------------------------
 async def main():
     lm_studio_provider = CustomModelProvider(client = AsyncOpenAI(
@@ -120,42 +170,11 @@ async def main():
     set_tracing_disabled(True)
     # enable_verbose_stdout_logging()
 
-    mcp_server = ExtendedMCPServerStdio(
-        params={
-            "command": "C:\\tools\\cabal\\bin\\pty-mcp-server.exe",
-            "args": ["-y", "C:\\work\\lambda-tuber\\ai-trial\\mission04\\pty-mcp-server.yaml"],
-        },
-        client_session_timeout_seconds=30
-    )
+    #------------------------------------------------------------
 
-    await mcp_server.connect()
 
-    linux_admin_prompt = await mcp_server.get_prompt("linux_admin_prompt", {})
-    linux_prompt_text = "\n".join(m.content.text for m in linux_admin_prompt.messages if hasattr(m.content, "text"))
-    spec_system = await mcp_server.get_resource("file:///spec_system.md")
-    spec_text = "\n".join(item.text for item in spec_system)
-
-    context_prompt = f"""
-        (日本語で対応してください。)
-
-        {linux_prompt_text}
-
-        --- システム仕様書 ---
-        {spec_text}
-
-    """
-
-    model_settings = ModelSettings(
-        tool_choice="auto",
-        extra_body={"max_tokens": 8000, "num_ctx": 8000} # https://github.com/ollama/ollama/pull/6504
-    )
-    agent = Agent(
-        name="Assistant",
-        instructions=context_prompt,
-        model="gpt-oss:20b",
-        model_settings=model_settings,
-        mcp_servers=[mcp_server]
-    )
+    www_agent, www_agent_mcp_server = await create_mcp_based_agent("www-admin-agent", [])
+    system_admin_agent, system_admin_agent_mcp_server = await create_mcp_based_agent("system-admin-agent", [www_agent])
 
     session = SQLiteSession(session_id="conversation_123", db_path=":memory:")
 
@@ -167,7 +186,7 @@ async def main():
             break
 
         run_config = RunConfig(model_provider=provider)
-        result = await Runner.run(starting_agent=agent, input=user_input, session=session, max_turns=30, run_config=run_config)
+        result = await Runner.run(starting_agent=system_admin_agent, input=user_input, session=session, max_turns=30, run_config=run_config)
 
         print("AI:", result.final_output)
 
@@ -178,14 +197,15 @@ async def main():
         if chat_size > max_memory_items:
             await summarize_memory(
                 session=session,
-                agent=agent,
+                agent=system_admin_agent,
                 run_config=run_config,
                 max_memory_items=max_memory_items,
                 max_summary_length=max_summary_length
             )
 
     session.close()
-    await mcp_server.cleanup()
+    await system_admin_agent_mcp_server.cleanup()
+    await www_agent_mcp_server.cleanup()
 
 #-----------------------------------------------------------------
 asyncio.run(main())
