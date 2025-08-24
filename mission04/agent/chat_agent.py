@@ -114,7 +114,7 @@ async def main():
         base_url="http://localhost:11434/v1",
         api_key="dummy"
     ))
-    provider = ollama_provider
+    provider = lm_studio_provider
 
     set_default_openai_api("chat_completions")
     set_tracing_disabled(True)
@@ -152,12 +152,13 @@ async def main():
     agent = Agent(
         name="Assistant",
         instructions=context_prompt,
-        model="gpt-oss:20b",
+        model="gpt-oss-20b",
+        #model="gpt-oss:20b",
         model_settings=model_settings,
         mcp_servers=[mcp_server]
     )
 
-    session = SQLiteSession(session_id="conversation_123", db_path=":memory:")
+    session = SQLiteSession(session_id="session_id", db_path=":memory:")
 
     while True:
         user_input = input("You: ")
@@ -167,7 +168,7 @@ async def main():
             break
 
         run_config = RunConfig(model_provider=provider)
-        result = await Runner.run(starting_agent=agent, input=user_input, session=session, max_turns=30, run_config=run_config)
+        result = await Runner.run(starting_agent=agent, input=user_input, session=session, max_turns=50, run_config=run_config)
 
         print("AI:", result.final_output)
 
