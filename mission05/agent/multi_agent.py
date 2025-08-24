@@ -181,11 +181,12 @@ async def main():
     # enable_verbose_stdout_logging()
 
     #------------------------------------------------------------
-
-
+    # Aagent
+    #------------------------------------------------------------
     www_agent, www_agent_mcp_server = await create_mcp_based_agent("www-admin-agent", [])
     system_admin_agent, system_admin_agent_mcp_server = await create_mcp_based_agent("system-admin-agent", [www_agent])
 
+    #------------------------------------------------------------
     session = SQLiteSession(session_id="conversation_123", db_path=":memory:")
 
     while True:
