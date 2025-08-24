@@ -27,6 +27,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+# ============================
+# 
+# ============================
+async def setup_agents():
+    mcp_servers = []
+
+    www_agent, mcp_server = await create_mcp_based_agent(
+        agent_name="www-admin-agent", prompt_names=[], resources=[], sub_agents=[]
+    )
+    mcp_servers.append(mcp_server)
+
+    starting_agent, mcp_server = await create_mcp_based_agent(
+        agent_name="system-admin-agent", prompt_names=[], resources=[], sub_agents=[www_agent]
+    )
+    mcp_servers.append(mcp_server)
+
+    return starting_agent, list(reversed(mcp_servers))
+
+
 #-----------------------------------------------------------------
 class CustomModelProvider(ModelProvider):
     def __init__(self, client: AsyncOpenAI):
@@ -35,7 +54,9 @@ class CustomModelProvider(ModelProvider):
     def get_model(self, model_name: str | None) -> OpenAIChatCompletionsModel:
         return OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
 
-
+# ============================
+# 
+# ============================
 class ExtendedMCPServerStdio(MCPServerStdio):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,20 +69,22 @@ class ExtendedMCPServerStdio(MCPServerStdio):
         response = await self.session.read_resource(uri)
         return response.contents
 
-
+# ============================
+# 
+# ============================
 def get_role_content(item):
-    # 属性アクセスがあれば属性、なければ辞書キー
     role = getattr(item, "role", None) or item.get("role", "")
     content = getattr(item, "content", None) or item.get("content", "")
     return role, content
 
-
+# ============================
+# 
+# ============================
 async def summarize_memory(session, agent, run_config, max_memory_items=10, max_summary_length=500):
     """
     SQLiteSession 内の古い履歴をまとめて要約する。
 
     Args:
-        runner: Runner インスタンス
         session: SQLiteSession
         agent: Assistant または Agent
         run_config: RunConfig
@@ -104,15 +127,70 @@ async def summarize_memory(session, agent, run_config, max_memory_items=10, max_
     return conversation_summary
 
 
-async def create_mcp_based_agent(agent_name: str, sub_agent_list: [Agent]):
-    """
-    MCPサーバを起動して、プロンプト・リソースを取得し、Agentを生成する。
-    引数は yaml_path のみで、他の設定は固定。
-    """
+# ============================
+# 
+# ============================
+async def update_memory(session, agent, run_config):
+    max_memory_items = 50
+    max_summary_length = 500
+    chat_size = len(await session.get_items())
+    logger.info('chat size:%d', chat_size)
+    if chat_size > max_memory_items:
+        await summarize_memory(
+            session=session,
+            agent=agent,
+            run_config=run_config,
+            max_memory_items=max_memory_items,
+            max_summary_length=max_summary_length
+        )
+
+# ============================
+# 
+# ============================
+async def load_prompts(mcp_server, prompt_names: list[str]) -> str:
+    required_prompt = "agent_core_prompt"
+    if required_prompt not in prompt_names:
+        prompt_names = [required_prompt] + prompt_names
+        
+    prompts = await asyncio.gather(
+        *[mcp_server.get_prompt(name, {}) for name in prompt_names]
+    )
+
+    texts = []
+    for prompt in prompts:
+        for m in prompt.messages:
+            if hasattr(m.content, "text"):
+                texts.append(m.content.text)
+
+    return "\n".join(texts)
+
+# ============================
+# 
+# ============================
+async def load_resources(mcp_server, resource_uris: list[str]) -> str:
+    core_uri = "file:///agent_core_specification.md"
+    if core_uri not in resource_uris:
+        resource_uris = [core_uri] + resource_uris
+
+    resources = await asyncio.gather(
+        *[mcp_server.get_resource(uri) for uri in resource_uris]
+    )
+
+    texts = []
+    for resource in resources:
+        for item in resource:
+            if hasattr(item, "text"):
+                texts.append(item.text)
+
+    return "\n".join(texts)
+
+# ============================
+# 
+# ============================
+async def create_mcp_based_agent(agent_name: str, prompt_names: list[str], resources: list[str], sub_agents: [Agent]):
     
     yaml_path = f"C:\\work\\lambda-tuber\\ai-trial\\mission05\\{agent_name}-mcp-server.yaml"
     logger.info(yaml_path)
-    # MCPサーバの初期化
     mcp_server = ExtendedMCPServerStdio(
         params={
             "command": "C:\\tools\\cabal\\bin\\pty-mcp-server.exe",
@@ -122,43 +200,31 @@ async def create_mcp_based_agent(agent_name: str, sub_agent_list: [Agent]):
     )
     await mcp_server.connect()
 
-    # プロンプト取得
-    core_prompt = await mcp_server.get_prompt("agent_core_prompt", {})
-    core_prompt_text = "\n".join(
-        m.content.text for m in core_prompt.messages if hasattr(m.content, "text")
-    )
-
-    # リソース取得
-    core_spec = await mcp_server.get_resource("file:///agent_core_specification.md")
-    core_spec_text = "\n".join(item.text for item in core_spec)
-    logger.info('=========================================')
-    logger.info(core_spec)
-
-    # コンテキスト作成
+    core_prompt_all = await load_prompts(mcp_server, prompt_names)
+    resourse_all = await load_resources(mcp_server, resources)
     context_prompt = f"""
-{core_prompt_text}
-{core_spec_text}
-"""
 
-    # モデル設定（固定）
-    model_settings = ModelSettings(
-        tool_choice="auto",
-        extra_body={"max_tokens": 8000, "num_ctx": 8000}
-    )
-    
+{core_prompt_all}
+
+{resourse_all}
+
+    """
     logger.info('=========================================')
     logger.info('context_prompt')
     logger.info('=========================================')
     logger.info(context_prompt)
 
-    # Agent作成
+    model_settings = ModelSettings(
+        tool_choice="auto",
+        extra_body={"max_tokens": 8000, "num_ctx": 8000}
+    )
     agent = Agent(
         name=agent_name,
         instructions=context_prompt,
         model="gpt-oss-20b",
         model_settings=model_settings,
         mcp_servers=[mcp_server],
-        handoffs=sub_agent_list
+        handoffs=sub_agents
     )
 
     return agent, mcp_server
@@ -183,11 +249,16 @@ async def main():
     #------------------------------------------------------------
     # Aagent
     #------------------------------------------------------------
-    www_agent, www_agent_mcp_server = await create_mcp_based_agent("www-admin-agent", [])
-    system_admin_agent, system_admin_agent_mcp_server = await create_mcp_based_agent("system-admin-agent", [www_agent])
+#    www_agent, www_agent_mcp_server = await create_mcp_based_agent(
+#        agent_name="www-admin-agent", prompt_names=[], resources=[], sub_agents=[]
+#    )
 
+#    system_admin_agent, system_admin_agent_mcp_server = await create_mcp_based_agent(
+#        agent_name="system-admin-agent", prompt_names=[], resources=[], sub_agents=[www_agent]
+#    )
 
-    #------------------------------------------------------------
+    starting_agent, mcp_servers = await setup_agents()
+
     session = SQLiteSession(session_id="conversation_123", db_path=":memory:")
 
     while True:
@@ -198,27 +269,36 @@ async def main():
             break
 
         run_config = RunConfig(model_provider=provider)
-        result = await Runner.run(starting_agent=system_admin_agent, input=user_input, session=session, max_turns=30, run_config=run_config)
+        result = await Runner.run(
+            starting_agent=starting_agent,
+            input=user_input,
+            session=session, max_turns=30,
+            run_config=run_config
+        )
 
         print("AI:", result.final_output)
 
-        max_memory_items = 50
-        max_summary_length = 500
-        chat_size = len(await session.get_items())
-        logger.info('chat size:%d', chat_size)
-        if chat_size > max_memory_items:
-            await summarize_memory(
-                session=session,
-                agent=system_admin_agent,
-                run_config=run_config,
-                max_memory_items=max_memory_items,
-                max_summary_length=max_summary_length
-            )
+        await update_memory(session, agent, run_config)
+        # max_memory_items = 50
+        # max_summary_length = 500
+        # chat_size = len(await session.get_items())
+        # logger.info('chat size:%d', chat_size)
+        # if chat_size > max_memory_items:
+        #     await summarize_memory(
+        #         session=session,
+        #         agent=starting_agent,
+        #         run_config=run_config,
+        #         max_memory_items=max_memory_items,
+        #         max_summary_length=max_summary_length
+        #     )
 
     session.close()
-    await system_admin_agent_mcp_server.cleanup()
-    await www_agent_mcp_server.cleanup()
+    # await system_admin_agent_mcp_server.cleanup()
+    # await www_agent_mcp_server.cleanup()
 
+    for server in mcp_servers:
+        await server.cleanup()
+    
 #-----------------------------------------------------------------
 asyncio.run(main())
 
