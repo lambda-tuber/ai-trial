@@ -69,6 +69,10 @@ async def main():
         base_url="http://localhost:11434/v1",
         api_key="dummy"
     ))
+    fundry_provider = CustomModelProvider(client = AsyncOpenAI(
+        base_url="http://127.0.0.1:61703/v1",
+        api_key="MSFoundryLocal"
+    ))
     provider = ollama_provider
 
     set_default_openai_api("chat_completions")
@@ -147,6 +151,7 @@ async def main():
     instruction_prompt = f"""
       現状のサーバが、仕様書通りの設定になってるかサーバに接続して確認してください。その際、設定変更は絶対しないでください。
       proc-sshでサーバに接続し、proc-messageで情報収集コマンドを発行してください。"
+      確認結果は、すべての項目を一覧表示で報告してください。
     """
     logger.info('=========================================')
     logger.info('instruction_prompt')
@@ -159,6 +164,7 @@ async def main():
         instructions=context_prompt,
         #model="gpt-oss-20b",
         model="gpt-oss:20b",
+        #model="Phi-4-generic-gpu",
         # model="gemma3:12b",
         model_settings=ModelSettings(tool_choice="auto", extra_body={"num_ctx": 8000}),
         mcp_servers=[mcp_server],

@@ -17,6 +17,7 @@ from agents.mcp import MCPServerStdio
 from openai import AsyncOpenAI
 import logging
 import sys
+from foundry_local import FoundryLocalManager
 
 #-----------------------------------------------------------------
 logging.basicConfig(
@@ -34,12 +35,16 @@ async def setup_agents():
     mcp_servers = []
 
     www_agent, mcp_server = await create_mcp_based_agent(
-        agent_name="www-admin-agent", prompt_names=[], resources=[], sub_agents=[]
+        agent_name="www-admin-agent",
+        model="gpt-oss-20b",
+        prompt_names=[], resources=[], sub_agents=[]
     )
     mcp_servers.append(mcp_server)
 
     starting_agent, mcp_server = await create_mcp_based_agent(
-        agent_name="system-admin-agent", prompt_names=[], resources=[], sub_agents=[www_agent]
+        agent_name="system-admin-agent", 
+        model="gpt-oss-20b",
+        prompt_names=[], resources=[], sub_agents=[www_agent]
     )
     mcp_servers.append(mcp_server)
 
@@ -48,11 +53,42 @@ async def setup_agents():
 
 #-----------------------------------------------------------------
 class CustomModelProvider(ModelProvider):
-    def __init__(self, client: AsyncOpenAI):
-        self.client = client
 
-    def get_model(self, model_name: str | None) -> OpenAIChatCompletionsModel:
-        return OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
+    # manager = FoundryLocalManager("Phi-4-generic-gpu")
+
+    def _create_client(self, model_name: str):
+        if model_name.startswith("gpt-oss-20b"):
+            return AsyncOpenAI(
+                base_url="http://localhost:1234/v1",
+                api_key="lmstudio"
+            )
+        elif model_name.startswith("qwen3:8b"):
+            return AsyncOpenAI(
+                base_url="http://localhost:11434/v1",
+                api_key="ollama"
+            )
+        elif model_name.startswith("Phi-4-generic-gpu"):
+            return AsyncOpenAI(
+                base_url="http://127.0.0.1:61703/v1",
+                api_key="MSFoundryLocal"
+            )
+        else:
+            return AsyncOpenAI(
+                base_url="http://localhost:1234/v1",
+                api_key="lmstudio"
+            )
+
+    def __init__(self):
+        self.client_cache = {}
+
+    def get_model(self, model_name: str):
+        if model_name in self.client_cache:
+            client = self.client_cache[model_name]
+        else:
+            client = self._create_client(model_name)
+            self.client_cache[model_name] = client
+
+        return OpenAIChatCompletionsModel(model=model_name, openai_client=client)
 
 # ============================
 # 
@@ -81,18 +117,6 @@ def get_role_content(item):
 # 
 # ============================
 async def summarize_memory(session, agent, run_config, max_memory_items=10, max_summary_length=500):
-    """
-    SQLiteSession 内の古い履歴をまとめて要約する。
-
-    Args:
-        session: SQLiteSession
-        agent: Assistant または Agent
-        run_config: RunConfig
-        max_memory_items: メモリに保持する最大件数
-        max_summary_length: 要約の最大文字数
-    Returns:
-        conversation_summary: 生成された要約（str）または None
-    """
     logger.info('=========================================')
     logger.info('start summarize_memory')
 
@@ -187,7 +211,7 @@ async def load_resources(mcp_server, resource_uris: list[str]) -> str:
 # ============================
 # 
 # ============================
-async def create_mcp_based_agent(agent_name: str, prompt_names: list[str], resources: list[str], sub_agents: [Agent]):
+async def create_mcp_based_agent(agent_name: str, model: str, prompt_names: list[str], resources: list[str], sub_agents: [Agent]):
     
     yaml_path = f"C:\\work\\lambda-tuber\\ai-trial\\mission05\\{agent_name}-mcp-server.yaml"
     logger.info(yaml_path)
@@ -221,7 +245,7 @@ async def create_mcp_based_agent(agent_name: str, prompt_names: list[str], resou
     agent = Agent(
         name=agent_name,
         instructions=context_prompt,
-        model="gpt-oss-20b",
+        model=model,
         model_settings=model_settings,
         mcp_servers=[mcp_server],
         handoffs=sub_agents
@@ -231,34 +255,12 @@ async def create_mcp_based_agent(agent_name: str, prompt_names: list[str], resou
 
 #-----------------------------------------------------------------
 async def main():
-    lm_studio_provider = CustomModelProvider(client = AsyncOpenAI(
-        base_url="http://localhost:1234/v1",
-        api_key="dummy"
-    ))
 
-    ollama_provider = CustomModelProvider(client = AsyncOpenAI(
-        base_url="http://localhost:11434/v1",
-        api_key="dummy"
-    ))
-    provider = lm_studio_provider
-
+    # enable_verbose_stdout_logging()
     set_default_openai_api("chat_completions")
     set_tracing_disabled(True)
-    # enable_verbose_stdout_logging()
-
-    #------------------------------------------------------------
-    # Aagent
-    #------------------------------------------------------------
-#    www_agent, www_agent_mcp_server = await create_mcp_based_agent(
-#        agent_name="www-admin-agent", prompt_names=[], resources=[], sub_agents=[]
-#    )
-
-#    system_admin_agent, system_admin_agent_mcp_server = await create_mcp_based_agent(
-#        agent_name="system-admin-agent", prompt_names=[], resources=[], sub_agents=[www_agent]
-#    )
-
     starting_agent, mcp_servers = await setup_agents()
-
+    provider = CustomModelProvider()
     session = SQLiteSession(session_id="conversation_123", db_path=":memory:")
 
     while True:
@@ -278,24 +280,9 @@ async def main():
 
         print("AI:", result.final_output)
 
-        await update_memory(session, agent, run_config)
-        # max_memory_items = 50
-        # max_summary_length = 500
-        # chat_size = len(await session.get_items())
-        # logger.info('chat size:%d', chat_size)
-        # if chat_size > max_memory_items:
-        #     await summarize_memory(
-        #         session=session,
-        #         agent=starting_agent,
-        #         run_config=run_config,
-        #         max_memory_items=max_memory_items,
-        #         max_summary_length=max_summary_length
-        #     )
+        await update_memory(session, starting_agent, run_config)
 
     session.close()
-    # await system_admin_agent_mcp_server.cleanup()
-    # await www_agent_mcp_server.cleanup()
-
     for server in mcp_servers:
         await server.cleanup()
     
