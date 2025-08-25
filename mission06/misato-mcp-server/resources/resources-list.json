@@ -1,0 +1,15 @@
+[
+  {
+    "name": "agent_core_specification",
+    "uri": "file:///agent_core_specification.md",
+    "description": "【必須】エージェントの仕様書。責務・ルール・利用可能なツールやリソースを記載する。すべてのMCPエージェントに必ず含まれる必要がある。",
+    "mimeType": "text/markdown"
+  },
+  {
+    "name": "MAGI_system_definition",
+    "uri": "file:///MAGI_system_definition.md",
+    "description": "エヴァンゲリオンのMAGIシステムの定義。三賢者（メルキオール、バルタザール、カスパー）の役割、判断方針、行動原則、問い合わせフローをMarkdown形式でまとめた資料。",
+    "mimeType": "text/markdown"
+  }
+]
+
