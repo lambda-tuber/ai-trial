@@ -25,7 +25,9 @@ from agents.mcp import MCPServerStdio
 from openai import AsyncOpenAI
 import logging
 import sys
-from foundry_local import FoundryLocalManager
+import json
+
+# from foundry_local import FoundryLocalManager
 from agents.util._types import MaybeAwaitable
 
 #-----------------------------------------------------------------
@@ -98,9 +100,8 @@ async def setup_agents():
         model="gpt-oss-20b",
         prompt_names=[],
         resources=["file:///MAGI_system_definition.md"],
-#        sub_agents=[melchior_agent, balthasar_agent, casper_agent],
-        sub_agents=[],
-        sub_agent_tools=tools
+        sub_agents=[melchior_agent, balthasar_agent, casper_agent],
+        sub_agent_tools=[para_tool]+tools
     )
     mcp_servers.append(mcp_server)
 
@@ -109,6 +110,40 @@ async def setup_agents():
 
 #-----------------------------------------------------------------
 class CustomModelProvider(ModelProvider):
+    def __init__(self, client: AsyncOpenAI):
+        self.client = client
+
+    def get_model(self, model_name: str | None) -> OpenAIChatCompletionsModel:
+        return OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
+
+global_run_configs = {
+    "misato": RunConfig(
+        model_provider=CustomModelProvider(AsyncOpenAI(
+            base_url="http://172.16.0.198:1234/v1",
+            # base_url="http://172.16.0.43:1234/v1",
+            api_key="lmstudio"
+        ))),
+    "melchior": RunConfig(
+        model_provider=CustomModelProvider(AsyncOpenAI(
+            base_url="http://172.16.0.43:1234/v1",
+            api_key="lmstudio"
+        ))),
+    "balthasar": RunConfig(
+        model_provider=CustomModelProvider(AsyncOpenAI(
+            # base_url="http://172.16.0.99:1234/v1",
+            base_url="http://172.16.0.43:1234/v1",
+            api_key="lmstudio"
+        ))),
+    "casper": RunConfig(
+        model_provider=CustomModelProvider(AsyncOpenAI(
+            base_url="http://172.16.0.100:1234/v1",
+            #base_url="http://172.16.0.43:1234/v1",
+            api_key="lmstudio"
+        ))),
+}
+
+#-----------------------------------------------------------------
+class CustomModelProvider2(ModelProvider):
 
     # manager = FoundryLocalManager("Phi-4-generic-gpu")
 
@@ -205,7 +240,7 @@ class CustomModelProvider(ModelProvider):
 # 
 # ============================
 global_session = SQLiteSession(session_id="conversation_global", db_path=":memory:")
-global_run_config = RunConfig(model_provider=CustomModelProvider())
+global_run_config = RunConfig(model_provider=CustomModelProvider2())
 
 
 # ============================
@@ -217,9 +252,18 @@ def create_parallel_merge_tool(tools: List[Tool], tool_name: str, tool_descripti
         description_override=tool_description,
         is_enabled=True
     )
-    async def merged_tool(context: RunContextWrapper, input_text: str) -> str:
-        tasks = [tool(context, input_text) for tool in tools]
+    async def merged_tool(context: RunContextWrapper, input_text: str) -> List[dict]:
+        logger.info('=========================================')
+        logger.info('create_parallel_merge_tool.merged_tool %s', input_text)
+
+        tasks = []
+        for tool in tools:
+            json_input = json.dumps({"input_text": input_text}, ensure_ascii=False)
+            # logger.info("Creating task for tool=%s with input JSON: %s", tool.name, json_input)
+            tasks.append(tool.on_invoke_tool(context, json_input))
+
         results = await asyncio.gather(*tasks, return_exceptions=True)
+        #logger.info('create_parallel_merge_tool.merged_tool result=%s', results)
 
         merged = []
         for tool_obj, result in zip(tools, results):
@@ -235,6 +279,7 @@ def create_parallel_merge_tool(tools: List[Tool], tool_name: str, tool_descripti
                     "success": True,
                     "output": result,
                 })
+
         return merged
 
     return merged_tool
@@ -259,14 +304,16 @@ def convert_agent_to_tool(
         description_override=tool_description or "",
         is_enabled=is_enabled,
     )
-    async def run_agent(context: RunContextWrapper, input: str) -> str:
+    async def run_agent(context: RunContextWrapper, input_text: str) -> str:
+        logger.info('=========================================')
+        logger.info('convert_agent_to_tool.run_agent agent=%s', agent.name)
         output = await Runner.run(
             starting_agent=agent,
-            input=input,
+            input=input_text,
             context=context.context,
             max_turns=30,
             session=global_session,
-            run_config=global_run_config
+            run_config=global_run_configs[agent.name]
         )
         if custom_output_extractor:
             return await custom_output_extractor(output)
@@ -468,12 +515,12 @@ async def main():
             input=user_input,
             session=global_session,
             max_turns=30,
-            run_config=global_run_config
+            run_config=global_run_configs[starting_agent.name]
         )
 
         print("AI:", result.final_output)
 
-        await update_memory(global_session, starting_agent, global_run_config)
+        await update_memory(global_session, starting_agent, global_run_configs[starting_agent.name])
 
     global_session.close()
     for server in mcp_servers:
