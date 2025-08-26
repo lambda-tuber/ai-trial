@@ -42,3 +42,31 @@ MAGIシステムは、赤木ナオコの人格を3つに分割して移植した
 | 4. 多数決 | 三賢者の回答を多数決で集約 |
 | 5. 最終判断 | ミサトの思考・判断を反映して最終回答を作成 |
 | 6. 回答送信 | 質問者へ「承認／否認＋理由」として返す |
+
+## システム構成
+- ミサト
+  - IP: 172.16.0.198
+  - ホスト名:k-pc
+  - GPU: GeForce RTX 4060
+  - サービス: LM Studio
+  - モデル: gpt-oss-20b
+- メルキオール (Melchior)
+  - IP: 172.16.0.43
+  - ホスト名:n-note
+  - GPU: GeForce RTX 4050 Laptop
+  - サービス: LM Studio
+  - モデル: phi-4-reasoning-plus
+- バルタザール (Balthasar)
+  - IP: 172.16.0.99
+  - ホスト名:t-pc
+  - GPU: GeForce RTX 3060
+  - サービス: LM Studio
+  - モデル: gemma-3-12b
+- カスパー (Casper)
+  - IP: 172.16.0.100
+  - ホスト名:o-note
+  - GPU: GeForce RTX 3050 Laptop
+  - サービス: LM Studio
+  - モデル: phi-4-mini-reasoning
+
+

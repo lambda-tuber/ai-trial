@@ -11,13 +11,22 @@ from agents import (
     enable_verbose_stdout_logging,
     ModelProvider,
     RunConfig,
-    OpenAIChatCompletionsModel
+    OpenAIChatCompletionsModel,
+    AgentBase,
+    RunResult,
+    RunContextWrapper,
+    Tool,
+    function_tool,
+    ItemHelpers
 )
+import inspect
+from typing import Callable, Awaitable, Any, List
 from agents.mcp import MCPServerStdio
 from openai import AsyncOpenAI
 import logging
 import sys
 from foundry_local import FoundryLocalManager
+from agents.util._types import MaybeAwaitable
 
 #-----------------------------------------------------------------
 logging.basicConfig(
@@ -37,33 +46,61 @@ project_dir = "C:\\work\\lambda-tuber\\ai-trial\\mission06"
 # ============================
 async def setup_agents():
     mcp_servers = []
+    tools = []
 
     melchior_agent, mcp_server = await create_mcp_based_agent(
         agent_name="melchior",
-        model="phi-4-reasoning-plus",
-        prompt_names=[], resources=[], sub_agents=[]
+        model="gpt-oss-20b",
+        #model="phi-4-reasoning-plus",
+        prompt_names=[], resources=[], sub_agents=[], sub_agent_tools=[]
     )
     mcp_servers.append(mcp_server)
+    tools.append(convert_agent_to_tool(
+        melchior_agent,
+        tool_name="ask_to_melchior",
+        tool_description=("MAGIシステムにおける三賢者の一人であるメルキオール (Melchior)に問い合わせるツールである。")
+    ))
 
     balthasar_agent, mcp_server = await create_mcp_based_agent(
         agent_name="balthasar",
-        model="gemma-3-12b",
-        prompt_names=[], resources=[], sub_agents=[]
+        model="gpt-oss-20b",
+        #model="gemma-3-12b",
+        prompt_names=[], resources=[], sub_agents=[], sub_agent_tools=[]
     )
     mcp_servers.append(mcp_server)
+    tools.append(convert_agent_to_tool(
+        balthasar_agent,
+        tool_name="ask_to_balthasar",
+        tool_description=("MAGIシステムにおける三賢者の一人であるバルタザール (Balthasar)に問い合わせるツールである。")
+    ))
 
     casper_agent, mcp_server = await create_mcp_based_agent(
         agent_name="casper",
-        model="phi-4-mini-reasoning",
-        prompt_names=[], resources=[], sub_agents=[]
+        #model="phi-4-mini-reasoning",
+        model="gpt-oss-20b",
+        prompt_names=[], resources=[], sub_agents=[], sub_agent_tools=[]
     )
     mcp_servers.append(mcp_server)
+    tools.append(convert_agent_to_tool(
+        casper_agent,
+        tool_name="ask_to_casper",
+        tool_description=("MAGIシステムにおける三賢者の一人であるカスパー (Casper)に問い合わせるツールである。")
+    ))
+
+    para_tool = create_parallel_merge_tool(
+        tools=tools,
+        tool_name="ask_to_magi_system",
+        tool_description=("MAGIシステムにおける三賢者に全員に、同時に問い合わせるツールである。")
+    )
 
     starting_agent, mcp_server = await create_mcp_based_agent(
         agent_name="misato", 
         model="gpt-oss-20b",
-        prompt_names=[], resources=[],
-        sub_agents=[melchior_agent, balthasar_agent, casper_agent]
+        prompt_names=[],
+        resources=["file:///MAGI_system_definition.md"],
+#        sub_agents=[melchior_agent, balthasar_agent, casper_agent],
+        sub_agents=[],
+        sub_agent_tools=tools
     )
     mcp_servers.append(mcp_server)
 
@@ -76,7 +113,35 @@ class CustomModelProvider(ModelProvider):
     # manager = FoundryLocalManager("Phi-4-generic-gpu")
 
     def _create_client(self, model_name: str):
-        if model_name.startswith("phi-4-reasoning-plus"):
+        if model_name == "melchior":
+            # Melchior@n-note
+            return AsyncOpenAI(
+                base_url="http://172.16.0.43:1234/v1",
+                api_key="lmstudio"
+            )
+        elif model_name == "balthasar":
+            # Balthasar@t-pc
+            return AsyncOpenAI(
+                base_url="http://172.16.0.198:1234/v1",
+                # base_url="http://172.16.0.99:1234/v1",
+                api_key="lmstudio"
+            )
+        elif model_name == "casper":
+            # Casper@o-note
+            return AsyncOpenAI(
+                base_url="http://172.16.0.100:1234/v1",
+                api_key="lmstudio"
+            )
+        elif model_name == "misato":
+            # misato@k-pc
+            return AsyncOpenAI(
+                base_url="http://172.16.0.198:1234/v1",
+                api_key="lmstudio"
+            )
+
+
+
+        elif model_name.startswith("phi-4-reasoning-plus"):
             # Melchior@n-note
             return AsyncOpenAI(
                 base_url="http://172.16.0.43:1234/v1",
@@ -112,6 +177,22 @@ class CustomModelProvider(ModelProvider):
     def get_model(self, model_name: str):
         logger.info('=========================================')
         logger.info("get_model %s", model_name)
+        frame = inspect.currentframe()
+        caller_frame = frame.f_back
+        local_vars = caller_frame.f_locals
+        logger.info('sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss=========================================')
+        logger.info(local_vars)
+        if 'agent' in local_vars:
+           agent_instance = local_vars['agent']
+           agent_name = agent_instance.name
+           logger.info('=========================================')
+           logger.info("agent_name %s", agent_name)
+           model_name = agent_name
+        else:
+           logger.info(local_vars)
+           logger.info('=========================================')
+           logger.info("agent_name nont")
+
         if model_name in self.client_cache:
             client = self.client_cache[model_name]
         else:
@@ -119,6 +200,80 @@ class CustomModelProvider(ModelProvider):
             self.client_cache[model_name] = client
 
         return OpenAIChatCompletionsModel(model=model_name, openai_client=client)
+
+# ============================
+# 
+# ============================
+global_session = SQLiteSession(session_id="conversation_global", db_path=":memory:")
+global_run_config = RunConfig(model_provider=CustomModelProvider())
+
+
+# ============================
+# 
+# ============================
+def create_parallel_merge_tool(tools: List[Tool], tool_name: str, tool_description: str) -> Tool:
+    @function_tool(
+        name_override=tool_name,
+        description_override=tool_description,
+        is_enabled=True
+    )
+    async def merged_tool(context: RunContextWrapper, input_text: str) -> str:
+        tasks = [tool(context, input_text) for tool in tools]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        merged = []
+        for tool_obj, result in zip(tools, results):
+            if isinstance(result, Exception):
+                merged.append({
+                    "tool": tool_obj.name,
+                    "success": False,
+                    "error": str(result),
+                })
+            else:
+                merged.append({
+                    "tool": tool_obj.name,
+                    "success": True,
+                    "output": result,
+                })
+        return merged
+
+    return merged_tool
+
+# ============================
+# 
+# ============================
+def convert_agent_to_tool(
+    agent: AgentBase,
+    tool_name: str | None = None,
+    tool_description: str | None = None,
+    custom_output_extractor: Callable[[RunResult], Awaitable[str]] | None = None,
+    is_enabled: bool
+        | Callable[[RunContextWrapper[Any], AgentBase[Any]], MaybeAwaitable[bool]] = True,
+) -> Tool:
+    """
+    Agent インスタンスを Tool に変換する関数。
+    """
+
+    @function_tool(
+        name_override=tool_name or _transforms.transform_string_function_style(agent.name),
+        description_override=tool_description or "",
+        is_enabled=is_enabled,
+    )
+    async def run_agent(context: RunContextWrapper, input: str) -> str:
+        output = await Runner.run(
+            starting_agent=agent,
+            input=input,
+            context=context.context,
+            max_turns=30,
+            session=global_session,
+            run_config=global_run_config
+        )
+        if custom_output_extractor:
+            return await custom_output_extractor(output)
+
+        return ItemHelpers.text_message_outputs(output.new_items)
+
+    return run_agent
 
 # ============================
 # 
@@ -241,7 +396,12 @@ async def load_resources(mcp_server, resource_uris: list[str]) -> str:
 # ============================
 # 
 # ============================
-async def create_mcp_based_agent(agent_name: str, model: str, prompt_names: list[str], resources: list[str], sub_agents: [Agent]):
+async def create_mcp_based_agent(
+    agent_name: str, model: str, prompt_names: list[str],
+    resources: list[str],
+    sub_agents: [Agent],
+    sub_agent_tools: []
+    ):
     
     yaml_path = f"{project_dir}\\{agent_name}-mcp-server.yaml"
     logger.info(yaml_path)
@@ -270,6 +430,7 @@ async def create_mcp_based_agent(agent_name: str, model: str, prompt_names: list
 
     model_settings = ModelSettings(
         tool_choice="auto",
+        parallel_tool_calls=True,
         extra_body={"max_tokens": 8000, "num_ctx": 8000}
     )
     agent = Agent(
@@ -278,6 +439,7 @@ async def create_mcp_based_agent(agent_name: str, model: str, prompt_names: list
         model=model,
         model_settings=model_settings,
         mcp_servers=[mcp_server],
+        tools = sub_agent_tools,
         handoffs=sub_agents
     )
 
@@ -290,8 +452,8 @@ async def main():
     set_default_openai_api("chat_completions")
     set_tracing_disabled(True)
     starting_agent, mcp_servers = await setup_agents()
-    provider = CustomModelProvider()
-    session = SQLiteSession(session_id="conversation_123", db_path=":memory:")
+    #provider = CustomModelProvider()
+    #session = SQLiteSession(session_id="conversation_123", db_path=":memory:")
 
     while True:
         user_input = input("You: ")
@@ -300,19 +462,20 @@ async def main():
             print("会話を終了します。")
             break
 
-        run_config = RunConfig(model_provider=provider)
+        # run_config = RunConfig(model_provider=provider)
         result = await Runner.run(
             starting_agent=starting_agent,
             input=user_input,
-            session=session, max_turns=30,
-            run_config=run_config
+            session=global_session,
+            max_turns=30,
+            run_config=global_run_config
         )
 
         print("AI:", result.final_output)
 
-        await update_memory(session, starting_agent, run_config)
+        await update_memory(global_session, starting_agent, global_run_config)
 
-    session.close()
+    global_session.close()
     for server in mcp_servers:
         await server.cleanup()
     
