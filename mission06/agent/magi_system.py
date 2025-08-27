@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 # 
 # ============================
 project_dir = "C:\\work\\lambda-tuber\\ai-trial\\mission06"
+global_session = SQLiteSession(session_id="conversation_global", db_path=":memory:")
 
 # ============================
 # 
@@ -142,106 +143,6 @@ global_run_configs = {
             api_key="lmstudio"
         ))),
 }
-
-#-----------------------------------------------------------------
-class CustomModelProvider2(ModelProvider):
-
-    # manager = FoundryLocalManager("Phi-4-generic-gpu")
-
-    def _create_client(self, model_name: str):
-        if model_name == "melchior":
-            # Melchior@n-note
-            return AsyncOpenAI(
-                base_url="http://172.16.0.43:1234/v1",
-                api_key="lmstudio"
-            )
-        elif model_name == "balthasar":
-            # Balthasar@t-pc
-            return AsyncOpenAI(
-                base_url="http://172.16.0.198:1234/v1",
-                # base_url="http://172.16.0.99:1234/v1",
-                api_key="lmstudio"
-            )
-        elif model_name == "casper":
-            # Casper@o-note
-            return AsyncOpenAI(
-                base_url="http://172.16.0.100:1234/v1",
-                api_key="lmstudio"
-            )
-        elif model_name == "misato":
-            # misato@k-pc
-            return AsyncOpenAI(
-                base_url="http://172.16.0.198:1234/v1",
-                api_key="lmstudio"
-            )
-
-
-
-        elif model_name.startswith("phi-4-reasoning-plus"):
-            # Melchior@n-note
-            return AsyncOpenAI(
-                base_url="http://172.16.0.43:1234/v1",
-                api_key="lmstudio"
-            )
-        elif model_name.startswith("gemma-3-12b"):
-            # Balthasar@t-pc
-            return AsyncOpenAI(
-                base_url="http://172.16.0.99:1234/v1",
-                api_key="lmstudio"
-            )
-        elif model_name.startswith("phi-4-mini-reasoning"):
-            # Casper@o-note
-            return AsyncOpenAI(
-                base_url="http://172.16.0.100:1234/v1",
-                api_key="lmstudio"
-            )
-        elif model_name.startswith("gpt-oss-20b"):
-            # misato@k-pc
-            return AsyncOpenAI(
-                base_url="http://172.16.0.198:1234/v1",
-                api_key="lmstudio"
-            )
-        else:
-            return AsyncOpenAI(
-                base_url="http://localhost:1234/v1",
-                api_key="lmstudio"
-            )
-
-    def __init__(self):
-        self.client_cache = {}
-
-    def get_model(self, model_name: str):
-        logger.info('=========================================')
-        logger.info("get_model %s", model_name)
-        frame = inspect.currentframe()
-        caller_frame = frame.f_back
-        local_vars = caller_frame.f_locals
-        logger.info('sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss=========================================')
-        logger.info(local_vars)
-        if 'agent' in local_vars:
-           agent_instance = local_vars['agent']
-           agent_name = agent_instance.name
-           logger.info('=========================================')
-           logger.info("agent_name %s", agent_name)
-           model_name = agent_name
-        else:
-           logger.info(local_vars)
-           logger.info('=========================================')
-           logger.info("agent_name nont")
-
-        if model_name in self.client_cache:
-            client = self.client_cache[model_name]
-        else:
-            client = self._create_client(model_name)
-            self.client_cache[model_name] = client
-
-        return OpenAIChatCompletionsModel(model=model_name, openai_client=client)
-
-# ============================
-# 
-# ============================
-global_session = SQLiteSession(session_id="conversation_global", db_path=":memory:")
-global_run_config = RunConfig(model_provider=CustomModelProvider2())
 
 
 # ============================
