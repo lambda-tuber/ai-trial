@@ -62,6 +62,22 @@
         "arguments"
       ]
     }
+  },
+  {
+    "name": "local-weather-report",
+    "description": "指定した地域の天気情報を取得して返すツールです。入力として地域名や場所に関する文字列（arguments）を受け取り、その地域の現在の天気や予報を出力します。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "天気情報を取得したい地域名や場所を指定する文字列。例：'東京'、'New York'。"
+        }
+      },
+      "required": [
+        "arguments"
+      ]
+    }
   }
 ]
 

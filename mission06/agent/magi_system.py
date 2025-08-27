@@ -131,7 +131,8 @@ global_run_configs = {
     "balthasar": RunConfig(
         model_provider=CustomModelProvider(AsyncOpenAI(
             # base_url="http://172.16.0.99:1234/v1",
-            base_url="http://172.16.0.43:1234/v1",
+            base_url="http://172.16.0.198:1234/v1",
+            #base_url="http://172.16.0.43:1234/v1",
             api_key="lmstudio"
         ))),
     "casper": RunConfig(
