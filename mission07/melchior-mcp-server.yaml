@@ -1,0 +1,53 @@
+logDir : "melchior-mcp-server/logs"
+logLevel : "Debug"
+toolsDir : "melchior-mcp-server/tools"
+promptsDir : "melchior-mcp-server/prompts"
+resourcesDir : "melchior-mcp-server/resources"
+prompts:
+  - '>>>'
+  - ']#'
+  - ']$'
+  - ')?'
+  - 'Password:'
+  - 'password:'
+  - 'ghci>'
+
+
+# not yet implemented parameters.
+environment:
+  ProgramData: "C:\\ProgramData"
+  SystemRoot: "C:\\Windows"
+timeoutMicrosec: 1000000
+invalidChars:
+  - '&&'
+  - '||'
+  - '|'
+  - '..'
+invalidWinCmds:
+  - del
+  - erase
+  - rd
+  - rmdir
+  - format
+  - shutdown
+  - restart
+  - taskkill
+invalidLinuxCmds:
+  - rm
+  - mv
+  - dd
+  - chmod
+  - chown
+  - shutdown
+  - reboot
+  - kill
+  - nc
+serial:
+  device: "COM3"
+  commSpeed: 9600
+  bitsPerWord: 8
+  stopb: 1
+  parity: "NoParity"
+  flowControl: "NoFlowControl"
+  timeout: 1
+
