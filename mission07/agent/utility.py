@@ -17,8 +17,6 @@ logger = logging.getLogger(__name__)
 #-----------------------------------------------------------------
 class CustomModelProvider(agents.ModelProvider):
     def __init__(self, client: agents.AsyncOpenAI):
-        logger.info('=========================================')
-        logger.info('CustomModelProvider.__init__ called')
         self.client = client
 
     def get_model(self, model_name: str | None) -> agents.OpenAIChatCompletionsModel:
@@ -44,7 +42,6 @@ def create_parallel_merge_tool(tools: List[agents.Tool], tool_name: str, tool_de
             tasks.append(tool.on_invoke_tool(context, json_input))
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        #logger.info('create_parallel_merge_tool.merged_tool result=%s', results)
 
         merged = []
         for tool_obj, result in zip(tools, results):
@@ -61,6 +58,8 @@ def create_parallel_merge_tool(tools: List[agents.Tool], tool_name: str, tool_de
                     "output": result,
                 })
 
+        logger.info('=========================================')
+        logger.info('create_parallel_merge_tool.merged_tool merged=%s', merged)
         return merged
 
     return merged_tool
@@ -156,8 +155,9 @@ async def create_mcp_based_agent(
     project_dir,
     agent_name: str, model: str, prompt_names: list[str],
     resources: list[str],
-    sub_agents: [agents.Agent],
-    sub_agent_tools: []
+    handoffs: [agents.Agent],
+    tools: [],
+    mcp_servers=[]
     ):
     
     mcp_exec = "C:\\tools\\cabal\\bin\\pty-mcp-server.exe"
@@ -170,7 +170,9 @@ async def create_mcp_based_agent(
         },
         client_session_timeout_seconds=30
     )
-    await mcp_server.connect()
+    merged_mcp_servers = [mcp_server]+mcp_servers
+    for server in merged_mcp_servers:
+        await server.connect()
 
     core_prompt_all = await load_prompts(mcp_server, prompt_names)
     resourse_all = await load_resources(mcp_server, resources)
@@ -196,9 +198,9 @@ async def create_mcp_based_agent(
         instructions=context_prompt,
         model=model,
         model_settings=model_settings,
-        mcp_servers=[mcp_server],
-        tools = sub_agent_tools,
-        handoffs=sub_agents
+        mcp_servers=merged_mcp_servers,
+        tools = tools,
+        handoffs =handoffs
     )
 
     return agent, mcp_server
