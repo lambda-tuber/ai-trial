@@ -58,8 +58,6 @@ def create_parallel_merge_tool(tools: List[agents.Tool], tool_name: str, tool_de
                     "output": result,
                 })
 
-        logger.info('=========================================')
-        logger.info('create_parallel_merge_tool.merged_tool merged=%s', merged)
         return merged
 
     return merged_tool
@@ -284,7 +282,11 @@ def convert_agent_to_tool(
         if custom_output_extractor:
             return await custom_output_extractor(output)
 
-        return agents.ItemHelpers.text_message_outputs(output.new_items)
+        result = agents.ItemHelpers.text_message_outputs(output.new_items)
+        logger.info('=========================================')
+        logger.info('convert_agent_to_tool.run_agent agent=%s, result=%s', agent.name, result)
+ 
+        return result
 
     return run_agent
 
