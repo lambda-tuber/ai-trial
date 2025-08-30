@@ -2,10 +2,11 @@ import asyncio
 import agents
 import logging
 import sys
-
 import utility
 
 
+#-----------------------------------------------------------------
+# ユーザ設定
 #-----------------------------------------------------------------
 project_dir = "C:\\work\\lambda-tuber\\ai-trial\\mission08"
 global_session_db = ":memory:"
@@ -56,6 +57,7 @@ tachikoma_list = [
 
 
 #-----------------------------------------------------------------
+# システム設定
 logger = logging.getLogger(__name__)
 # enable_verbose_stdout_logging()
 agents.set_default_openai_api("chat_completions")
