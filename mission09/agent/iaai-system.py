@@ -71,9 +71,10 @@ async def main():
 
     session = agents.SQLiteSession(session_id="conversation_global", db_path=global_session_db)
     run_configs = utility.create_run_configs(tachikoma_list)
-
+    run_config = utility.create_run_config(tachikoma_list)
+    
     mba_list, mcp_servers = await utility.generate_mcp_based_agents(project_dir, pty_mcp_server, tachikoma_list)
-    utility.wiring_agent_tools(mba_list, run_configs, session)
+    utility.wiring_agent_tools(mba_list, run_config, session)
     utility.wiring_handoffs_agent(mba_list)
 
     starting_agent = mba_list[0]
@@ -92,7 +93,7 @@ async def main():
             input=user_input,
             session=session,
             max_turns=30,
-            run_config=run_configs[starting_agent.name]
+            run_config=run_config
         )
 
         print("AI:", result.final_output)

@@ -3,7 +3,7 @@ import asyncio
 import agents
 import logging
 import sys
-from typing import Callable, Awaitable, Any, List
+from typing import Callable, Awaitable, Any, List, Dict
 import json
 import inspect
 
@@ -27,10 +27,24 @@ class CustomModelProvider(agents.ModelProvider):
         agent = caller_frame.f_locals.get("agent", None)
         logger.info('=========================================')
         #logger.info('CustomModelProvider.get_model.caller_frame %s', caller_frame)
-        logger.info('CustomModelProvider.get_model.agent %s', agent)
+        logger.info('CustomModelProvider.get_model.agent %s', agent.name)
 
 
         return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
+
+class CustomModelProvider2(agents.ModelProvider):
+    def __init__(self, client_map: Dict[str, agents.AsyncOpenAI]):
+        self.client_map = client_map
+
+    def get_model(self, model_name: str | None) -> agents.OpenAIChatCompletionsModel:
+
+        stack = inspect.stack()
+        caller_frame = stack[1].frame
+        agent = caller_frame.f_locals.get("agent", None)
+        logger.info('=========================================')
+        logger.info('CustomModelProvider2.get_model.agent %s', agent.name)
+
+        return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client_map[agent.name])
 
 # ============================
 # 
@@ -287,7 +301,7 @@ def convert_agent_to_tool(
             context=context.context,
             max_turns=30,
             session=session,
-            run_config=run_configs[agent.name]
+            run_config=run_configs
         )
         if custom_output_extractor:
             return await custom_output_extractor(output)
@@ -320,6 +334,19 @@ def create_run_configs(tachikoma_list):
         )
     return run_configs
 
+def create_run_config(tachikoma_list):
+    client_map = {}
+    for agent_def in tachikoma_list:
+        name = agent_def["name"]
+        llm_info = agent_def["llm"]
+
+        client_map[name] = agents.AsyncOpenAI(
+            base_url=llm_info["base_url"],
+            api_key=llm_info["api_key"]
+        )
+
+    run_config = agents.RunConfig(model_provider=CustomModelProvider2(client_map))
+    return run_config
 
 # ============================
 # 
