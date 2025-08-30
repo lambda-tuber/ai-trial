@@ -32,6 +32,7 @@ class CustomModelProvider(agents.ModelProvider):
 
         return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
 
+# for handoffs
 class CustomModelProvider2(agents.ModelProvider):
     def __init__(self, client_map: Dict[str, agents.AsyncOpenAI]):
         self.client_map = client_map
@@ -301,7 +302,7 @@ def convert_agent_to_tool(
             context=context.context,
             max_turns=30,
             session=session,
-            run_config=run_configs
+            run_config=run_configs[agent.name]
         )
         if custom_output_extractor:
             return await custom_output_extractor(output)
@@ -334,6 +335,7 @@ def create_run_configs(tachikoma_list):
         )
     return run_configs
 
+# for handoffs
 def create_run_config(tachikoma_list):
     client_map = {}
     for agent_def in tachikoma_list:

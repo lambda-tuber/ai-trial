@@ -18,7 +18,8 @@ tachikoma_list = [
         "description": "Infrastructre as AI (IaAI) システムの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.198:1234/v1",
+            # "base_url": "http://172.16.0.198:1234/v1",
+            "base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -30,7 +31,8 @@ tachikoma_list = [
         "description": "IaAIシステムにおけるWWWサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.198:1234/v1",
+            # "base_url": "http://172.16.0.99:1234/v1",
+            "base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
@@ -40,7 +42,7 @@ tachikoma_list = [
         "description": "IaAIシステムにおけるAPサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.100:1234/v1",
+            "base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
@@ -50,7 +52,8 @@ tachikoma_list = [
         "description": "IaAIシステムにおけるDBサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.100:1234/v1",
+            # "base_url": "http://172.16.0.100:1234/v1",
+            "base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
@@ -71,11 +74,11 @@ async def main():
 
     session = agents.SQLiteSession(session_id="conversation_global", db_path=global_session_db)
     run_configs = utility.create_run_configs(tachikoma_list)
-    run_config = utility.create_run_config(tachikoma_list)
+    # run_config = utility.create_run_config(tachikoma_list) # for handoffs.
     
     mba_list, mcp_servers = await utility.generate_mcp_based_agents(project_dir, pty_mcp_server, tachikoma_list)
-    utility.wiring_agent_tools(mba_list, run_config, session)
-    utility.wiring_handoffs_agent(mba_list)
+    utility.wiring_agent_tools(mba_list, run_configs, session)
+    # utility.wiring_handoffs_agent(mba_list)
 
     starting_agent = mba_list[0]
     while True:
@@ -93,7 +96,7 @@ async def main():
             input=user_input,
             session=session,
             max_turns=30,
-            run_config=run_config
+            run_config=run_configs[starting_agent.name]
         )
 
         print("AI:", result.final_output)
