@@ -18,7 +18,7 @@ tachikoma_list = [
         "description": "Infrastructre as AI (IaAI) システムの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -27,30 +27,30 @@ tachikoma_list = [
     },
     {
         "name": "www-sv-admin",
-        "description": "IaAIシステムのWWWサーバの管理者",
+        "description": "IaAIシステムにおけるWWWサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
     },
     {
         "name": "ap-sv-admin",
-        "description": "IaAIシステムのAPサーバの管理者",
+        "description": "IaAIシステムにおけるAPサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.100:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
     },
     {
         "name": "db-sv-admin",
-        "description": "IaAIシステムのDBサーバの管理者",
+        "description": "IaAIシステムにおけるDBサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.100:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []

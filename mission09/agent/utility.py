@@ -5,6 +5,7 @@ import logging
 import sys
 from typing import Callable, Awaitable, Any, List
 import json
+import inspect
 
 #-----------------------------------------------------------------
 logging.basicConfig(
@@ -20,6 +21,15 @@ class CustomModelProvider(agents.ModelProvider):
         self.client = client
 
     def get_model(self, model_name: str | None) -> agents.OpenAIChatCompletionsModel:
+
+        stack = inspect.stack()
+        caller_frame = stack[1].frame
+        agent = caller_frame.f_locals.get("agent", None)
+        logger.info('=========================================')
+        #logger.info('CustomModelProvider.get_model.caller_frame %s', caller_frame)
+        logger.info('CustomModelProvider.get_model.agent %s', agent)
+
+
         return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
 
 # ============================
