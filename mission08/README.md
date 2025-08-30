@@ -11,7 +11,7 @@
 同様に本実装では：
 
 - **LLM**: [LM Studio](https://lmstudio.ai/) などを利用したローカル LLM  
-- **MCP**: `stdio` モードで動作する [pty-mcp-server](https://github.com/modelcontextprotocol) などを利用  
+- **MCP**: `stdio` モードで動作する [pty-mcp-server](https://github.com/phoityne/pty-mcp-server) などを利用  
 
 を組み合わせることで、「タチコマ」と呼ぶ自律型エージェントを構築します。  
 
