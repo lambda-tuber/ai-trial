@@ -55,9 +55,9 @@ tachikoma_list = [
     }
 ]
 
-
 #-----------------------------------------------------------------
 # システム設定
+#-----------------------------------------------------------------
 logger = logging.getLogger(__name__)
 # enable_verbose_stdout_logging()
 agents.set_default_openai_api("chat_completions")
