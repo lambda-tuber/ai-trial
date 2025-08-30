@@ -9,6 +9,8 @@ import utility
 # ユーザ設定
 #-----------------------------------------------------------------
 project_dir = "C:\\work\\lambda-tuber\\ai-trial\\mission08"
+pty_mcp_server = "C:\\tools\\cabal\\bin\\pty-mcp-server.exe"
+
 global_session_db = ":memory:"
 tachikoma_list = [
     {
@@ -70,7 +72,7 @@ async def main():
     session = agents.SQLiteSession(session_id="conversation_global", db_path=global_session_db)
     run_configs = utility.create_run_configs(tachikoma_list)
 
-    mba_list, mcp_servers = await utility.generate_mcp_based_agents(project_dir, tachikoma_list)
+    mba_list, mcp_servers = await utility.generate_mcp_based_agents(project_dir, pty_mcp_server, tachikoma_list)
     utility.wiring_agent_tools(mba_list, run_configs, session)
     utility.wiring_handoffs_agent(mba_list)
 

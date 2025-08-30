@@ -151,6 +151,7 @@ async def update_memory(session, agent, run_config):
 # ============================
 async def create_mcp_based_agent(
     project_dir,
+    pty_mcp_server,
     agent_name: str, model: str, prompt_names: list[str],
     resources: list[str],
     handoffs: [agents.Agent],
@@ -158,12 +159,11 @@ async def create_mcp_based_agent(
     mcp_servers=[]
     ):
     
-    mcp_exec = "C:\\tools\\cabal\\bin\\pty-mcp-server.exe"
-    yaml_path = f"{project_dir}\\{agent_name}-mcp-server.yaml"
+    yaml_path = f"{project_dir}/{agent_name}-mcp-server.yaml"
     logger.info(yaml_path)
     mcp_server = ExtendedMCPServerStdio(
         params={
-            "command": mcp_exec,
+            "command": pty_mcp_server,
             "args": ["-y", yaml_path],
         },
         client_session_timeout_seconds=30
@@ -314,20 +314,21 @@ def create_run_configs(tachikoma_list):
 # ============================
 # 
 # ============================
-async def generate_mcp_based_agents(project_dir, tachikoma_list):
+async def generate_mcp_based_agents(project_dir, pty_mcp_server, tachikoma_list):
     mcp_servers = []
     agent_list = []
 
     for agent_def in tachikoma_list:
         agent, mcp_server = await create_mcp_based_agent(
             project_dir=project_dir,
+            pty_mcp_server=pty_mcp_server,
             agent_name=agent_def["name"],
             model=agent_def["llm"]["model"],
             prompt_names=agent_def.get("prompts", []),
             resources=agent_def.get("resources", []),
             handoffs=[],
             tools=[],
-            mcp_servers=agent_def["mcp_servers"]
+            mcp_servers=agent_def.get("mcp_servers", [])
         )
 
         agent_list.append(agent)
