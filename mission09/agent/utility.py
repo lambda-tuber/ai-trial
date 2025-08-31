@@ -191,7 +191,8 @@ async def create_mcp_based_agent(
             "command": pty_mcp_server,
             "args": ["-y", yaml_path],
         },
-        client_session_timeout_seconds=30
+        client_session_timeout_seconds=30,
+        cache_tools_list=True
     )
     merged_mcp_servers = [mcp_server]+mcp_servers
     for server in merged_mcp_servers:
