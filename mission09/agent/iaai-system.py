@@ -18,8 +18,9 @@ tachikoma_list = [
         "description": "Infrastructre as AI (IaAI) システムの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            # "base_url": "http://172.16.0.198:1234/v1",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
+            # "base_url": "http://172.16.0.100:1234/v1",
+            #"base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -53,7 +54,8 @@ tachikoma_list = [
         "llm": {
             "model": "gpt-oss-20b",
             # "base_url": "http://172.16.0.100:1234/v1",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
+            # "base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
@@ -84,7 +86,7 @@ async def main():
     while True:
         user_input = input("You: ")
 
-        if user_input.strip().lower() in ("exit", "q"):
+        if user_input.strip().lower() in ("exit", "q", "ｑ"):
             print("会話を終了します。")
             break
 
@@ -95,7 +97,7 @@ async def main():
             starting_agent=starting_agent,
             input=user_input,
             session=session,
-            max_turns=30,
+            max_turns=100,
             run_config=run_configs[starting_agent.name]
         )
 

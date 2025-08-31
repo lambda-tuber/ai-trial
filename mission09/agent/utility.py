@@ -134,7 +134,7 @@ async def summarize_memory(session, agent, run_config, max_memory_items=10, max_
         {old_text}
     """
 
-    result = await agents.Runner.run(starting_agent=agent, input=summary_prompt, max_turns=10, run_config=run_config)
+    result = await agents.Runner.run(starting_agent=agent, input=summary_prompt, max_turns=100, run_config=run_config)
     conversation_summary = result.final_output.strip()
 
     while len(await session.get_items()) > max_memory_items - 1:
@@ -295,12 +295,12 @@ def convert_agent_to_tool(
     )
     async def run_agent(context: agents.RunContextWrapper, input_text: str) -> str:
         logger.info('=========================================')
-        logger.info('convert_agent_to_tool.run_agent agent=%s', agent.name)
+        logger.info('convert_agent_to_tool.run_agent agent=%s, context=%s ', agent.name, context.context)
         output = await agents.Runner.run(
             starting_agent=agent,
             input=input_text,
             context=context.context,
-            max_turns=30,
+            max_turns=100,
             session=session,
             run_config=run_configs[agent.name]
         )
@@ -383,8 +383,8 @@ def wiring_agent_tools(agent_list, run_configs, session):
     agent_tools_map = {}
     para_tools = []
     for agent in agent_list:
-        # tool_name = f"message_to_{agent.name}"
-        tool_name = f"message_to_{agent.name}"
+        # tool_name = f"message-to-{agent.name}"
+        tool_name = f"message-to-{agent.name}"
         tool_description = f"「{agent.name}」に問い合わせるツールである。"
         as_tool = convert_agent_to_tool(
             run_configs,
@@ -408,7 +408,7 @@ def wiring_agent_tools(agent_list, run_configs, session):
 
     para_tool = create_parallel_merge_tool(
         tools=para_tools[1:],  # エントリープラグ(starting_agent)を除く
-        tool_name="message_to_all_agent",
+        tool_name="message-to-all-agent",
         tool_description=("すべてのエージェントに、同時に問い合わせるツールである。")
     )
     agent_list[0].tools.append(para_tool)
