@@ -20,7 +20,7 @@ tachikoma_list = [
             "model": "gpt-oss-20b",
             "base_url": "http://172.16.0.198:1234/v1",
             # "base_url": "http://172.16.0.100:1234/v1",
-            #"base_url": "http://172.16.0.43:1234/v1",
+            # "base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -33,7 +33,8 @@ tachikoma_list = [
         "llm": {
             "model": "gpt-oss-20b",
             # "base_url": "http://172.16.0.99:1234/v1",
-            "base_url": "http://172.16.0.43:1234/v1",
+            # "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
@@ -43,7 +44,9 @@ tachikoma_list = [
         "description": "IaAIシステムにおけるAPサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            # "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
+            # "base_url": "http://172.16.0.100:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
@@ -66,7 +69,7 @@ tachikoma_list = [
 # システム設定
 #-----------------------------------------------------------------
 logger = logging.getLogger(__name__)
-# enable_verbose_stdout_logging()
+# agents.enable_verbose_stdout_logging()
 agents.set_default_openai_api("chat_completions")
 agents.set_tracing_disabled(True)
 
