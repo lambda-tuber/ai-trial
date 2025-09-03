@@ -18,7 +18,7 @@ tachikoma_list = [
         "description": "MAGIシステムの三賢者を束ねるミサト",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -29,8 +29,8 @@ tachikoma_list = [
         "name": "melchior",
         "description": "MAGIシステムの三賢者の一人メルキオール",
         "llm": {
-            "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "model": "gemma-3-12b",
+            "base_url": "http://172.16.0.100:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -50,7 +50,7 @@ tachikoma_list = [
         "description": "MAGIシステムの三賢者の一人カスパー",
         "llm": {
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -61,7 +61,7 @@ tachikoma_list = [
 # システム設定
 #-----------------------------------------------------------------
 logger = logging.getLogger(__name__)
-# enable_verbose_stdout_logging()
+# agents.enable_verbose_stdout_logging()
 agents.set_default_openai_api("chat_completions")
 agents.set_tracing_disabled(True)
 
@@ -71,16 +71,17 @@ async def main():
 
     session = agents.SQLiteSession(session_id="conversation_global", db_path=global_session_db)
     run_configs = utility.create_run_configs(tachikoma_list)
-
+    # run_config = utility.create_run_config(tachikoma_list) # for handoffs.
+    
     mba_list, mcp_servers = await utility.generate_mcp_based_agents(project_dir, pty_mcp_server, tachikoma_list)
     utility.wiring_agent_tools(mba_list, run_configs, session)
-    utility.wiring_handoffs_agent(mba_list)
+    # utility.wiring_handoffs_agent(mba_list)
 
     starting_agent = mba_list[0]
     while True:
         user_input = input("You: ")
 
-        if user_input.strip().lower() in ("exit", "q"):
+        if user_input.strip().lower() in ("exit", "q", "ｑ"):
             print("会話を終了します。")
             break
 
@@ -91,7 +92,7 @@ async def main():
             starting_agent=starting_agent,
             input=user_input,
             session=session,
-            max_turns=30,
+            max_turns=100,
             run_config=run_configs[starting_agent.name]
         )
 

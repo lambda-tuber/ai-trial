@@ -3,8 +3,9 @@ import asyncio
 import agents
 import logging
 import sys
-from typing import Callable, Awaitable, Any, List
+from typing import Callable, Awaitable, Any, List, Dict
 import json
+import inspect
 
 #-----------------------------------------------------------------
 logging.basicConfig(
@@ -20,7 +21,31 @@ class CustomModelProvider(agents.ModelProvider):
         self.client = client
 
     def get_model(self, model_name: str | None) -> agents.OpenAIChatCompletionsModel:
+
+        stack = inspect.stack()
+        caller_frame = stack[1].frame
+        agent = caller_frame.f_locals.get("agent", None)
+        logger.info('=========================================')
+        #logger.info('CustomModelProvider.get_model.caller_frame %s', caller_frame)
+        logger.info('CustomModelProvider.get_model.agent %s', agent.name)
+
+
         return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
+
+# for handoffs
+class CustomModelProvider2(agents.ModelProvider):
+    def __init__(self, client_map: Dict[str, agents.AsyncOpenAI]):
+        self.client_map = client_map
+
+    def get_model(self, model_name: str | None) -> agents.OpenAIChatCompletionsModel:
+
+        stack = inspect.stack()
+        caller_frame = stack[1].frame
+        agent = caller_frame.f_locals.get("agent", None)
+        logger.info('=========================================')
+        logger.info('CustomModelProvider2.get_model.agent %s', agent.name)
+
+        return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client_map[agent.name])
 
 # ============================
 # 
@@ -109,7 +134,7 @@ async def summarize_memory(session, agent, run_config, max_memory_items=10, max_
         {old_text}
     """
 
-    result = await agents.Runner.run(starting_agent=agent, input=summary_prompt, max_turns=10, run_config=run_config)
+    result = await agents.Runner.run(starting_agent=agent, input=summary_prompt, max_turns=100, run_config=run_config)
     conversation_summary = result.final_output.strip()
 
     while len(await session.get_items()) > max_memory_items - 1:
@@ -166,7 +191,8 @@ async def create_mcp_based_agent(
             "command": pty_mcp_server,
             "args": ["-y", yaml_path],
         },
-        client_session_timeout_seconds=30
+        client_session_timeout_seconds=30,
+        cache_tools_list=True
     )
     merged_mcp_servers = [mcp_server]+mcp_servers
     for server in merged_mcp_servers:
@@ -270,12 +296,12 @@ def convert_agent_to_tool(
     )
     async def run_agent(context: agents.RunContextWrapper, input_text: str) -> str:
         logger.info('=========================================')
-        logger.info('convert_agent_to_tool.run_agent agent=%s', agent.name)
+        logger.info('convert_agent_to_tool.run_agent agent=%s, context=%s ', agent.name, context.context)
         output = await agents.Runner.run(
             starting_agent=agent,
             input=input_text,
             context=context.context,
-            max_turns=30,
+            max_turns=100,
             session=session,
             run_config=run_configs[agent.name]
         )
@@ -310,6 +336,20 @@ def create_run_configs(tachikoma_list):
         )
     return run_configs
 
+# for handoffs
+def create_run_config(tachikoma_list):
+    client_map = {}
+    for agent_def in tachikoma_list:
+        name = agent_def["name"]
+        llm_info = agent_def["llm"]
+
+        client_map[name] = agents.AsyncOpenAI(
+            base_url=llm_info["base_url"],
+            api_key=llm_info["api_key"]
+        )
+
+    run_config = agents.RunConfig(model_provider=CustomModelProvider2(client_map))
+    return run_config
 
 # ============================
 # 
@@ -344,8 +384,8 @@ def wiring_agent_tools(agent_list, run_configs, session):
     agent_tools_map = {}
     para_tools = []
     for agent in agent_list:
-        # tool_name = f"message_to_{agent.name}"
-        tool_name = f"message_to_{agent.name}"
+        # tool_name = f"message-to-{agent.name}"
+        tool_name = f"message-to-{agent.name}"
         tool_description = f"「{agent.name}」に問い合わせるツールである。"
         as_tool = convert_agent_to_tool(
             run_configs,
@@ -369,7 +409,7 @@ def wiring_agent_tools(agent_list, run_configs, session):
 
     para_tool = create_parallel_merge_tool(
         tools=para_tools[1:],  # エントリープラグ(starting_agent)を除く
-        tool_name="message_to_all_agent",
+        tool_name="message-to-all-agent",
         tool_description=("すべてのエージェントに、同時に問い合わせるツールである。")
     )
     agent_list[0].tools.append(para_tool)
