@@ -41,3 +41,11 @@ AIはこれを用いてResourcesとPromptsに基づいた操作を実現しま�
 ### No.2 [AI] ClaudeのIaC Claudeの挨拶
 
 [![No.2](https://img.youtube.com/vi/3RhB2aQ5IWU/maxresdefault.jpg)](https://youtube.com/shorts/3RhB2aQ5IWU)
+
+### No.3 [AI] ClaudeのIaC めざせSpec指向
+
+[![No.2](https://img.youtube.com/vi/xCNnAn0wulQ/maxresdefault.jpg)](https://youtube.com/shorts/xCNnAn0wulQ)
+
+### No.4 [AI] ClaudeのIaC Spec指向でホスト名設定
+
+[![No.2](https://img.youtube.com/vi/oMKwLlMNCVY/maxresdefault.jpg)](https://youtube.com/shorts/oMKwLlMNCVY)
