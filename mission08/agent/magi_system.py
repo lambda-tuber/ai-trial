@@ -17,7 +17,9 @@ tachikoma_list = [
         "name": "misato",                                      # 注：1件目がエントリープラグ(starting_agent)になる。
         "description": "MAGIシステムの三賢者を束ねるミサト",
         "llm": {
-            "model": "gpt-oss-20b",
+            "model": "gemma-3-27b",
+            # "model": "hermes-4-70b",
+            # "model": "gpt-oss-20b",
             "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
@@ -29,8 +31,11 @@ tachikoma_list = [
         "name": "melchior",
         "description": "MAGIシステムの三賢者の一人メルキオール",
         "llm": {
+            # "model": "gemma-3-27b",
+            # "model": "hermes-4-70b",
             "model": "gemma-3-12b",
             "base_url": "http://172.16.0.100:1234/v1",
+            #"base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -39,8 +44,11 @@ tachikoma_list = [
         "name": "balthasar",
         "description": "MAGIシステムの三賢者の一人バルタザール",
         "llm": {
+            #"model": "gemma-3-27b",
+            # "model": "hermes-4-70b",
             "model": "gpt-oss-20b",
             "base_url": "http://172.16.0.43:1234/v1",
+            # "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],
@@ -49,7 +57,9 @@ tachikoma_list = [
         "name": "casper",
         "description": "MAGIシステムの三賢者の一人カスパー",
         "llm": {
-            "model": "gpt-oss-20b",
+            "model": "gemma-3-27b",
+            # "model": "hermes-4-70b",
+            #"model": "gpt-oss-20b",
             "base_url": "http://172.16.0.198:1234/v1",
             "api_key": "lmstudio"
         },
