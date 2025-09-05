@@ -1,0 +1,52 @@
+logDir : "misato-mcp-server/logs"
+logLevel : "Debug"
+toolsDir : "misato-mcp-server/tools"
+promptsDir : "misato-mcp-server/prompts"
+resourcesDir : "misato-mcp-server/resources"
+prompts:
+  - '>>>'
+  - ']#'
+  - ']$'
+  - ')?'
+  - 'Password:'
+  - 'password:'
+  - 'ghci>'
+
+
+# not yet implemented parameters.
+environment:
+  ProgramData: "C:\\ProgramData"
+  SystemRoot: "C:\\Windows"
+timeoutMicrosec: 1000000
+invalidChars:
+  - '&&'
+  - '||'
+  - '|'
+  - '..'
+invalidCmds:
+  - del
+  - erase
+  - rd
+  - rmdir
+  - format
+  - shutdown
+  - restart
+  - taskkill
+  - rm
+  - mv
+  - dd
+  - chmod
+  - chown
+  - shutdown
+  - reboot
+  - kill
+  - nc
+serial:
+  device: "COM3"
+  commSpeed: 9600
+  bitsPerWord: 8
+  stopb: 1
+  parity: "NoParity"
+  flowControl: "NoFlowControl"
+  timeout: 1
+
