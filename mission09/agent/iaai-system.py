@@ -17,7 +17,8 @@ tachikoma_list = [
         "name": "iaai-sys-admin",                              # 注：1件目がエントリープラグ(starting_agent)になる。
         "description": "Infrastructre as AI (IaAI) システムの管理者",
         "llm": {
-            "model": "gpt-oss-20b",
+            "model": "gemma-3-27b",
+            #"model": "gpt-oss-20b",
             "base_url": "http://172.16.0.198:1234/v1",
             # "base_url": "http://172.16.0.100:1234/v1",
             # "base_url": "http://172.16.0.43:1234/v1",
@@ -31,10 +32,11 @@ tachikoma_list = [
         "name": "www-sv-admin",
         "description": "IaAIシステムにおけるWWWサーバの管理者",
         "llm": {
-            "model": "gpt-oss-20b",
+            "model": "gemma-3-12b",
+            #"model": "gpt-oss-20b",
             # "base_url": "http://172.16.0.99:1234/v1",
             # "base_url": "http://172.16.0.43:1234/v1",
-            "base_url": "http://172.16.0.198:1234/v1",
+            "base_url": "http://172.16.0.100:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": []
@@ -44,8 +46,8 @@ tachikoma_list = [
         "description": "IaAIシステムにおけるAPサーバの管理者",
         "llm": {
             "model": "gpt-oss-20b",
-            # "base_url": "http://172.16.0.43:1234/v1",
-            "base_url": "http://172.16.0.198:1234/v1",
+            "base_url": "http://172.16.0.43:1234/v1",
+            #"base_url": "http://172.16.0.198:1234/v1",
             # "base_url": "http://172.16.0.100:1234/v1",
             "api_key": "lmstudio"
         },
@@ -55,7 +57,8 @@ tachikoma_list = [
         "name": "db-sv-admin",
         "description": "IaAIシステムにおけるDBサーバの管理者",
         "llm": {
-            "model": "gpt-oss-20b",
+            #"model": "gpt-oss-20b",
+            "model": "gemma-3-27b",
             # "base_url": "http://172.16.0.100:1234/v1",
             "base_url": "http://172.16.0.198:1234/v1",
             # "base_url": "http://172.16.0.43:1234/v1",
