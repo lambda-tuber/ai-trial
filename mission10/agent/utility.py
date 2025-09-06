@@ -16,7 +16,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 #-----------------------------------------------------------------
-class CustomModelProvider(agents.ModelProvider):
+class ParallelToolModelProvider(agents.ModelProvider):
     def __init__(self, client: agents.AsyncOpenAI):
         self.client = client
 
@@ -25,15 +25,15 @@ class CustomModelProvider(agents.ModelProvider):
         stack = inspect.stack()
         caller_frame = stack[1].frame
         agent = caller_frame.f_locals.get("agent", None)
-        logger.info('=========================================')
+        logger.info('=========================================1')
         #logger.info('CustomModelProvider.get_model.caller_frame %s', caller_frame)
-        logger.info('CustomModelProvider.get_model.agent %s', agent.name)
+        logger.info('ParallelToolModelProvider.get_model.agent %s', agent.name)
 
 
         return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client)
 
 # for handoffs
-class CustomModelProvider2(agents.ModelProvider):
+class CustomModelProvider(agents.ModelProvider):
     def __init__(self, client_map: Dict[str, agents.AsyncOpenAI]):
         self.client_map = client_map
 
@@ -42,8 +42,8 @@ class CustomModelProvider2(agents.ModelProvider):
         stack = inspect.stack()
         caller_frame = stack[1].frame
         agent = caller_frame.f_locals.get("agent", None)
-        logger.info('=========================================')
-        logger.info('CustomModelProvider2.get_model.agent %s', agent.name)
+        logger.info('=========================================2')
+        logger.info('CustomModelProvider.get_model.agent %s', agent.name)
 
         return agents.OpenAIChatCompletionsModel(model=model_name, openai_client=self.client_map[agent.name])
 
@@ -57,7 +57,7 @@ def create_parallel_merge_tool(tools: List[agents.Tool], tool_name: str, tool_de
         is_enabled=True
     )
     async def merged_tool(context: agents.RunContextWrapper, input_text: str) -> List[dict]:
-        logger.info('=========================================')
+        logger.info('=========================================3')
         logger.info('create_parallel_merge_tool.merged_tool %s', input_text)
 
         tasks = []
@@ -117,7 +117,7 @@ def get_role_content(item):
 # 
 # ============================
 async def summarize_memory(session, agent, run_config, max_memory_items=10, max_summary_length=500):
-    logger.info('=========================================')
+    logger.info('=========================================4')
     logger.info('start summarize_memory')
 
     history = await session.get_items()
@@ -146,7 +146,7 @@ async def summarize_memory(session, agent, run_config, max_memory_items=10, max_
 
     logger.info("履歴：%s", old_text)
     logger.info("要約：%s", conversation_summary)
-    logger.info('=========================================')
+    logger.info('=========================================5')
 
     return conversation_summary
 
@@ -207,9 +207,9 @@ async def create_mcp_based_agent(
 {resourse_all}
 
     """
-    logger.info('=========================================')
+    logger.info('=========================================6')
     logger.info('context_prompt')
-    logger.info('=========================================')
+    logger.info('=========================================7')
     logger.info(context_prompt)
 
     model_settings = agents.ModelSettings(
@@ -276,6 +276,51 @@ async def load_resources(mcp_server, resource_uris: list[str]) -> str:
 # 
 # ============================
 def convert_agent_to_tool(
+    run_config,
+    session,
+    agent: agents.AgentBase,
+    tool_name: str | None = None,
+    tool_description: str | None = None,
+    custom_output_extractor: Callable[[agents.RunResult], Awaitable[str]] | None = None,
+    is_enabled: bool
+        | Callable[[agents.RunContextWrapper[Any], agents.AgentBase[Any]], agents.util._types.MaybeAwaitable[bool]] = True,
+) -> agents.Tool:
+    """
+    Agent インスタンスを Tool に変換する関数。
+    """
+
+    @agents.function_tool(
+        name_override=tool_name or _transforms.transform_string_function_style(agent.name),
+        description_override=tool_description or "",
+        is_enabled=is_enabled,
+    )
+    async def run_agent(context: agents.RunContextWrapper, input_text: str) -> str:
+        logger.info('=========================================8')
+        logger.info('convert_agent_to_tool.run_agent agent=%s, context=%s ', agent.name, context.context)
+        output = await agents.Runner.run(
+            starting_agent=agent,
+            input=input_text,
+            context=context.context,
+            max_turns=100,
+            session=session,
+            run_config=run_config
+        )
+        if custom_output_extractor:
+            return await custom_output_extractor(output)
+
+        result = agents.ItemHelpers.text_message_outputs(output.new_items)
+        logger.info('=========================================9')
+        logger.info('convert_agent_to_tool.run_agent agent=%s, result=%s', agent.name, result)
+ 
+        return result
+
+    return run_agent
+
+
+# ============================
+# 
+# ============================
+def convert_agent_to_para_tool(
     run_configs,
     session,
     agent: agents.AgentBase,
@@ -295,8 +340,8 @@ def convert_agent_to_tool(
         is_enabled=is_enabled,
     )
     async def run_agent(context: agents.RunContextWrapper, input_text: str) -> str:
-        logger.info('=========================================')
-        logger.info('convert_agent_to_tool.run_agent agent=%s, context=%s ', agent.name, context.context)
+        logger.info('=========================================10')
+        logger.info('convert_agent_to_para_tool.run_agent agent=%s, context=%s ', agent.name, context.context)
         output = await agents.Runner.run(
             starting_agent=agent,
             input=input_text,
@@ -309,13 +354,12 @@ def convert_agent_to_tool(
             return await custom_output_extractor(output)
 
         result = agents.ItemHelpers.text_message_outputs(output.new_items)
-        logger.info('=========================================')
-        logger.info('convert_agent_to_tool.run_agent agent=%s, result=%s', agent.name, result)
+        logger.info('=========================================11')
+        logger.info('convert_agent_to_para_tool.run_agent agent=%s, result=%s', agent.name, result)
  
         return result
 
     return run_agent
-
 
 # ============================
 # 
@@ -327,7 +371,7 @@ def create_run_configs(tachikoma_list):
         llm_info = agent_def["llm"]
 
         run_configs[name] = agents.RunConfig(
-            model_provider=CustomModelProvider(
+            model_provider=ParallelToolModelProvider(
                 agents.AsyncOpenAI(
                     base_url=llm_info["base_url"],
                     api_key=llm_info["api_key"]
@@ -348,7 +392,7 @@ def create_run_config(tachikoma_list):
             api_key=llm_info["api_key"]
         )
 
-    run_config = agents.RunConfig(model_provider=CustomModelProvider2(client_map))
+    run_config = agents.RunConfig(model_provider=CustomModelProvider(client_map))
     return run_config
 
 # ============================
@@ -380,22 +424,20 @@ async def generate_mcp_based_agents(project_dir, pty_mcp_server, tachikoma_list)
 # ============================
 # 
 # ============================
-def wiring_agent_tools(agent_list, run_configs, session):
+def wiring_agent_tools(agent_list, run_config, run_configs, session):
     agent_tools_map = {}
-    para_tools = []
     for agent in agent_list:
         # tool_name = f"message-to-{agent.name}"
         tool_name = f"message-to-{agent.name}"
         tool_description = f"「{agent.name}」に問い合わせるツールである。"
         as_tool = convert_agent_to_tool(
-            run_configs,
+            run_config,
             session,
             agent,
             tool_name=tool_name,
             tool_description=tool_description
         )
         agent_tools_map[agent.name] = as_tool
-        para_tools.append(as_tool) 
 
     for agent in agent_list:
         tools = []
@@ -406,6 +448,18 @@ def wiring_agent_tools(agent_list, run_configs, session):
 
         agent.tools.extend(tools)
 
+    para_tools = []
+    for agent in agent_list:
+        tool_name = f"parallel-message-to-{agent.name}"
+        tool_description = f"「{agent.name}」に問い合わせるツールである。(parallelb版)"
+        as_tool = convert_agent_to_para_tool(
+            run_configs,
+            session,
+            agent,
+            tool_name=tool_name,
+            tool_description=tool_description
+        )
+        para_tools.append(as_tool) 
 
     para_tool = create_parallel_merge_tool(
         tools=para_tools[1:],  # エントリープラグ(starting_agent)を除く
