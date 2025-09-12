@@ -1,0 +1,51 @@
+logDir : "ap-sv-admin-mcp-server/logs"
+logLevel : "Debug"
+toolsDir : "ap-sv-admin-mcp-server/tools"
+promptsDir : "ap-sv-admin-mcp-server/prompts"
+resourcesDir : "ap-sv-admin-mcp-server/resources"
+prompts:
+  - '>>>'
+  - ']#'
+  - ']$'
+  - ')?'
+  - 'Password:'
+  - 'password:'
+  - 'ghci>'
+
+
+# not yet implemented parameters.
+environment:
+  ProgramData: "C:\\ProgramData"
+  SystemRoot: "C:\\Windows"
+timeoutMicrosec: 1000000
+invalidChars:
+  - '&&'
+  - '||'
+  - '..'
+invalidCmds:
+  - del
+  - erase
+  - rd
+  - rmdir
+  - format
+  - shutdown
+  - restart
+  - taskkill
+  - rm
+  - mv
+  - dd
+  - chmod
+  - chown
+  - shutdown
+  - reboot
+  - kill
+  - nc
+serial:
+  device: "COM3"
+  commSpeed: 9600
+  bitsPerWord: 8
+  stopb: 1
+  parity: "NoParity"
+  flowControl: "NoFlowControl"
+  timeout: 1
+
