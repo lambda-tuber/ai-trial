@@ -17,6 +17,6 @@ Claudeには、様々なペルソナを付与して、一緒に作業しても�
 ## Youtubeショート一覧
 ### IaAIな日常 FC1 エクセルで電話帳作成1
 
-[![No.1](https://img.youtube.com/vi/xxxxxxxx/maxresdefault.jpg)](https://youtube.com/shorts/xxxxxx)
+[![No.1](https://img.youtube.com/vi/CzTZlvxpEi0/maxresdefault.jpg)](https://youtube.com/shorts/CzTZlvxpEi0)
 
  
