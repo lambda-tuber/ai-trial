@@ -66,7 +66,16 @@
 - データ仕様
   - 株価データ: yfinance.Ticker("^N225")を用いて最新情報を取得する。
   - データ範囲: 株価データの範囲は、過去2週間を対象とする。
-  - PNGグラフデータ: 株価データをmplfinanceでPNGグラフデータに変換する。io.BytesIOバッファ経由でxlwingsに渡す。
+  - PNGグラフデータ: 株価データをmplfinanceでPNGに変換した画像。  
+      変換例
+      ```
+      ticker = yf.Ticker("^N225")
+      data = ticker.history(start=start_date, end=end_date)
+      mpfstyle = mpf.make_mpf_style(base_mpf_style="yahoo", rc = {'font.family': 'Meiryo'})
+      fig, axlist = mpf.plot(data, type='candle', style=mpfstyle, returnfig=True, figsize=(10,6))
+      fig.savefig(io.BytesIO(), format="png", dpi=150, bbox_inches="tight")
+      ws.pictures.add(fig, name="chart", left=100, top=100)
+      ```
 - ウィジェット仕様
   - 配置: グリッド
       - タイトル: 日経平均レポート
