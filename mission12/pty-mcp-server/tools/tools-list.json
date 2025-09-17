@@ -84,6 +84,38 @@
         "arguments"
       ]
     }
+  },
+  {
+    "name": "screenshot",
+    "description": "Captures a screenshot of the primary screen, resizes it to the specified width in pixels, and outputs the image as a Base64-encoded PNG in JSON format.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "The target width in pixels for the resized screenshot. Example: '800'"
+        }
+      },
+      "required": [
+        "arguments"
+      ]
+    }
+  },
+  {
+    "name": "mousepoint",
+    "description": "Returns the current mouse cursor position on the primary desktop, scaled according to the specified width in pixels.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "The target width in pixels for scaling the desktop coordinates. Example: '800'"
+        }
+      },
+      "required": [
+        "arguments"
+      ]
+    }
   }
 ]
 

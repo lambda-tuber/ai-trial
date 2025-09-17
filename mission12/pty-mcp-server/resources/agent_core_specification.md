@@ -67,14 +67,15 @@
   - 株価データ: yfinance.Ticker("^N225")を用いて最新情報を取得する。
   - データ範囲: 株価データの範囲は、過去2週間を対象とする。
   - PNGグラフデータ: 株価データをmplfinanceでPNGに変換した画像。  
-      変換例
-      ```
+      ```変換コード
+      import xlwings as xw; import yfinance as yf; import mplfinance as mpf; import io
+      import matplotlib; matplotlib.use("Agg") 
       ticker = yf.Ticker("^N225")
-      data = ticker.history(start=start_date, end=end_date)
+      data = ticker.history(start=開始日, end=終了日)
       mpfstyle = mpf.make_mpf_style(base_mpf_style="yahoo", rc = {'font.family': 'Meiryo'})
       fig, axlist = mpf.plot(data, type='candle', style=mpfstyle, returnfig=True, figsize=(10,6))
-      fig.savefig(io.BytesIO(), format="png", dpi=150, bbox_inches="tight")
-      ws.pictures.add(fig, name="chart", left=100, top=100)
+      fig.savefig(io.BytesIO(), format="png", dpi=150)
+      xw.sheet.pictures.add(fig, name="chart", left=100, top=100)
       ```
 - ウィジェット仕様
   - 配置: グリッド
