@@ -25,5 +25,5 @@ Claudeには、様々なペルソナを付与して、一緒に作業しても�
 
 ### IaAIな日常 FC3 エクセルで電話帳作成3
 
-[![No.3](https://img.youtube.com/-2R6J8CjRZk/maxresdefault.jpg)](https://youtube.com/shorts/-2R6J8CjRZk)
+[![No.3](https://img.youtube.com/vi/-2R6J8CjRZk/maxresdefault.jpg)](https://youtube.com/shorts/-2R6J8CjRZk)
 
