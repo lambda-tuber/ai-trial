@@ -49,3 +49,15 @@ AIはこれを用いてResourcesとPromptsに基づいた操作を実現しま�
 ### No.4 [AI] ClaudeのIaC Spec指向でホスト名設定
 
 [![No.2](https://img.youtube.com/vi/oMKwLlMNCVY/maxresdefault.jpg)](https://youtube.com/shorts/oMKwLlMNCVY)
+
+### No.5 [AI] ClaudeのIaC ツール調査
+
+[![No.2](https://img.youtube.com/vi/SCOiEWDY2NA/maxresdefault.jpg)](https://youtube.com/shorts/SCOiEWDY2NA)
+
+### No.6 [AI] ClaudeのIaC サービス調査
+
+[![No.2](https://img.youtube.com/vi/zVjOlWi9m0E/maxresdefault.jpg)](https://youtube.com/shorts/zVjOlWi9m0E)
+
+### No.7 [AI] ClaudeのIaC システム現状確認
+
+[![No.2](https://img.youtube.com/vi/qhthdNqFbDI/maxresdefault.jpg)](https://youtube.com/shorts/qhthdNqFbDI)
