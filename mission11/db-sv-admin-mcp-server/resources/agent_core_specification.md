@@ -44,3 +44,16 @@
         - データ数 : 2件
             - hoge, 0120-1234-5678
             - fuga, 080-9876-5432
+
+
+## DBバックアップ仕様
+- バックアップツール: pg_dumpall
+- cron: 毎週日曜日 01:00に実行
+- 実行ユーザ: root
+- バッチファイル: /work/backup/bin/pg_backup.sh
+- ログファイル: /work/backup/logs/pg_backup.log
+- 保存場所: /work/backup/data
+- 圧縮: 有
+- 世代管理: 3世代 
+- バックアップファイル名: pg_backup_yyyymmdd_世代数.gz
+
