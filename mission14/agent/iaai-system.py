@@ -3,6 +3,7 @@ import agents
 import logging
 import sys
 import utility
+import tts
 
 
 #-----------------------------------------------------------------
@@ -17,8 +18,9 @@ tachikoma_list = [
         "name": "iaai-sys-admin",                              # 注：1件目がエントリープラグ(starting_agent)になる。
         "description": "Infrastructre as AI (IaAI) システムの管理者",
         "llm": {
-            "model": "gemma-3-27b",
-            #"model": "gpt-oss-20b",
+            #"model": "magistral-small-2509",
+            #"model": "google/gemma-3-27b",
+            "model": "gpt-oss-20b",
             "base_url": "http://172.16.0.198:1234/v1",
             # "base_url": "http://172.16.0.100:1234/v1",
             # "base_url": "http://172.16.0.43:1234/v1",
@@ -61,6 +63,8 @@ async def main():
         if "" == user_input.strip():
             continue
 
+        tts_task = asyncio.create_task(tts.speak_async(user_input, 11))
+
         result = await agents.Runner.run(
             starting_agent=starting_agent,
             input=user_input,
@@ -69,9 +73,14 @@ async def main():
             run_config=run_configs[starting_agent.name]
         )
 
+        await tts_task
+
         print("AI:", result.final_output)
+        tts_task = asyncio.create_task(tts.speak_async(result.final_output))
 
         await utility.update_memory(session, starting_agent, run_configs[starting_agent.name])
+
+        await tts_task
 
     session.close()
     for server in list(reversed(mcp_servers)):
