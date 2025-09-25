@@ -61,3 +61,7 @@ AIはこれを用いてResourcesとPromptsに基づいた操作を実現しま�
 ### No.7 [AI] ClaudeのIaC システム現状確認
 
 [![No.7](https://img.youtube.com/vi/qhthdNqFbDI/maxresdefault.jpg)](https://youtube.com/shorts/qhthdNqFbDI)
+
+### No.8 [AI] ClaudeのIaC 設定ファイルのバックアップ
+
+[![No.8](https://img.youtube.com/vi/ZDM8ig5_WRk/maxresdefault.jpg)](https://youtube.com/shorts/ZDM8ig5_WRk)
