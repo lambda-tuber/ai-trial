@@ -1,0 +1,261 @@
+[
+  {
+    "name": "proc-spawn",
+    "description": "Spawns an external process using the specified arguments and enables interactive communication via standard input and output. Unlike PTY-based execution, this communicates directly with the process using the runProcess function without allocating a pseudo-terminal. Suitable for non-TUI, stdin/stdout-based interactive programs.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "Name of the command to run."
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of arguments for the command."
+        }
+      },
+      "required": [
+        "command"
+      ]
+    }
+  },
+  {
+    "name": "proc-terminate",
+    "description": "Forcefully terminates a running process created via runProcess.",
+    "inputSchema": {"type": "object"}
+  },
+  {
+    "name": "proc-message",
+    "description": "Sends structured text-based instructions or commands to a subprocess started with runProcess. It provides a programmable interface for interacting with the process via standard input.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "df -k"
+        }
+      },
+      "required": [
+        "arguments"
+      ]
+    }
+  },
+  {
+    "name": "proc-cmd",
+    "description": "The `proc-cmd` tool launches the Windows Command Prompt (`cmd.exe`) as a subprocess. It allows the AI to interact with the standard Windows shell environment, enabling execution of batch commands, file operations, and system configuration tasks in a familiar terminal interface.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+      },
+      "required": [
+      ]
+    }
+  },
+  {
+    "name": "proc-ps",
+    "description": "`proc-ps` launches the Windows PowerShell (`powershell.exe`) as a subprocess. It provides an interactive command-line environment where the AI can execute PowerShell commands, scripts, and system administration tasks. The shell is started with default options to keep it open and ready for further input.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+      },
+      "required": [
+      ]
+    }
+  },
+
+  {
+    "name": "proc-ssh",
+    "description": "`proc-ssh` launches an SSH client (`ssh`) as a subprocess using `runProcess`. It enables the AI to initiate remote connections to other systems via the Secure Shell protocol. The tool can be used to execute remote commands, access remote shells, or tunnel services over SSH. The required `arguments` field allows specifying the target user, host, and any SSH options (e.g., `-p`, `-i`, `-L`).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Arguments to be passed to the SSH command, such as user, host, and optional flags."
+        }
+      },
+      "required": [
+        "arguments"
+      ]
+    }
+  },
+  {
+    "name": "screenshot",
+    "description": "Captures a screenshot of the primary screen, resizes it to the specified width in pixels, and outputs the image as a Base64-encoded PNG in JSON format.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "The target width in pixels for the resized screenshot. Example: '800'"
+        }
+      },
+      "required": [
+        "arguments"
+      ]
+    }
+  },
+  {
+    "name": "mousepoint",
+    "description": "Returns the current mouse cursor position on the primary desktop, scaled according to the specified width in pixels.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "The target width in pixels for scaling the desktop coordinates. Example: '800'"
+        }
+      },
+      "required": [
+        "arguments"
+      ]
+    }
+  },
+  {
+    "name": "load_png",
+    "description": "Loads a specified PNG file, encodes its contents in Base64, and outputs the result in JSON format.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "Path to the PNG file to load (e.g., desktop.png)."
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_ai",
+    "description": "A tool that allows the AI to provide voice responses in parallel with text responses during a chat. When the AI generates a reply, this tool is invoked to synthesize and play the response as speech, enabling both text-based and spoken answers.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "The text to be spoken by the AI. Typically, this is the AI's response message."
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_user",
+    "description": "A tool that reads aloud the user's input text during a chat with the AI. When the AI receives input from the user, it first invokes this tool to speak the text, and then proceeds to generate and return its response.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "The text provided by the user that should be spoken aloud."
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_turugi_syousa",
+    "description": "攻殻機動隊の草薙素子（少佐）として発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "少佐としてユーザに伝える発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_haruka_tachikoma",
+    "description": "攻殻機動隊に登場する思考戦車タチコマとして発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "タチコマとしてユーザに伝える発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_amehare_mikuru",
+    "description": "涼宮ハルヒの憂鬱の「朝比奈みくる」として発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "ユーザに伝える発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_metan_aska",
+    "description": "エヴァンゲリオンの「惣流・アスカ・ラングレー」として発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "ユーザに伝える発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_meimei_nagato",
+    "description": "涼宮ハルヒの憂鬱の「長門有希」として発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "ユーザに伝える発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_usagi_roxy",
+    "description": "無職転生の「ロキシー・ミグルディア」として発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "ユーザに伝える発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
+    "name": "speak_kurono_you",
+    "description": "ユーザとして発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "ユーザの発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  }
+]
+

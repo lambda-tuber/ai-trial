@@ -1,0 +1,9 @@
+[
+  {
+    "name": "agent_core_specification",
+    "uri": "file:///agent_core_specification.md",
+    "description": "【必須】エージェントの仕様書。責務・ルール・利用可能なツールやリソースを記載する。すべてのMCPエージェントに必ず含まれる必要がある。",
+    "mimeType": "text/markdown"
+  }
+]
+
