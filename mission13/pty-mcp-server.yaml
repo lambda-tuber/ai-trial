@@ -50,4 +50,3 @@ serial:
   parity: "NoParity"
   flowControl: "NoFlowControl"
   timeout: 1
-
