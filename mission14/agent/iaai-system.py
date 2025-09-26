@@ -21,9 +21,9 @@ tachikoma_list = [
             #"model": "magistral-small-2509",
             #"model": "google/gemma-3-27b",
             "model": "gpt-oss-20b",
-            "base_url": "http://172.16.0.198:1234/v1",
+            # "base_url": "http://172.16.0.198:1234/v1",
             # "base_url": "http://172.16.0.100:1234/v1",
-            # "base_url": "http://172.16.0.43:1234/v1",
+            "base_url": "http://172.16.0.43:1234/v1",
             "api_key": "lmstudio"
         },
         "mcp_servers": [],

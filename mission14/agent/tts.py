@@ -15,10 +15,10 @@ SPEAKER_ID = 7 # ずんだもん ツンツン  アスカ
 #SPEAKER_ID = 61 # 中国うさぎ　ロキシー
 #SPEAKER_ID = 47 # ナースロボ　ロキシー
 #SPEAKER_ID = 94 # 中部つるぎ ノーマル 少佐
-#SPEAKER_ID = 14 # 冥鳴ひまり　長門 綾波
+SPEAKER_ID = 14 # 冥鳴ひまり　長門 綾波
 
 #SPEAKER_ID = 11 # 玄野武宏 ノーマル
-SPEAKER_ID = 74 # 琴詠ニア ノーマル
+#SPEAKER_ID = 74 # 琴詠ニア ノーマル
 #SPEAKER_ID = 69 # 満別花丸 ノーマル
 
 def list_speakers_and_styles(base_url=BASE_URL):
