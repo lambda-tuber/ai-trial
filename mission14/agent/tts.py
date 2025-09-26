@@ -7,8 +7,14 @@ import re
 
 BASE_URL = "http://127.0.0.1:50021"  # Voicevox Engine デフォルトポート
 #SPEAKER_ID = 37 # 四国めたん ひそひそ 綾波
-#SPEAKER_ID = 6 # 四国めたん ツンツン リツコ
-SPEAKER_ID = 7 # ずんだもん ツンツン  アスカ
+SPEAKER_ID = 6 # 四国めたん ツンツン リツコ
+    # query["speedScale"] = 1.0
+    # query["pitchScale"] = 0.06
+    # query["intonationScale"] = 1.3
+#SPEAKER_ID = 7 # ずんだもん ツンツン  アスカ
+    # query["speedScale"] = 1.0
+    # query["pitchScale"] = -0.01
+    # query["intonationScale"] = 1.5
 #SPEAKER_ID = 38 # ずんだもん ひそひそ ロキシー
 #SPEAKER_ID = 10 # 雨晴はう ノーマル みくるさん
 #SPEAKER_ID = 107 # 東北ずんこ　みくるさん
@@ -48,6 +54,9 @@ def tts_play(text: str, speaker_id: int = SPEAKER_ID):
     )
     response.raise_for_status()
     query = response.json()
+    # query["speedScale"] = 1.0
+    # query["pitchScale"] = 0.06
+    # query["intonationScale"] = 1.5
 
     # 2. synthesis で音声データを取得
     response = requests.post(
@@ -75,6 +84,10 @@ async def tts_play_async(text: str, speaker_id: int = SPEAKER_ID, base_url: str 
     )
     resp.raise_for_status()
     query = resp.json()
+    # query["speedScale"] = 1.0
+    # query["pitchScale"] = 0.06
+    # query["intonationScale"] = 1.3
+
 
     # 2. synthesis で wav バイナリを取得
     resp = requests.post(
@@ -116,17 +129,17 @@ async def main():
 
     list_speakers_and_styles()
 
-    tts_play("あんたバカぁ？　決まってるじゃない、弐号機で、あれをやっつけるのよ")
+    tts_play("あんたバカぁ？　決まってるじゃない、弐号機で、あれをやっつけるのよ。ばかしんーじー！！")
 
-    long_text = "信じてもらえないかもしれないけど、あたしはこの時代の人間ではありません。もっと未来から来ました。「禁則事項です"
-    for sentence in split_sentences(long_text):
-        tts_play(sentence)
+    # long_text = "信じてもらえないかもしれないけど、あたしはこの時代の人間ではありません。もっと未来から来ました。「禁則事項です"
+    # for sentence in split_sentences(long_text):
+    #     tts_play(sentence)
 
-    await tts_play_async("次の文もすぐ再生されます。")
+    # await tts_play_async("次の文もすぐ再生されます。")
 
-    long_text = "世の中に不満があるなら自分を変えろ。それが嫌なら耳と目を閉じ、口を噤んで孤独に暮らせ"
-    for sentence in split_sentences(long_text):
-        await tts_play_async(sentence)
+    # long_text = "世の中に不満があるなら自分を変えろ。それが嫌なら耳と目を閉じ、口を噤んで孤独に暮らせ"
+    # for sentence in split_sentences(long_text):
+    #     await tts_play_async(sentence)
 
 
 if __name__ == "__main__":
