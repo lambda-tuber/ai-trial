@@ -3,7 +3,6 @@
 このシリーズでは、ClaudeにWindows上で、いろいろ作業をしてもらいます。  
 Claudeには、様々なペルソナを付与して、一緒に作業してもらいます。
 
-
 ## Setup
 1. git cloneする。
 2. python環境を準備する。
@@ -12,14 +11,11 @@ Claudeには、様々なペルソナを付与して、一緒に作業しても�
 
 ## 利用ツール一覧
 - [Microsoft Clipchamp](https://apps.microsoft.com/detail/9p1j8s7ccwwt?hl=ja-JP&gl=JP)
-- [AivisSpeech](https://aivis-project.com/)
+- [voicevox](https://voicevox.hiroshiba.jp/)
 
 ## Youtubeショート一覧
-### IaAIな日常 FC1 エクセルで電話帳作成1
+### IaAIな日常 中国うさぎさんに、ロキシーを演じてもらった 編 その1
 
-[![No.1](https://img.youtube.com/vi/CzTZlvxpEi0/maxresdefault.jpg)](https://youtube.com/shorts/CzTZlvxpEi0)
+[![No.1](https://img.youtube.com/vi/ocG0DN0PUsM/maxresdefault.jpg)](https://youtube.com/shorts/ocG0DN0PUsM)
 
-### IaAIな日常 FC1 エクセルで電話帳作成2
 
-[![No.1](https://img.youtube.com/vi/lfUvLqNVZIs/maxresdefault.jpg)](https://youtube.com/shorts/lfUvLqNVZIs)
- 
