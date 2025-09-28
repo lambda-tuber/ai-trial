@@ -46,18 +46,19 @@ def list_speakers_and_styles(base_url=BASE_URL):
         print()  # 空行で区切り
 
 
-def tts_play(text: str, speaker_id: int = SPEAKER_ID):
+def tts_play(text: str, speaker_id: int = SPEAKER_ID, pitch_scale = PITCH_SCALE, base_url: str = BASE_URL):
     # 1. audio_query で音声合成パラメータを取得
     response = requests.post(
-        f"{BASE_URL}/audio_query",
+        f"{base_url}/audio_query",
         params={"speaker": speaker_id, "text": text}
     )
     response.raise_for_status()
     query = response.json()
+    query["pitchScale"] = pitch_scale
 
     # 2. synthesis で音声データを取得
     response = requests.post(
-        f"{BASE_URL}/synthesis",
+        f"{base_url}/synthesis",
         params={"speaker": speaker_id},
         headers={"Content-Type": "application/json"},
         json=query
@@ -65,10 +66,12 @@ def tts_play(text: str, speaker_id: int = SPEAKER_ID):
     response.raise_for_status()
 
     # 3. 音声データを再生
-    audio_data, samplerate = sf.read(io.BytesIO(response.content))
-    sd.play(audio_data, samplerate)
-    sd.wait()
-
+    # audio_data, samplerate = sf.read(io.BytesIO(response.content))
+    # sd.play(audio_data, samplerate)
+    # sd.wait()
+    audio_data, samplerate = sf.read(io.BytesIO(response.content), dtype='float32', always_2d=True)
+    with sd.OutputStream(samplerate=samplerate, channels=audio_data.shape[1], dtype='float32') as stream:
+        stream.write(audio_data)
 
 async def tts_play_async(text: str, speaker_id: int = SPEAKER_ID, pitch_scale = PITCH_SCALE, base_url: str = BASE_URL):
     """
@@ -94,9 +97,22 @@ async def tts_play_async(text: str, speaker_id: int = SPEAKER_ID, pitch_scale = 
     wav_bytes = resp.content
 
     # 3. メモリ上で再生（非同期対応）
-    data, samplerate = sf.read(io.BytesIO(wav_bytes))
-    sd.play(data, samplerate)
-    await asyncio.to_thread(sd.wait)
+    # data, samplerate = sf.read(io.BytesIO(wav_bytes))
+    # sd.play(data, samplerate)
+    # await asyncio.to_thread(sd.wait)
+
+    audio_data, samplerate = sf.read(io.BytesIO(resp.content), dtype='float32', always_2d=True)
+    # 再生処理を同期関数として定義
+    def _play():
+        with sd.OutputStream(
+            samplerate=samplerate,
+            channels=audio_data.shape[1],
+            dtype='float32'
+        ) as stream:
+            stream.write(audio_data)
+
+    # 別スレッドで実行 → await で待てる
+    await asyncio.to_thread(_play)
 
 
 
@@ -134,5 +150,10 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+    # speaker_id = sys.argv[1]
+    # pitch_scale = sys.argv[2]
+    # long_text = sys.argv[3]
+    # tts_play(remove_bracket_text(long_text), speaker_id, pitch_scale)
 
 

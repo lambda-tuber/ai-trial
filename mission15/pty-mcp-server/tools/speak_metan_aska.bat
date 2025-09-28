@@ -14,6 +14,6 @@ if "%~1"=="" (
 
 set TEXT=%~1 
 set SPEAKER_ID=6
-set PITCH_SCALE=0.04
+set PITCH_SCALE=0.0
 
 python "%~dp0speak.py" %SPEAKER_ID% %PITCH_SCALE% "%TEXT%"
