@@ -25,6 +25,8 @@ SPEAKER_ID = 45 # 櫻歌ミコ　タチコマ
 #SPEAKER_ID = 74 # 琴詠ニア ノーマル
 #SPEAKER_ID = 69 # 満別花丸 ノーマル
 
+PITCH_SCALE = 0.0
+
 def list_speakers_and_styles(base_url=BASE_URL):
     """
     Voicevox の話者一覧とスタイル一覧を取得して表示する
@@ -68,7 +70,7 @@ def tts_play(text: str, speaker_id: int = SPEAKER_ID):
     sd.wait()
 
 
-async def tts_play_async(text: str, speaker_id: int = SPEAKER_ID, base_url: str = BASE_URL):
+async def tts_play_async(text: str, speaker_id: int = SPEAKER_ID, pitch_scale = PITCH_SCALE, base_url: str = BASE_URL):
     """
     Voicevox OSS Engine を使ってテキストを音声合成し、非同期で再生する関数
     """
@@ -79,6 +81,7 @@ async def tts_play_async(text: str, speaker_id: int = SPEAKER_ID, base_url: str 
     )
     resp.raise_for_status()
     query = resp.json()
+    query["pitchScale"] = pitch_scale
 
     # 2. synthesis で wav バイナリを取得
     resp = requests.post(
@@ -103,9 +106,10 @@ def split_sentences(text: str):
     return [s.strip() for s in sentences if s.strip()]
 
 
-async def speak_async(text: str, speaker_id: int = SPEAKER_ID, base_url: str = BASE_URL):
-    for sentence in split_sentences(remove_bracket_text(text)):
-        await tts_play_async(sentence, speaker_id, base_url)
+async def speak_async(text: str, speaker_id: int = SPEAKER_ID, pitch_scale = PITCH_SCALE, base_url: str = BASE_URL):
+    # for sentence in split_sentences(remove_bracket_text(text)):
+    #     await tts_play_async(sentence, speaker_id, pitch_scale, base_url)
+    await tts_play_async(remove_bracket_text(text), speaker_id, pitch_scale, base_url)
 
 
 def remove_bracket_text(text: str) -> str:
@@ -122,9 +126,10 @@ async def main():
         sys.exit(1)
 
     speaker_id = sys.argv[1]
-    long_text = sys.argv[2]
+    pitch_scale = sys.argv[2]
+    long_text = sys.argv[3]
 
-    await speak_async(long_text, speaker_id)
+    await speak_async(long_text, speaker_id, pitch_scale)
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@
     - pip
     - pywin32
     - xlwings
+    - yfinance
 
 
 ## シート仕様

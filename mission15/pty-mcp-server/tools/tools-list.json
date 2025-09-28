@@ -216,6 +216,20 @@
     }
   },
   {
+    "name": "speak_no7_aska",
+    "description": "エヴァンゲリオンの「惣流・アスカ・ラングレー」として発話を行うツール。通常会話用。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "ユーザに伝える発話内容"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
     "name": "speak_meimei_nagato",
     "description": "涼宮ハルヒの憂鬱の「長門有希」として発話を行うツール。通常会話用。",
     "inputSchema": {
