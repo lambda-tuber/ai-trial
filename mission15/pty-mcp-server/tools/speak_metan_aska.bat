@@ -12,8 +12,8 @@ if "%~1"=="" (
     exit /b 1
 )
 
-set TEXT=%~1 
+set TEXT=%*
 set SPEAKER_ID=6
-set PITCH_SCALE=0.0
+set PITCH_SCALE=0.02
 
 python "%~dp0speak.py" %SPEAKER_ID% %PITCH_SCALE% "%TEXT%"

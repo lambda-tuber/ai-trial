@@ -13,7 +13,7 @@ if "%~1"=="" (
     exit /b 1
 )
 
-set TEXT=%~1 
+set TEXT=%*
 set SPEAKER_ID=29
 set PITCH_SCALE=0.03
 
