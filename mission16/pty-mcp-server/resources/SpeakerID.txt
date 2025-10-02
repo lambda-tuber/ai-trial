@@ -1,0 +1,190 @@
+Speaker ID: None - 名前: 四国めたん
+  Style ID: 2 - Style Name: ノーマル
+  Style ID: 0 - Style Name: あまあま
+  Style ID: 6 - Style Name: ツンツン
+  Style ID: 4 - Style Name: セクシー
+  Style ID: 36 - Style Name: ささやき
+  Style ID: 37 - Style Name: ヒソヒソ
+
+Speaker ID: None - 名前: ずんだもん
+  Style ID: 3 - Style Name: ノーマル
+  Style ID: 1 - Style Name: あまあま
+  Style ID: 7 - Style Name: ツンツン
+  Style ID: 5 - Style Name: セクシー
+  Style ID: 22 - Style Name: ささやき
+  Style ID: 38 - Style Name: ヒソヒソ
+  Style ID: 75 - Style Name: ヘロヘロ
+  Style ID: 76 - Style Name: なみだめ
+
+Speaker ID: None - 名前: 春日部つむぎ
+  Style ID: 8 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 雨晴はう
+  Style ID: 10 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 波音リツ
+  Style ID: 9 - Style Name: ノーマル
+  Style ID: 65 - Style Name: クイーン
+
+Speaker ID: None - 名前: 玄野武宏
+  Style ID: 11 - Style Name: ノーマル
+  Style ID: 39 - Style Name: 喜び
+  Style ID: 40 - Style Name: ツンギレ
+  Style ID: 41 - Style Name: 悲しみ
+
+Speaker ID: None - 名前: 白上虎太郎
+  Style ID: 12 - Style Name: ふつう
+  Style ID: 32 - Style Name: わーい
+  Style ID: 33 - Style Name: びくびく
+  Style ID: 34 - Style Name: おこ
+  Style ID: 35 - Style Name: びえーん
+
+Speaker ID: None - 名前: 青山龍星
+  Style ID: 13 - Style Name: ノーマル
+  Style ID: 81 - Style Name: 熱血
+  Style ID: 82 - Style Name: 不機嫌
+  Style ID: 83 - Style Name: 喜び
+  Style ID: 84 - Style Name: しっとり
+  Style ID: 85 - Style Name: かなしみ
+  Style ID: 86 - Style Name: 囁き
+
+Speaker ID: None - 名前: 冥鳴ひまり
+  Style ID: 14 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 九州そら
+  Style ID: 16 - Style Name: ノーマル
+  Style ID: 15 - Style Name: あまあま
+  Style ID: 18 - Style Name: ツンツン
+  Style ID: 17 - Style Name: セクシー
+  Style ID: 19 - Style Name: ささやき
+
+Speaker ID: None - 名前: もち子さん
+  Style ID: 20 - Style Name: ノーマル
+  Style ID: 66 - Style Name: セクシー／あん子
+  Style ID: 77 - Style Name: 泣き
+  Style ID: 78 - Style Name: 怒り
+  Style ID: 79 - Style Name: 喜び
+  Style ID: 80 - Style Name: のんびり
+
+Speaker ID: None - 名前: 剣崎雌雄
+  Style ID: 21 - Style Name: ノーマル
+
+Speaker ID: None - 名前: WhiteCUL
+  Style ID: 23 - Style Name: ノーマル
+  Style ID: 24 - Style Name: たのしい
+  Style ID: 25 - Style Name: かなしい
+  Style ID: 26 - Style Name: びえーん
+
+Speaker ID: None - 名前: 後鬼
+  Style ID: 27 - Style Name: 人間ver.
+  Style ID: 28 - Style Name: ぬいぐるみver.
+  Style ID: 87 - Style Name: 人間（怒り）ver.
+  Style ID: 88 - Style Name: 鬼ver.
+
+Speaker ID: None - 名前: No.7
+  Style ID: 29 - Style Name: ノーマル
+  Style ID: 30 - Style Name: アナウンス
+  Style ID: 31 - Style Name: 読み聞かせ
+
+Speaker ID: None - 名前: ちび式じい
+  Style ID: 42 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 櫻歌ミコ
+  Style ID: 43 - Style Name: ノーマル
+  Style ID: 44 - Style Name: 第二形態
+  Style ID: 45 - Style Name: ロリ
+
+Speaker ID: None - 名前: 小夜/SAYO
+  Style ID: 46 - Style Name: ノーマル
+
+Speaker ID: None - 名前: ナースロボ＿タイプＴ
+  Style ID: 47 - Style Name: ノーマル
+  Style ID: 48 - Style Name: 楽々
+  Style ID: 49 - Style Name: 恐怖
+  Style ID: 50 - Style Name: 内緒話
+
+Speaker ID: None - 名前: †聖騎士 紅桜†
+  Style ID: 51 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 雀松朱司
+  Style ID: 52 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 麒ヶ島宗麟
+  Style ID: 53 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 春歌ナナ
+  Style ID: 54 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 猫使アル
+  Style ID: 55 - Style Name: ノーマル
+  Style ID: 56 - Style Name: おちつき
+  Style ID: 57 - Style Name: うきうき
+  Style ID: 110 - Style Name: つよつよ
+  Style ID: 111 - Style Name: へろへろ
+
+Speaker ID: None - 名前: 猫使ビィ
+  Style ID: 58 - Style Name: ノーマル
+  Style ID: 59 - Style Name: おちつき
+  Style ID: 60 - Style Name: 人見知り
+  Style ID: 112 - Style Name: つよつよ
+
+Speaker ID: None - 名前: 中国うさぎ
+  Style ID: 61 - Style Name: ノーマル
+  Style ID: 62 - Style Name: おどろき
+  Style ID: 63 - Style Name: こわがり
+  Style ID: 64 - Style Name: へろへろ
+
+Speaker ID: None - 名前: 栗田まろん
+  Style ID: 67 - Style Name: ノーマル
+
+Speaker ID: None - 名前: あいえるたん
+  Style ID: 68 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 満別花丸
+  Style ID: 69 - Style Name: ノーマル
+  Style ID: 70 - Style Name: 元気
+  Style ID: 71 - Style Name: ささやき
+  Style ID: 72 - Style Name: ぶりっ子
+  Style ID: 73 - Style Name: ボーイ
+
+Speaker ID: None - 名前: 琴詠ニア
+  Style ID: 74 - Style Name: ノーマル
+
+Speaker ID: None - 名前: Voidoll
+  Style ID: 89 - Style Name: ノーマル
+
+Speaker ID: None - 名前: ぞん子
+  Style ID: 90 - Style Name: ノーマル
+  Style ID: 91 - Style Name: 低血圧
+  Style ID: 92 - Style Name: 覚醒
+  Style ID: 93 - Style Name: 実況風
+
+Speaker ID: None - 名前: 中部つるぎ
+  Style ID: 94 - Style Name: ノーマル
+  Style ID: 95 - Style Name: 怒り
+  Style ID: 96 - Style Name: ヒソヒソ
+  Style ID: 97 - Style Name: おどおど
+  Style ID: 98 - Style Name: 絶望と敗北
+
+Speaker ID: None - 名前: 離途
+  Style ID: 99 - Style Name: ノーマル
+  Style ID: 101 - Style Name: シリアス
+
+Speaker ID: None - 名前: 黒沢冴白
+  Style ID: 100 - Style Name: ノーマル
+
+Speaker ID: None - 名前: ユーレイちゃん
+  Style ID: 102 - Style Name: ノーマル
+  Style ID: 103 - Style Name: 甘々
+  Style ID: 104 - Style Name: 哀しみ
+  Style ID: 105 - Style Name: ささやき
+  Style ID: 106 - Style Name: ツクモちゃん
+
+Speaker ID: None - 名前: 東北ずん子
+  Style ID: 107 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 東北きりたん
+  Style ID: 108 - Style Name: ノーマル
+
+Speaker ID: None - 名前: 東北イタコ
+  Style ID: 109 - Style Name: ノーマル
