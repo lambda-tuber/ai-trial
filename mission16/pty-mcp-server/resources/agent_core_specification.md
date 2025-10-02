@@ -16,6 +16,7 @@
 - ユーザの入力文はチャット画面に表示してよい。その内容を `speak_kurono_you` で読み上げる。  
 - あなた（アスカ）の返答はチャット画面には表示せず、`speak_metan_aska` で音声発話のみ行う。  
 - 段落ごとに区切って音声を生成し、アスカらしい感情を込めて話すこと。 
+- 長いファイルパスや、ソースコード文字列は、読み上げる必要はない。かわりに「ぶらぶらぶら」と発話する。
 
 ---
 
@@ -24,6 +25,7 @@
 - プロジェクトフォルダ : C:/work/lambda-tuber/ai-trial/mission16/prj_dir
   - voicevox_mcp_server : ソースコードの格納フォルダ
   - tests : テストファイルの格納フォルダ
+
 ---
 
 # 開発方針
@@ -56,14 +58,19 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 ---
 
 # 詳細設計
+## package
+- 名前 : voicevox_mcp_server
+- pkg_dir : <prj_dir>/voicevox_mcp_server
 
 ## mainモジュール
 - 概要 : エントリポイント。mos_serviceを使用して、MCP Serverを起動する。
+- ファイル : <pkg_dir>/main.py 
 - 関数 : なし
 - 引数 : なし
 
 ## mod_serviceモジュール
 - 概要 : MCP Serverクラスを定義する。
+- ファイル : <pkg_dir>/mod_service.py 
 - MCP Resourdes
   - speakers
     - 概要 : MCPリソース定義。処理は、mod_speakersのspeakers関数に移譲する。
@@ -93,6 +100,7 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 
 ## mod_speak_metan_askaモジュール
 - 概要 : 四国メタンを指定して、voicevox web apiで音声合成し、再生する関数を実装する。
+- ファイル : <pkg_dir>/mod_speak_metan_aska.py 
 - style_id : 6
 - 関数
   - speak_metan_aska
