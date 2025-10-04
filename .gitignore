@@ -8,3 +8,4 @@ mission03
 **/*.png
 **/.pytest_cache/*
 **/*.egg-info/*
+**/dist/*

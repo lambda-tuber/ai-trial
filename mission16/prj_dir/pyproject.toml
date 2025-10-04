@@ -18,6 +18,9 @@ dependencies = [
     "sounddevice>=0.4.6",
     "numpy>=1.24.0",
 ]
+urls = { "Homepage" = "https://github.com/lambda-tuber/pvv-mcp-server" }
+license = { text = "Apache-2.0" }
+keywords = ["VOICEVOX", "MCP", "FastMCP", "TTS", "AI", "voice synthesis"]
 
 [project.optional-dependencies]
 dev = [
