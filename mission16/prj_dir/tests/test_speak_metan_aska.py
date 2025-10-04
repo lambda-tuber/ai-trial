@@ -1,89 +1,99 @@
-# test_speak_metan_aska.py
-
 import unittest
 from unittest.mock import patch, MagicMock
 import numpy as np
+import io
+import soundfile as sf
 from voicevox_mcp_server.mod_speak_metan_aska import speak_metan_aska
 
 
 class TestSpeakMetanAska(unittest.TestCase):
-    
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.sd.play')
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.sd.wait')
+
+    @patch('voicevox_mcp_server.mod_speak_metan_aska.sd.OutputStream')
     @patch('voicevox_mcp_server.mod_speak_metan_aska.requests.post')
-    def test_speak_metan_aska_success(self, mock_post, mock_wait, mock_play):
+    def test_speak_metan_aska_success(self, mock_post, mock_outputstream):
         """正常系：音声合成と再生が正しく行われることを確認"""
-        
-        # モックの設定
-        # audio_queryのレスポンス
+
+        # audio_query のレスポンス
         mock_query_response = MagicMock()
         mock_query_response.json.return_value = {"accent_phrases": []}
-        
-        # synthesisのレスポンス（WAVファイル）
-        # 44バイトのWAVヘッダー + 音声データ
-        wav_header = b'\x00' * 44
-        audio_data = np.array([100, 200, 300], dtype=np.int16).tobytes()
+        mock_query_response.raise_for_status.return_value = None
+
+        # synthesis のレスポンス（WAVデータ生成）
+        wav_bytes_io = io.BytesIO()
+        sf.write(wav_bytes_io, np.zeros((10, 1), dtype=np.float32), 24000, format='WAV')
+        wav_bytes = wav_bytes_io.getvalue()
+
         mock_synthesis_response = MagicMock()
-        mock_synthesis_response.content = wav_header + audio_data
-        
-        # postの戻り値を設定（1回目がquery、2回目がsynthesis）
+        mock_synthesis_response.content = wav_bytes
+        mock_synthesis_response.raise_for_status.return_value = None
+
+        # post の戻り値を設定
         mock_post.side_effect = [mock_query_response, mock_synthesis_response]
-        
+
+        # OutputStream のモック設定
+        mock_stream = MagicMock()
+        mock_outputstream.return_value.__enter__.return_value = mock_stream
+
         # 関数実行
         speak_metan_aska("テストメッセージ")
-        
+
         # 検証
         self.assertEqual(mock_post.call_count, 2)
-        
-        # 1回目の呼び出し（audio_query）
+
+        # audio_query 呼び出し
         first_call = mock_post.call_args_list[0]
         self.assertIn('audio_query', first_call[0][0])
         self.assertEqual(first_call[1]['params']['text'], "テストメッセージ")
         self.assertEqual(first_call[1]['params']['speaker'], 6)
-        
-        # 2回目の呼び出し（synthesis）
+
+        # synthesis 呼び出し
         second_call = mock_post.call_args_list[1]
         self.assertIn('synthesis', second_call[0][0])
         self.assertEqual(second_call[1]['params']['speaker'], 6)
-        
-        # 再生が呼ばれたことを確認
-        mock_play.assert_called_once()
-        mock_wait.assert_called_once()
-        
-        # 再生されたデータの検証
-        play_args = mock_play.call_args
-        self.assertEqual(play_args[1]['samplerate'], 24000)
-    
+
+        # OutputStream が呼ばれたか確認
+        mock_outputstream.assert_called_once()
+        mock_stream.write.assert_called_once()
+
     @patch('voicevox_mcp_server.mod_speak_metan_aska.requests.post')
     def test_speak_metan_aska_query_error(self, mock_post):
         """異常系：audio_query APIがエラーを返す場合"""
-        
+
         # モックの設定：HTTPエラーを発生させる
         mock_response = MagicMock()
         mock_response.raise_for_status.side_effect = Exception("API Error")
         mock_post.return_value = mock_response
-        
+
         # 例外が発生することを確認
         with self.assertRaises(Exception):
             speak_metan_aska("テストメッセージ")
-    
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.sd.play')
+
+    @patch('voicevox_mcp_server.mod_speak_metan_aska.sd.OutputStream')
     @patch('voicevox_mcp_server.mod_speak_metan_aska.requests.post')
-    def test_speak_metan_aska_empty_message(self, mock_post, mock_play):
+    def test_speak_metan_aska_empty_message(self, mock_post, mock_outputstream):
         """境界値テスト：空文字列のメッセージ"""
-        
-        # モックの設定
+
+        # audio_query のレスポンス
         mock_query_response = MagicMock()
         mock_query_response.json.return_value = {"accent_phrases": []}
-        
-        wav_header = b'\x00' * 44
-        audio_data = b''
+        mock_query_response.raise_for_status.return_value = None
+
+        # synthesis のレスポンス（空データ）
+        wav_bytes_io = io.BytesIO()
+        sf.write(wav_bytes_io, np.zeros((0, 1), dtype=np.float32), 24000, format='WAV')
+        wav_bytes = wav_bytes_io.getvalue()
+
         mock_synthesis_response = MagicMock()
-        mock_synthesis_response.content = wav_header + audio_data
-        
+        mock_synthesis_response.content = wav_bytes
+        mock_synthesis_response.raise_for_status.return_value = None
+
         mock_post.side_effect = [mock_query_response, mock_synthesis_response]
-        
-        # 関数実行（空文字でもエラーにならないことを確認）
+
+        # OutputStream のモック
+        mock_stream = MagicMock()
+        mock_outputstream.return_value.__enter__.return_value = mock_stream
+
+        # 実行（例外が出ないことを確認）
         try:
             speak_metan_aska("")
         except Exception as e:
@@ -92,4 +102,3 @@ class TestSpeakMetanAska(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    

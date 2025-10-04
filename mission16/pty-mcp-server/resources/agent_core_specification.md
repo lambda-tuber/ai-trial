@@ -87,16 +87,30 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
   - speak
     - 概要 : MCPツール定義。処理は、mod_speakのspeak関数に移譲する。
     - 引数
-      1. style_id : voicevox 発話音声を指定するID
-      2. speedScale : float 話速。デフォルト 1.0（0.5 で半分の速さ、2.0 で倍速）
-      3. pitchScale : float 声の高さ（ピッチ）。デフォルト 0.0（正規値）。±0.5 程度で自然
-      4. intonationScale float 抑揚（イントネーション）の強さ。デフォルト 1.0
-      5. volumeScale float 音量。デフォルト 1.0
-      6. msg : 発話するメッセージ
+      1. style_id : voicevox 発話音声を指定するID(必須)
+      2. msg : 発話するメッセージ(必須)
+      3. speedScale : float 話速。デフォルト 1.0（0.5 で半分の速さ、2.0 で倍速）(オプショナル)
+      4. pitchScale : float 声の高さ（ピッチ）。デフォルト 0.0（正規値）。±0.5 程度で自然 (オプショナル)
+      5. intonationScale float 抑揚（イントネーション）の強さ。デフォルト 1.0 (オプショナル)
+      6. volumeScale float 音量。デフォルト 1.0 (オプショナル)
   - speak_metan_aska
     - 概要 : MCPツール定義。処理は、mod_speak_metan_askaのspeak_metan_aska関数に移譲する。
     - 引数
       1. msg : 発話するメッセージ
+
+## mod_speak_モジュール
+- 概要 : voicevox web apiで音声合成し、再生する関数を実装する。
+- ファイル : <pkg_dir>/mod_speak.py 
+- 関数
+  - speak
+    - 概要 : voicevox web apiで音声合成し、音声を再生する。
+    - 引数 
+      1. style_id : voicevox 発話音声を指定するID(必須)
+      2. msg : 発話するメッセージ(必須)
+      3. speedScale : float 話速。デフォルト 1.0（0.5 で半分の速さ、2.0 で倍速）(オプショナル)
+      4. pitchScale : float 声の高さ（ピッチ）。デフォルト 0.0（正規値）。±0.5 程度で自然 (オプショナル)
+      5. intonationScale float 抑揚（イントネーション）の強さ。デフォルト 1.0 (オプショナル)
+      6. volumeScale float 音量。デフォルト 1.0 (オプショナル)
 
 ## mod_speak_metan_askaモジュール
 - 概要 : 四国メタンを指定して、voicevox web apiで音声合成し、再生する関数を実装する。
@@ -108,3 +122,10 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
     - 引数 
       1. msg : 発話するメッセージ
 
+## mod_speakersモジュール
+- 概要 : voicevox web apiでspeakers情報を取得する。
+- ファイル : <pkg_dir>/mod_speakers.py 
+- 関数
+  - speakers
+    - 概要 : voicevox web apiでspeakers情報を取得する。
+    - 引数 : なし

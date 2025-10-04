@@ -2,7 +2,9 @@
 
 import requests
 import sounddevice as sd
+import soundfile as sf
 import numpy as np
+import io
 
 def speak_metan_aska(msg: str) -> None:
     """
@@ -46,21 +48,6 @@ def speak_metan_aska(msg: str) -> None:
     )
     synthesis_response.raise_for_status()
     
-    # 音声データの取得（WAVファイル）
-    audio_data = synthesis_response.content
-    
-    # WAVファイルのヘッダーをスキップしてPCMデータを取得
-    # 標準的なWAVヘッダーは44バイト
-    pcm_data = audio_data[44:]
-    
-    # int16のバイナリデータをnumpy配列に変換
-    audio_array = np.frombuffer(pcm_data, dtype=np.int16)
-    
-    # float32に正規化（-1.0 to 1.0）
-    audio_float = audio_array.astype(np.float32) / 32768.0
-    
-    # 再生（VOICEVOXのデフォルトサンプリングレートは24000Hz）
-    sd.play(audio_float, samplerate=24000)
-    sd.wait()
-
-
+    audio_data, samplerate = sf.read(io.BytesIO(synthesis_response.content), dtype='float32', always_2d=True)
+    with sd.OutputStream(samplerate=samplerate, channels=audio_data.shape[1], dtype='float32') as stream:
+        stream.write(audio_data)

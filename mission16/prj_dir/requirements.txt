@@ -3,3 +3,7 @@ requests
 sounddevice
 numpy
 pytest
+anyio
+pytest-asyncio
+pytest-tornasync
+pytest-trio

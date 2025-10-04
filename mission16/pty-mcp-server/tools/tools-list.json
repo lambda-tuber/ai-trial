@@ -132,6 +132,20 @@
     }
   },
   {
+    "name": "readfile",
+    "description": "指定されたファイルを読み込み、その内容を標準出力に出力します。",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "type": "string",
+          "description": "読み込むファイルのパス"
+        }
+      },
+      "required": ["arguments"]
+    }
+  },
+  {
     "name": "speak_ai",
     "description": "A tool that allows the AI to provide voice responses in parallel with text responses during a chat. When the AI generates a reply, this tool is invoked to synthesize and play the response as speech, enabling both text-based and spoken answers.",
     "inputSchema": {
