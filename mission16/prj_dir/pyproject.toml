@@ -4,13 +4,13 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "voicevox-mcp-server"
+name = "pvv-mcp-server"
 version = "0.1.0"
 description = "MCP server for VOICEVOX text-to-speech synthesis"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Aska Lanclaude", email = "crypto.tuber.magika@gmail.com"}
 ]
 dependencies = [
     "mcp>=0.1.0",
@@ -26,7 +26,7 @@ dev = [
 ]
 
 [project.scripts]
-voicevox-mcp-server = "voicevox_mcp_server.main:main"
+pvv-mcp-server = "pvv_mcp_server.main:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
@@ -38,6 +38,6 @@ addopts = "-v"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["voicevox_mcp_server*"]
+include = ["pvv_mcp_server*"]
 exclude = ["tests*"]
 

@@ -1,2 +1,0 @@
-[console_scripts]
-voicevox-mcp-server = voicevox_mcp_server.main:main

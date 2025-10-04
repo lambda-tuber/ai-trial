@@ -8,7 +8,7 @@ import pytest
 import numpy as np
 import soundfile as sf
 from unittest.mock import patch, MagicMock
-from voicevox_mcp_server.mod_speak import speak
+from pvv_mcp_server.mod_speak import speak
 
 
 def make_wav_bytes(data: np.ndarray, samplerate=24000):
@@ -21,8 +21,8 @@ def make_wav_bytes(data: np.ndarray, samplerate=24000):
 class TestSpeak:
     """speak関数のテストクラス"""
     
-    @patch('voicevox_mcp_server.mod_speak.sd.OutputStream')
-    @patch('voicevox_mcp_server.mod_speak.requests')
+    @patch('pvv_mcp_server.mod_speak.sd.OutputStream')
+    @patch('pvv_mcp_server.mod_speak.requests')
     def test_speak_success_default_params(self, mock_requests, mock_stream):
         """正常系: デフォルトパラメータで音声合成・再生が成功する"""
         # モックの設定
@@ -62,8 +62,8 @@ class TestSpeak:
         
         mock_stream_instance.write.assert_called_once()
     
-    @patch('voicevox_mcp_server.mod_speak.sd.OutputStream')
-    @patch('voicevox_mcp_server.mod_speak.requests')
+    @patch('pvv_mcp_server.mod_speak.sd.OutputStream')
+    @patch('pvv_mcp_server.mod_speak.requests')
     def test_speak_success_custom_params(self, mock_requests, mock_stream):
         """正常系: カスタムパラメータで音声合成・再生が成功する"""
         mock_query_response = MagicMock()
@@ -98,7 +98,7 @@ class TestSpeak:
         assert query_data["intonationScale"] == 1.2
         assert query_data["volumeScale"] == 0.8
     
-    @patch('voicevox_mcp_server.mod_speak.requests.post')
+    @patch('pvv_mcp_server.mod_speak.requests.post')
     def test_speak_audio_query_error(self, mock_post):
         """異常系: audio_queryでエラーが発生する"""
         mock_post.side_effect = Exception("API Error")
@@ -108,8 +108,8 @@ class TestSpeak:
         
         assert "VOICEVOX API通信エラー" in str(exc_info.value)
     
-    @patch('voicevox_mcp_server.mod_speak.sd.OutputStream')
-    @patch('voicevox_mcp_server.mod_speak.requests.post')
+    @patch('pvv_mcp_server.mod_speak.sd.OutputStream')
+    @patch('pvv_mcp_server.mod_speak.requests.post')
     def test_speak_synthesis_error(self, mock_post, mock_stream):
         """異常系: synthesisでエラーが発生する"""
         mock_query_response = MagicMock()
@@ -125,8 +125,8 @@ class TestSpeak:
         
         assert "VOICEVOX API通信エラー" in str(exc_info.value)
     
-    @patch('voicevox_mcp_server.mod_speak.sd.OutputStream')
-    @patch('voicevox_mcp_server.mod_speak.requests.post')
+    @patch('pvv_mcp_server.mod_speak.sd.OutputStream')
+    @patch('pvv_mcp_server.mod_speak.requests.post')
     def test_speak_playback_error(self, mock_post, mock_stream):
         """異常系: 音声再生でエラーが発生する"""
         mock_query_response = MagicMock()

@@ -21,9 +21,9 @@
 ---
 
 # プロジェクト仕様
-- アプリケーション名 : voicevox-mcp-server
+- アプリケーション名 : pvv-mcp-server
 - プロジェクトフォルダ : C:/work/lambda-tuber/ai-trial/mission16/prj_dir
-  - voicevox_mcp_server : ソースコードの格納フォルダ
+  - pvv_mcp_server : ソースコードの格納フォルダ
   - tests : テストファイルの格納フォルダ
 
 ---
@@ -59,8 +59,8 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 
 # 詳細設計
 ## package
-- 名前 : voicevox_mcp_server
-- pkg_dir : <prj_dir>/voicevox_mcp_server
+- 名前 : pvv_mcp_server
+- pkg_dir : <prj_dir>/pvv_mcp_server
 
 ## mainモジュール
 - 概要 : エントリポイント。mos_serviceを使用して、MCP Serverを起動する。

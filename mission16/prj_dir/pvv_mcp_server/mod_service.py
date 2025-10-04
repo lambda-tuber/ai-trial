@@ -3,12 +3,12 @@ MCP Server service module
 MCPサーバクラスとToolsを定義する
 """
 from mcp.server.fastmcp import FastMCP
-from voicevox_mcp_server import mod_speak
-from voicevox_mcp_server import mod_speak_metan_aska
-from voicevox_mcp_server import mod_speakers
+from pvv_mcp_server import mod_speak
+from pvv_mcp_server import mod_speak_metan_aska
+from pvv_mcp_server import mod_speakers
 import json
 
-mcp = FastMCP("voicevox-mcp-server")
+mcp = FastMCP("pvv-mcp-server")
 
 @mcp.tool()
 async def speak(

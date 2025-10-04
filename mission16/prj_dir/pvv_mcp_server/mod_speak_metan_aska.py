@@ -17,15 +17,15 @@ def speak_metan_aska(msg: str) -> None:
         None
 
     Example:
-        python -c "from voicevox_mcp_server.mod_speak_metan_aska import speak_metan_aska; speak_metan_aska('あんた、バカぁ！？')"
+        python -c "from pvv_mcp_server.mod_speak_metan_aska import speak_metan_aska; speak_metan_aska('あんた、バカぁ！？')"
 
     """
     # VOICEVOXのデフォルトURL
-    voicevox_url = "http://127.0.0.1:50021"
+    pvv_url = "http://127.0.0.1:50021"
     style_id = 6  # 四国めたん
     
     # 音声合成用クエリの作成
-    query_url = f"{voicevox_url}/audio_query"
+    query_url = f"{pvv_url}/audio_query"
     query_params = {
         "text": msg,
         "speaker": style_id
@@ -37,7 +37,7 @@ def speak_metan_aska(msg: str) -> None:
     query_data = query_response.json()
     
     # 音声合成
-    synthesis_url = f"{voicevox_url}/synthesis"
+    synthesis_url = f"{pvv_url}/synthesis"
     synthesis_params = {
         "speaker": style_id
     }

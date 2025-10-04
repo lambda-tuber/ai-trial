@@ -3,13 +3,13 @@ from unittest.mock import patch, MagicMock
 import numpy as np
 import io
 import soundfile as sf
-from voicevox_mcp_server.mod_speak_metan_aska import speak_metan_aska
+from pvv_mcp_server.mod_speak_metan_aska import speak_metan_aska
 
 
 class TestSpeakMetanAska(unittest.TestCase):
 
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.sd.OutputStream')
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.requests.post')
+    @patch('pvv_mcp_server.mod_speak_metan_aska.sd.OutputStream')
+    @patch('pvv_mcp_server.mod_speak_metan_aska.requests.post')
     def test_speak_metan_aska_success(self, mock_post, mock_outputstream):
         """正常系：音声合成と再生が正しく行われることを確認"""
 
@@ -55,7 +55,7 @@ class TestSpeakMetanAska(unittest.TestCase):
         mock_outputstream.assert_called_once()
         mock_stream.write.assert_called_once()
 
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.requests.post')
+    @patch('pvv_mcp_server.mod_speak_metan_aska.requests.post')
     def test_speak_metan_aska_query_error(self, mock_post):
         """異常系：audio_query APIがエラーを返す場合"""
 
@@ -68,8 +68,8 @@ class TestSpeakMetanAska(unittest.TestCase):
         with self.assertRaises(Exception):
             speak_metan_aska("テストメッセージ")
 
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.sd.OutputStream')
-    @patch('voicevox_mcp_server.mod_speak_metan_aska.requests.post')
+    @patch('pvv_mcp_server.mod_speak_metan_aska.sd.OutputStream')
+    @patch('pvv_mcp_server.mod_speak_metan_aska.requests.post')
     def test_speak_metan_aska_empty_message(self, mock_post, mock_outputstream):
         """境界値テスト：空文字列のメッセージ"""
 

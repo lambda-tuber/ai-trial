@@ -1,10 +1,10 @@
 """
 main.py
-voicevox-mcp-serverのエントリポイント
+pvv-mcp-serverのエントリポイント
 """
 import io
 import sys
-from voicevox_mcp_server import mod_service
+from pvv_mcp_server import mod_service
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 

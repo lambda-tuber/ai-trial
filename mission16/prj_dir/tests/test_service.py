@@ -4,7 +4,7 @@ mod_service モジュールのユニットテスト
 """
 import pytest
 from unittest.mock import patch, MagicMock
-from voicevox_mcp_server import mod_service
+from pvv_mcp_server import mod_service
 
 
 class TestService:
@@ -14,7 +14,7 @@ class TestService:
     @pytest.mark.asyncio
     async def test_speak_success(self):
         """speak 関数が正常に動作することを確認"""
-        with patch('voicevox_mcp_server.mod_service.mod_speak.speak') as mock_speak:
+        with patch('pvv_mcp_server.mod_service.mod_speak.speak') as mock_speak:
             mock_speak.return_value = None
 
             result = await mod_service.speak(
@@ -31,7 +31,7 @@ class TestService:
     @pytest.mark.asyncio
     async def test_speak_error(self):
         """speak 関数がエラー時に適切に処理されることを確認"""
-        with patch('voicevox_mcp_server.mod_service.mod_speak.speak') as mock_speak:
+        with patch('pvv_mcp_server.mod_service.mod_speak.speak') as mock_speak:
             mock_speak.side_effect = Exception("テストエラー")
 
             result = await mod_service.speak(style_id=1, msg="エラーテスト")
@@ -42,7 +42,7 @@ class TestService:
     @pytest.mark.asyncio
     async def test_speak_metan_aska_success(self):
         """speak_metan_aska 関数が正常に動作することを確認"""
-        with patch('voicevox_mcp_server.mod_service.mod_speak_metan_aska.speak_metan_aska') as mock_speak:
+        with patch('pvv_mcp_server.mod_service.mod_speak_metan_aska.speak_metan_aska') as mock_speak:
             mock_speak.return_value = None
 
             result = await mod_service.speak_metan_aska("テストメッセージ")
@@ -53,7 +53,7 @@ class TestService:
     @pytest.mark.asyncio
     async def test_speak_metan_aska_error(self):
         """speak_metan_aska 関数がエラー時に適切に処理されることを確認"""
-        with patch('voicevox_mcp_server.mod_service.mod_speak_metan_aska.speak_metan_aska') as mock_speak:
+        with patch('pvv_mcp_server.mod_service.mod_speak_metan_aska.speak_metan_aska') as mock_speak:
             mock_speak.side_effect = Exception("テストエラー")
 
             result = await mod_service.speak_metan_aska("エラーテスト")
@@ -64,7 +64,7 @@ class TestService:
     def test_speakers_success(self):
         """speakers リソースが正常に JSON を返すことを確認"""
         fake_data = [{"id": 1, "name": "テスト話者"}]
-        with patch('voicevox_mcp_server.mod_service.mod_speakers.speakers', return_value=fake_data):
+        with patch('pvv_mcp_server.mod_service.mod_speakers.speakers', return_value=fake_data):
             result = mod_service.speakers()
 
             import json
@@ -73,7 +73,7 @@ class TestService:
 
     def test_speakers_error(self):
         """speakers リソースがエラー時に 'エラー: ...' を返すことを確認"""
-        with patch('voicevox_mcp_server.mod_service.mod_speakers.speakers', side_effect=Exception("テストエラー")):
+        with patch('pvv_mcp_server.mod_service.mod_speakers.speakers', side_effect=Exception("テストエラー")):
             result = mod_service.speakers()
             assert result == "エラー: テストエラー"
 
@@ -87,4 +87,4 @@ class TestService:
 
     def test_mcp_server_name(self):
         """MCP サーバの名前が正しく設定されていることを確認"""
-        assert mod_service.mcp.name == "voicevox-mcp-server"
+        assert mod_service.mcp.name == "pvv-mcp-server"

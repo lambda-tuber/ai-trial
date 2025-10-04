@@ -4,13 +4,13 @@ mod_speakers.pyのユニットテスト
 """
 import pytest
 from unittest.mock import patch, Mock
-from voicevox_mcp_server.mod_speakers import speakers
+from pvv_mcp_server.mod_speakers import speakers
 
 
 class TestSpeakers:
     """speakers関数のテストクラス"""
     
-    @patch('voicevox_mcp_server.mod_speakers.requests.get')
+    @patch('pvv_mcp_server.mod_speakers.requests.get')
     def test_speakers_success(self, mock_get):
         """正常系: 話者一覧が正しく取得できること"""
         # モックレスポンスの準備
@@ -46,7 +46,7 @@ class TestSpeakers:
         assert result[1]["name"] == "ずんだもん"
         assert len(result[0]["styles"]) == 3
     
-    @patch('voicevox_mcp_server.mod_speakers.requests.get')
+    @patch('pvv_mcp_server.mod_speakers.requests.get')
     def test_speakers_empty_list(self, mock_get):
         """正常系: 話者が0件の場合"""
         # モックレスポンスの準備
@@ -61,7 +61,7 @@ class TestSpeakers:
         # 検証
         assert result == []
     
-    @patch('voicevox_mcp_server.mod_speakers.requests.get')
+    @patch('pvv_mcp_server.mod_speakers.requests.get')
     def test_speakers_api_error(self, mock_get):
         """異常系: API呼び出しに失敗した場合"""
         # モックで例外を発生させる
