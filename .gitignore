@@ -7,3 +7,4 @@ mission03
 **/__pycache__/*
 **/*.png
 **/.pytest_cache/*
+**/*.egg-info/*
