@@ -10,4 +10,5 @@ mission03
 **/*.egg-info/*
 **/dist/*
 **/*.mcpb
+**/libs/*
 .pypirc
