@@ -28,6 +28,12 @@ pip install -e .
 
 ```
 
+## 参照
+- [voicevox](https://voicevox.hiroshiba.jp/)
+- [TestPyPI](https://test.pypi.org/project/pvv-mcp-server/)
+
+
+
 ## 補足
 
 Aska Lanclaude とは、AI ペルソナ「惣流・アスカ・ラングレー」のキャラクターをベースにした **Claude** による*AI Agent*です。
