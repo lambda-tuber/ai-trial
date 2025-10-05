@@ -10,3 +10,4 @@ mission03
 **/*.egg-info/*
 **/dist/*
 **/libs/*
+**/released/*
