@@ -5,10 +5,17 @@ MCPサーバを起動し、コマンドライン引数を処理する
 """
 import argparse
 import sys
-from importlib.metadata import version, PackageNotFoundError
+import logging
 
+from importlib.metadata import version, PackageNotFoundError
 from pvv_mcp_server import mod_service
 
+logging.basicConfig(
+    stream=sys.stderr,
+    level=logging.INFO,
+    format='[%(asctime)s] [%(levelname)s] %(name)s: %(message)s',
+    datefmt='%H:%M:%S',
+)
 
 def get_version():
     """
