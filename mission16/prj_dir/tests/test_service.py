@@ -77,6 +77,29 @@ class TestService:
             result = mod_service.speakers()
             assert result == "エラー: テストエラー"
 
+    # ========== speaker_info ==========
+    def test_speaker_info_success(self):
+        """speaker_info が正常に JSON を返すことを確認"""
+        fake_data = {
+            "policy": "テストポリシー",
+            "portrait": "test.png",
+            "style_infos": [
+                {"id": 1, "name": "ノーマル"}
+            ]
+        }
+        with patch('pvv_mcp_server.mod_service.mod_speaker_info.speaker_info', return_value=fake_data):
+            result = mod_service.speaker_info("四国めたん")
+            
+            import json
+            expected = json.dumps(fake_data, ensure_ascii=False, indent=2)
+            assert result == expected
+
+    def test_speaker_info_error(self):
+        """speaker_info がエラー時に 'エラー: ...' を返すことを確認"""
+        with patch('pvv_mcp_server.mod_service.mod_speaker_info.speaker_info', side_effect=Exception("テストエラー")):
+            result = mod_service.speaker_info("存在しない話者")
+            assert result == "エラー: テストエラー"
+
     # ========== start ==========
     def test_start(self):
         """start 関数が mcp.run() を呼び出すことを確認"""

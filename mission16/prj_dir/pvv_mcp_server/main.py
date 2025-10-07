@@ -1,20 +1,46 @@
 """
-main.py
-pvv-mcp-serverのエントリポイント
+pvv-mcp-server のエントリポイント
+
+MCPサーバを起動し、コマンドライン引数を処理する
 """
-import io
+import argparse
 import sys
-import os
+from importlib.metadata import version, PackageNotFoundError
 
 from pvv_mcp_server import mod_service
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "../libs"))
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+
+def get_version():
+    """
+    パッケージのバージョン情報を取得する
+    
+    Returns:
+        str: バージョン文字列
+    """
+    try:
+        return version("pvv-mcp-server")
+    except PackageNotFoundError:
+        return "development"
+
 
 def main():
     """
     MCPサーバを起動する
+    コマンドライン引数でバージョン表示にも対応
     """
+    parser = argparse.ArgumentParser(
+        description="VOICEVOX MCP Server - 音声合成機能を提供するMCPサーバ"
+    )
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        version=f"pvv-mcp-server {get_version()}"
+    )
+    
+    # 引数をパース（--version の場合はここで終了する）
+    parser.parse_args()
+    
+    # MCPサーバを起動
     mod_service.start()
 
 

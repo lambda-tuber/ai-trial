@@ -6,6 +6,7 @@ from mcp.server.fastmcp import FastMCP
 from pvv_mcp_server import mod_speak
 from pvv_mcp_server import mod_speak_metan_aska
 from pvv_mcp_server import mod_speakers
+from pvv_mcp_server import mod_speaker_info
 import json
 
 mcp = FastMCP("pvv-mcp-server")
@@ -80,6 +81,23 @@ def speakers() -> str:
     except Exception as e:
         return f"エラー: {str(e)}"
 
+
+@mcp.resource("voicevox://speaker_info/{speaker_id}")
+def speaker_info(speaker_id: str) -> str:
+    """
+    指定した話者の詳細情報を返す
+    
+    Args:
+        speaker_id: 話者名またはUUID
+    
+    Returns:
+        話者情報のJSON文字列
+    """
+    try:
+        info = mod_speaker_info.speaker_info(speaker_id)
+        return json.dumps(info, ensure_ascii=False, indent=2)
+    except Exception as e:
+        return f"エラー: {str(e)}"
 
 
 def start():

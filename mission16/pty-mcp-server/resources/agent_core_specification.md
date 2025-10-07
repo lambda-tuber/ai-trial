@@ -66,7 +66,9 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 - 概要 : エントリポイント。mos_serviceを使用して、MCP Serverを起動する。
 - ファイル : <pkg_dir>/main.py 
 - 関数 : なし
-- 引数 : なし
+- 引数
+  - version : オプショナル
+  - help : オプショナル
 
 ## mod_serviceモジュール
 - 概要 : MCP Serverクラスを定義する。
@@ -76,7 +78,7 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
     - 概要 : MCPリソース定義。処理は、mod_speakersのspeakers関数に移譲する。
     - 引数 : なし
   - speaker_info
-    - 概要 : MCPリソース定義。処理は、mod_speaker_infoのspeaker_info関数に移譲する。
+    - 概要 : MCPリソース定義。処理は、mod_speakerのspeaker_info関数に移譲する。
     - 引数
       1. uuid : Voicevox発話者のuuid
 
@@ -129,3 +131,19 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
   - speakers
     - 概要 : voicevox web apiでspeakers情報を取得する。
     - 引数 : なし
+
+## mod_speaker_infoモジュール
+- 概要 : voicevox web apiでspeaker情報を取得する。
+- ファイル : <pkg_dir>/mod_speaker_info.py 
+- 関数
+  - speaker
+    - 概要 : voicevox web apiでspeaker情報を取得する。
+    - 引数
+      1. speaker_id : 文字列。話者名、または、UUID。
+    - 詳細
+      1. 引数がUUIDの場合は、Voicevox APIのspeaker_infoにUUIDをリクエストし、話者情報を取得する。
+      2. 引数がUUIDではない場合は
+          1. mod_speakers.speakers関数で、話者リストを取得する。
+          2. 話者名が引数に部分一致する話者を話者リストから検索抽出し、当該話者のUUIDを特定する。
+          3. Voicevox APIのspeaker_infoにUUIDをリクエストし、話者情報を取得する。
+
