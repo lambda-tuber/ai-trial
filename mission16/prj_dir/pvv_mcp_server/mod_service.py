@@ -7,9 +7,17 @@ from pvv_mcp_server import mod_speak
 from pvv_mcp_server import mod_speak_metan_aska
 from pvv_mcp_server import mod_speakers
 from pvv_mcp_server import mod_speaker_info
+import pvv_mcp_server.avatar.mod_avatar_manager
 import json
+from typing import Any
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QTimer
+import sys
+from threading import Thread
+
 
 mcp = FastMCP("pvv-mcp-server")
+_config = None
 
 @mcp.tool()
 async def speak(
@@ -100,6 +108,17 @@ def speaker_info(speaker_id: str) -> str:
         return f"エラー: {str(e)}"
 
 
-def start():
-    """stdio モードで FastMCP を起動"""
+def start_mcp():
     mcp.run(transport="stdio")
+
+
+def start(conf: dict[str, Any]):
+    """stdio モードで FastMCP を起動"""
+    global _config 
+    _config = conf
+
+    Thread(target=start_mcp, args=(), daemon=True).start()
+
+    app = QApplication(sys.argv) 
+    pvv_mcp_server.avatar.mod_avatar_manager.setup(conf["avatars"]) 
+    sys.exit(app.exec())

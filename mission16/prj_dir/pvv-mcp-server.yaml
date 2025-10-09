@@ -1,34 +1,36 @@
 avatars:
   0:  &style_id_0   # VOICEVOX:四国めたん あまあま
     "位置" : right_out  # left_out, left_in, right_in, right_out,
+    "表示" : True
     "反転" : False
+    "縮尺" : 50
     "画像" :
       "立ち絵":
-        - josei_20_a.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_a.png
       "口パク":
-        - josei_20_a.png
-        - josei_20_b.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_a.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_b.png
       "まばたき":
-        - josei_20_a.png
-        - josei_20_h.png
-        - josei_20_h.png
-        - josei_20_a.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_a.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_h.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_h.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_a.png
       "えがお":
-        - josei_20_a.png
-        - josei_20_e.png
-        - josei_20_f.png
-        - josei_20_g.png
-        - josei_20_f.png
-        - josei_20_e.png
-        - josei_20_a.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_a.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_e.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_f.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_g.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_f.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_e.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_a.png
       "おこ":
-        - josei_20_c.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_c.png
       "にやり":
-        - josei_20_f.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_f.png
       "えっ":
-        - josei_20_e.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_e.png
       "ん－":
-        - josei_20_d.png
+        - C:/work/lambda-tuber/ai-trial/mission16/docs/josei_20_pw/josei_20_d.png
   2:  *style_id_0   # VOICEVOX:四国めたん ノーマル
   4:  *style_id_0   # VOICEVOX:四国めたん セクシー
   6:  *style_id_0   # VOICEVOX:四国めたん ツンツン
@@ -37,7 +39,8 @@ avatars:
   
   11: &style_id_11     # VOICEVOX:玄野武宏 (CV: ガロ) ノーマル
     "位置" : left_out  # left_out, left_in, right_in, right_out,
-    "反転" : False
+    "表示" : False
+    "反転" : True
     "画像" :
       "立ち絵":
         - animal_01_g.png
