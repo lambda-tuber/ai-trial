@@ -7,3 +7,4 @@ dist/*
  mcpb_pack.bat
 .pypirc
 *.bat
+released/*

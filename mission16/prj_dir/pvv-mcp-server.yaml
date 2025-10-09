@@ -1,0 +1,55 @@
+avatars:
+  0:  &style_id_0   # VOICEVOX:四国めたん あまあま
+    "位置" : right_out  # left_out, left_in, right_in, right_out,
+    "反転" : False
+    "画像" :
+      "立ち絵":
+        - josei_20_a.png
+      "口パク":
+        - josei_20_a.png
+        - josei_20_b.png
+      "まばたき":
+        - josei_20_a.png
+        - josei_20_h.png
+        - josei_20_h.png
+        - josei_20_a.png
+      "えがお":
+        - josei_20_a.png
+        - josei_20_e.png
+        - josei_20_f.png
+        - josei_20_g.png
+        - josei_20_f.png
+        - josei_20_e.png
+        - josei_20_a.png
+      "おこ":
+        - josei_20_c.png
+      "にやり":
+        - josei_20_f.png
+      "えっ":
+        - josei_20_e.png
+      "ん－":
+        - josei_20_d.png
+  2:  *style_id_0   # VOICEVOX:四国めたん ノーマル
+  4:  *style_id_0   # VOICEVOX:四国めたん セクシー
+  6:  *style_id_0   # VOICEVOX:四国めたん ツンツン
+  36: *style_id_0   # VOICEVOX:四国めたん ささやき
+  37: *style_id_0   # VOICEVOX:四国めたん ヒソヒソ
+  
+  11: &style_id_11     # VOICEVOX:玄野武宏 (CV: ガロ) ノーマル
+    "位置" : left_out  # left_out, left_in, right_in, right_out,
+    "反転" : False
+    "画像" :
+      "立ち絵":
+        - animal_01_g.png
+      "口パク":
+        - animal_01_g.png
+        - animal_01_h.png
+      "あくび":
+        - animal_01_g.png
+        - animal_01_i.png
+        - animal_01_f.png
+        - animal_01_i.png
+        - animal_01_g.png
+  39: *style_id_11     # VOICEVOX:玄野武宏 (CV: ガロ) 喜び
+  40: *style_id_11     # VOICEVOX:玄野武宏 (CV: ガロ) ツンギレ
+  41: *style_id_11     # VOICEVOX:玄野武宏 (CV: ガロ) 悲しみ

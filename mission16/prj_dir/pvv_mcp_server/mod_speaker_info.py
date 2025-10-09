@@ -53,17 +53,18 @@ def speaker_info(speaker_id: str) -> Dict[str, Any]:
         data = response.json()
         
         # 音声、base64画像データを省略
-        if "portrait" in data and data["portrait"]:
-            data["portrait"] = "[画像データ省略]"
+        # if "portrait" in data and data["portrait"]:
+        #     data["portrait"] = "[画像データ省略]"
         
-        if "style_infos" in data:
-            for style in data["style_infos"]:
-                if "icon" in style and style["icon"]:
-                    style["icon"] = "[画像データ省略]"
-                if "portrait" in style and style["portrait"]:
-                    style["portrait"] = "[画像データ省略]"
-                if "voice_samples" in style and style["voice_samples"]:
-                    style["voice_samples"] = ["[サンプル音声データ省略]"]
+        # if "style_infos" in data:
+        #     for style in data["style_infos"]:
+        #         if "icon" in style and style["icon"]:
+        #             style["icon"] = "[画像データ省略]"
+        #         if "portrait" in style and style["portrait"]:
+        #             style["portrait"] = "[画像データ省略]"
+        #         if "voice_samples" in style and style["voice_samples"]:
+        #             style["voice_samples"] = ["[サンプル音声データ省略]"]
+
         return data
 
     except requests.RequestException as e:
