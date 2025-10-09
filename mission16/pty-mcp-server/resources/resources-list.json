@@ -4,6 +4,18 @@
     "uri": "file:///agent_core_specification.md",
     "description": "【必須】エージェントの仕様書。責務・ルール・利用可能なツールやリソースを記載する。すべてのMCPエージェントに必ず含まれる必要がある。",
     "mimeType": "text/markdown"
+  },
+  {
+    "name": "spec_pvv",
+    "uri": "file:///spec_pvv.md",
+    "description": "pvv-mcp-serverの機能仕様書。",
+    "mimeType": "text/markdown"
+  },
+  {
+    "name": "spec_avatar",
+    "uri": "file:///spec_avatar.md",
+    "description": "アバター表示の機能仕様書。",
+    "mimeType": "text/markdown"
   }
 ]
 

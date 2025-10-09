@@ -35,6 +35,7 @@
 ## mod_load_pixmapsモジュール
 - 概要 : anime_keyごとの画像ファイルを読み込んで、QPixmapの連想配列を返す。
 - ファイル : <pkg_dir>/avatar/mod_load_pixmaps.py 
+- UnitTest : <prj_dir>/tests/avatar/test_load_pixmaps.py 
 - 関数 : load_pixmaps
   - 概要 : アニメーション画像を事前に読み込んでおく。
   - 引数
@@ -46,6 +47,7 @@
 ## mod_update_frameモジュール
 - 概要 : self.label(QLabel)の画像を差し替える。
 - ファイル : <pkg_dir>/avatar/mod_update_frame.py 
+- UnitTest : <prj_dir>/tests/avatar/test_update_frame.py 
 - 関数 : update_frame
   - 概要 : self.label(QLabel)の画像を差し替える。
   - 引数
@@ -58,6 +60,7 @@
 ## mod_update_positionモジュール
 - 概要 : self.app_titleで指定されたアプリケーションウィンドウの左下外側(left_out)、左下内側(left_in)、右下内側(right_in)、右下外外側(right_in)に下揃えするように、self(AvatarWindow)を移動する。
 - ファイル : <pkg_dir>/avatar/mod_update_position.py 
+- UnitTest : <prj_dir>/tests/avatar/test_update_position.py 
 - 関数 : update_position
   - 概要 :self.app_titleで指定されたアプリケーションウィンドウの左下外側(left_out)、左下内側(left_in)、右下内側(right_in)、右下外外側(right_in)に下揃えするように、self(AvatarWindow)を移動する。
   - 引数
@@ -66,4 +69,20 @@
     1. self.app_titleで指定されたアプリケーションウィンドウを特定する。
     2. アプリケーションウィンドウの位置(x,y)、幅、高さを特定する。
     3. self.positionで指定された表示位置に従い、selfの移動先を算出し、移動を実行する。
-    
+
+## mod_right_click_context_menuモジュール
+- 概要 : アバターを右クリックした際に表示するメニューを定義する。
+- ファイル : <pkg_dir>/avatar/mod_right_click_context_menu.py 
+- UnitTest : <prj_dir>/tests/avatar/test_right_click_context_menu.py 
+- 関数 : update_position
+  - 概要 :アバターを右クリックした際に表示するメニューを定義する。
+  - 引数
+    1. self : AvatarWindowのインスタンス
+    2. postion : クリック位置
+  - 処理
+    1. アニメーション選択サブメニューの定義
+    2. アニメーション速度設定サブメニューの定義
+    3. 表示位置選択サブメニューの定義
+    4. 左右反転メニューの定義
+    5. 位置追随設定の定義
+
