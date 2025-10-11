@@ -139,7 +139,7 @@ def start_mcp_avatar(conf: dict[str, Any]):
 
     Thread(target=start_mcp, args=(conf,), daemon=True).start()
 
-    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    #ctypes.windll.shcore.SetProcessDpiAwareness(1)
     app = QApplication(sys.argv) 
     pvv_mcp_server.mod_avatar_manager.setup(conf) 
     sys.exit(app.exec())

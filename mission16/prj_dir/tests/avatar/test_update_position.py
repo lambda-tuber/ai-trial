@@ -1,183 +1,267 @@
 """
 test_update_position.py
-mod_update_position.pyのユニットテスト
+mod_update_positionのユニットテスト
 """
 
-import pytest
 import sys
-import os
-from unittest.mock import Mock, MagicMock, patch
-from PySide6.QtWidgets import QApplication, QWidget
+import pytest
+from unittest.mock import Mock, patch, MagicMock
+from PySide6.QtWidgets import QApplication, QLabel
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt
 
 # テスト対象モジュールのインポート
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'pvv_mcp_server', 'avatar'))
-from pvv_mcp_server.avatar.mod_update_position import update_position
+sys.path.insert(0, 'C:/work/lambda-tuber/ai-trial/mission16/prj_dir')
+from pvv_mcp_server.avatar.mod_update_position import (
+    update_position,
+    find_window_by_title,
+    get_window_rect,
+    RECT
+)
+
+
+class MockAvatarWindow:
+    """テスト用のAvatarWindowモック"""
+    def __init__(self):
+        self.app_title = "Claude"
+        self.position = "left_out"
+        self._width = 200
+        self._height = 300
+        self._x = 0
+        self._y = 0
+    
+    def width(self):
+        return self._width
+    
+    def height(self):
+        return self._height
+    
+    def move(self, x, y):
+        self._x = x
+        self._y = y
+
+
+class TestFindWindowByTitle:
+    """find_window_by_title関数のテスト"""
+    
+    @patch('pvv_mcp_server.avatar.mod_update_position.user32')
+    def test_find_window_success(self, mock_user32):
+        """ウィンドウが見つかる場合のテスト"""
+        # モックの設定
+        mock_hwnd = 12345
+        
+        def mock_enum_windows(callback, lparam):
+            # テスト用のウィンドウを列挙
+            callback(mock_hwnd, lparam)
+            return True
+        
+        mock_user32.EnumWindows.side_effect = mock_enum_windows
+        mock_user32.IsWindowVisible.return_value = True
+        mock_user32.GetWindowTextLengthW.return_value = 6
+        mock_user32.GetWindowTextW.side_effect = lambda hwnd, buf, size: buf.__setitem__(slice(0, 6), "Claude")
+        
+        # 実行
+        result = find_window_by_title("Claude")
+        
+        # 検証
+        assert result == mock_hwnd
+    
+    @patch('pvv_mcp_server.avatar.mod_update_position.user32')
+    def test_find_window_not_found(self, mock_user32):
+        """ウィンドウが見つからない場合のテスト"""
+        # モックの設定
+        def mock_enum_windows(callback, lparam):
+            # ウィンドウを列挙しない
+            return True
+        
+        mock_user32.EnumWindows.side_effect = mock_enum_windows
+        
+        # 実行
+        result = find_window_by_title("NonExistent")
+        
+        # 検証
+        assert result is None
+
+
+class TestGetWindowRect:
+    """get_window_rect関数のテスト"""
+    
+    @patch('pvv_mcp_server.avatar.mod_update_position.user32.GetWindowRect')
+    def test_get_window_rect_success(self, mock_get_window_rect):
+        """正常にウィンドウ矩形を取得できる場合のテスト"""
+        # モックの設定
+        mock_hwnd = 12345
+        
+        # RECT構造体を実際に作成してテスト
+        test_rect = RECT()
+        test_rect.left = 100
+        test_rect.top = 200
+        test_rect.right = 900
+        test_rect.bottom = 700
+        
+        def side_effect(hwnd, rect_ptr):
+            # 実際のRECT構造体の値をコピー
+            import ctypes
+            ctypes.memmove(rect_ptr, ctypes.addressof(test_rect), ctypes.sizeof(RECT))
+            return True
+        
+        mock_get_window_rect.side_effect = side_effect
+        
+        # 実行
+        x, y, width, height = get_window_rect(mock_hwnd)
+        
+        # 検証
+        assert x == 100
+        assert y == 200
+        assert width == 800
+        assert height == 500
+    
+    @patch('pvv_mcp_server.avatar.mod_update_position.user32.GetWindowRect')
+    def test_get_window_rect_failure(self, mock_get_window_rect):
+        """ウィンドウ矩形取得に失敗する場合のテスト"""
+        # モックの設定
+        mock_hwnd = 12345
+        mock_get_window_rect.return_value = False
+        
+        # 実行と検証
+        with pytest.raises(Exception, match="GetWindowRect failed"):
+            get_window_rect(mock_hwnd)
 
 
 class TestUpdatePosition:
-    """update_position関数のテストクラス"""
+    """update_position関数のテスト"""
     
-    @pytest.fixture(scope="class")
-    def qapp(self):
-        """QApplicationインスタンスを作成（GUIテストに必要）"""
-        app = QApplication.instance()
-        if app is None:
-            app = QApplication(sys.argv)
-        yield app
+    @patch('pvv_mcp_server.avatar.mod_update_position.find_window_by_title')
+    @patch('pvv_mcp_server.avatar.mod_update_position.get_window_rect')
+    def test_update_position_left_out(self, mock_get_rect, mock_find_window):
+        """left_out位置の計算テスト"""
+        # モックの設定
+        mock_find_window.return_value = 12345
+        mock_get_rect.return_value = (100, 200, 800, 500)  # x, y, width, height
+        
+        # テスト対象の準備
+        avatar = MockAvatarWindow()
+        avatar.position = "left_out"
+        
+        # 実行
+        update_position(avatar)
+        
+        # 検証: x = 100 - 200 = -100, y = 200 + 500 - 300 = 400
+        assert avatar._x == -100
+        assert avatar._y == 400
     
-    @pytest.fixture
-    def mock_self(self, qapp):
-        """AvatarWindowのモックインスタンス"""
-        mock = Mock(spec=QWidget)
-        mock.app_title = "Claude"
-        mock.position = "left_out"
-        mock.width = MagicMock(return_value=200)
-        mock.height = MagicMock(return_value=400)
-        mock.move = MagicMock()
-        return mock
+    @patch('pvv_mcp_server.avatar.mod_update_position.find_window_by_title')
+    @patch('pvv_mcp_server.avatar.mod_update_position.get_window_rect')
+    def test_update_position_left_in(self, mock_get_rect, mock_find_window):
+        """left_in位置の計算テスト"""
+        # モックの設定
+        mock_find_window.return_value = 12345
+        mock_get_rect.return_value = (100, 200, 800, 500)
+        
+        # テスト対象の準備
+        avatar = MockAvatarWindow()
+        avatar.position = "left_in"
+        
+        # 実行
+        update_position(avatar)
+        
+        # 検証: x = 100, y = 200 + 500 - 300 = 400
+        assert avatar._x == 100
+        assert avatar._y == 400
     
-    @pytest.fixture
-    def mock_window(self):
-        """pygetwindowのウィンドウモック"""
-        window = Mock()
-        window.left = 100
-        window.top = 100
-        window.width = 800
-        window.height = 600
-        return window
+    @patch('pvv_mcp_server.avatar.mod_update_position.find_window_by_title')
+    @patch('pvv_mcp_server.avatar.mod_update_position.get_window_rect')
+    def test_update_position_right_in(self, mock_get_rect, mock_find_window):
+        """right_in位置の計算テスト"""
+        # モックの設定
+        mock_find_window.return_value = 12345
+        mock_get_rect.return_value = (100, 200, 800, 500)
+        
+        # テスト対象の準備
+        avatar = MockAvatarWindow()
+        avatar.position = "right_in"
+        
+        # 実行
+        update_position(avatar)
+        
+        # 検証: x = 100 + 800 - 200 = 700, y = 200 + 500 - 300 = 400
+        assert avatar._x == 700
+        assert avatar._y == 400
     
-    def test_update_position_left_out(self, mock_self, mock_window):
-        """left_out位置のテスト"""
-        mock_self.position = "left_out"
+    @patch('pvv_mcp_server.avatar.mod_update_position.find_window_by_title')
+    @patch('pvv_mcp_server.avatar.mod_update_position.get_window_rect')
+    def test_update_position_right_out(self, mock_get_rect, mock_find_window):
+        """right_out位置の計算テスト"""
+        # モックの設定
+        mock_find_window.return_value = 12345
+        mock_get_rect.return_value = (100, 200, 800, 500)
         
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
+        # テスト対象の準備
+        avatar = MockAvatarWindow()
+        avatar.position = "right_out"
         
-        # 期待される座標: (100 - 200, 100 + 600 - 400) = (-100, 300)
-        mock_self.move.assert_called_once_with(-100, 300)
+        # 実行
+        update_position(avatar)
+        
+        # 検証: x = 100 + 800 = 900, y = 200 + 500 - 300 = 400
+        assert avatar._x == 900
+        assert avatar._y == 400
     
-    def test_update_position_left_in(self, mock_self, mock_window):
-        """left_in位置のテスト"""
-        mock_self.position = "left_in"
+    @patch('pvv_mcp_server.avatar.mod_update_position.find_window_by_title')
+    def test_update_position_window_not_found(self, mock_find_window):
+        """ウィンドウが見つからない場合のテスト"""
+        # モックの設定
+        mock_find_window.return_value = None
         
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
+        # テスト対象の準備
+        avatar = MockAvatarWindow()
+        initial_x = avatar._x
+        initial_y = avatar._y
         
-        # 期待される座標: (100, 100 + 600 - 400) = (100, 300)
-        mock_self.move.assert_called_once_with(100, 300)
+        # 実行
+        update_position(avatar)
+        
+        # 検証: 位置が変更されないこと
+        assert avatar._x == initial_x
+        assert avatar._y == initial_y
     
-    def test_update_position_right_in(self, mock_self, mock_window):
-        """right_in位置のテスト"""
-        mock_self.position = "right_in"
+    def test_update_position_no_app_title(self):
+        """app_titleが設定されていない場合のテスト"""
+        # テスト対象の準備
+        avatar = MockAvatarWindow()
+        avatar.app_title = None
+        initial_x = avatar._x
+        initial_y = avatar._y
         
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
+        # 実行
+        update_position(avatar)
         
-        # 期待される座標: (100 + 800 - 200, 100 + 600 - 400) = (700, 300)
-        mock_self.move.assert_called_once_with(700, 300)
+        # 検証: 位置が変更されないこと
+        assert avatar._x == initial_x
+        assert avatar._y == initial_y
     
-    def test_update_position_right_out(self, mock_self, mock_window):
-        """right_out位置のテスト"""
-        mock_self.position = "right_out"
+    @patch('pvv_mcp_server.avatar.mod_update_position.find_window_by_title')
+    @patch('pvv_mcp_server.avatar.mod_update_position.get_window_rect')
+    def test_update_position_default_position(self, mock_get_rect, mock_find_window):
+        """positionが設定されていない場合のデフォルト値テスト"""
+        # モックの設定
+        mock_find_window.return_value = 12345
+        mock_get_rect.return_value = (100, 200, 800, 500)
         
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
+        # テスト対象の準備
+        avatar = MockAvatarWindow()
+        delattr(avatar, 'position')  # positionを削除
         
-        # 期待される座標: (100 + 800, 100 + 600 - 400) = (900, 300)
-        mock_self.move.assert_called_once_with(900, 300)
-    
-    def test_update_position_no_app_title(self, mock_self, mock_window):
-        """app_titleが存在しない場合のテスト"""
-        delattr(mock_self, 'app_title')
+        # 実行
+        update_position(avatar)
         
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
-        
-        # moveが呼ばれないことを確認
-        mock_self.move.assert_not_called()
-    
-    def test_update_position_empty_app_title(self, mock_self, mock_window):
-        """app_titleが空の場合のテスト"""
-        mock_self.app_title = ""
-        
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
-        
-        # moveが呼ばれないことを確認
-        mock_self.move.assert_not_called()
-    
-    def test_update_position_no_position(self, mock_self, mock_window):
-        """positionが存在しない場合のテスト（デフォルト値使用）"""
-        delattr(mock_self, 'position')
-        
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
-        
-        # デフォルト値 "left_out" が使用される
-        # 期待される座標: (100 - 200, 100 + 600 - 400) = (-100, 300)
-        mock_self.move.assert_called_once_with(-100, 300)
-        assert mock_self.position == "left_out"
-    
-    def test_update_position_window_not_found(self, mock_self):
-        """ターゲットウィンドウが見つからない場合のテスト"""
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[]):
-            update_position(mock_self)
-        
-        # moveが呼ばれないことを確認
-        mock_self.move.assert_not_called()
-    
-    def test_update_position_invalid_position(self, mock_self, mock_window):
-        """無効なposition値の場合のテスト"""
-        mock_self.position = "invalid_position"
-        
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock_self)
-        
-        # moveが呼ばれないことを確認
-        mock_self.move.assert_not_called()
-    
-    def test_update_position_exception_handling(self, mock_self):
-        """例外が発生した場合のテスト"""
-        with patch('pygetwindow.getWindowsWithTitle', side_effect=Exception("Test error")):
-            # 例外が発生してもクラッシュしない
-            update_position(mock_self)
-        
-        # moveが呼ばれないことを確認
-        mock_self.move.assert_not_called()
-    
-    def test_update_position_multiple_windows(self, mock_self, mock_window):
-        """複数のウィンドウが見つかった場合のテスト（最初のウィンドウを使用）"""
-        mock_window2 = Mock()
-        mock_window2.left = 500
-        mock_window2.top = 500
-        mock_window2.width = 800
-        mock_window2.height = 600
-        
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window, mock_window2]):
-            update_position(mock_self)
-        
-        # 最初のウィンドウ (mock_window) の座標が使用される
-        # 期待される座標: (100 - 200, 100 + 600 - 400) = (-100, 300)
-        mock_self.move.assert_called_once_with(-100, 300)
-    
-    def test_update_position_different_sizes(self, qapp):
-        """異なるサイズのアバターウィンドウでのテスト"""
-        mock = Mock(spec=QWidget)
-        mock.app_title = "Claude"
-        mock.position = "right_out"
-        mock.width = MagicMock(return_value=150)  # 幅150
-        mock.height = MagicMock(return_value=300)  # 高さ300
-        mock.move = MagicMock()
-        
-        mock_window = Mock()
-        mock_window.left = 200
-        mock_window.top = 200
-        mock_window.width = 1000
-        mock_window.height = 800
-        
-        with patch('pygetwindow.getWindowsWithTitle', return_value=[mock_window]):
-            update_position(mock)
-        
-        # 期待される座標: (200 + 1000, 200 + 800 - 300) = (1200, 700)
-        mock.move.assert_called_once_with(1200, 700)
+        # 検証: デフォルトのleft_outとして動作
+        assert avatar.position == "left_out"
+        assert avatar._x == -100
+        assert avatar._y == 400
 
+
+if __name__ == '__main__':
+    pytest.main([__file__, '-v'])
+
+    

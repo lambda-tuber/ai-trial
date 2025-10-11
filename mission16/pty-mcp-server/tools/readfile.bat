@@ -27,7 +27,8 @@ echo %~1 | findstr /B /I "%ROOT_DIR%" >nul
 if %errorlevel%==0 (
     set "TARGET_FILE=%~1"
 ) else (
-    set "TARGET_FILE=%ROOT_DIR%\%~1"
+    rem set "TARGET_FILE=%ROOT_DIR%\%~1"
+    set "TARGET_FILE=%~1"
 )
 
 REM ファイル存在確認
