@@ -5,6 +5,8 @@ REM   readfile.bat filename.txt
 REM   readfile.bat subdir\file.txt
 REM   readfile.bat C:\data\subdir\file.txt
 
+chcp 65001
+
 setlocal
 
 REM ルートディレクトリを指定
@@ -27,8 +29,7 @@ echo %~1 | findstr /B /I "%ROOT_DIR%" >nul
 if %errorlevel%==0 (
     set "TARGET_FILE=%~1"
 ) else (
-    rem set "TARGET_FILE=%ROOT_DIR%\%~1"
-    set "TARGET_FILE=%~1"
+    set "TARGET_FILE=%ROOT_DIR%\%~1"
 )
 
 REM ファイル存在確認

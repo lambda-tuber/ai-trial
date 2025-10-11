@@ -77,6 +77,7 @@ def update_position(self) -> None:
         windows = gw.getWindowsWithTitle(self.app_title)
         
         if not windows:
+            # self.follow_timer.stop()
             logger.warning(f"Window with title '{self.app_title}' not found")
             return
         

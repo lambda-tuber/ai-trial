@@ -18,7 +18,7 @@
 
 ## package
 - 名前 : pvv_mcp_server
-- pkg_dir : <prj_dir>/pvv_mcp_server
+- pkg_dir : <prj_dir>\pvv_mcp_server
 
 ## 依存パッケージ
 - PySide6
@@ -27,15 +27,15 @@
 
 ## mod_avatarモジュール
 - 概要 : 統合クラス。
-- ファイル : <pkg_dir>/avatar/mod_avatar.py 
+- ファイル : <pkg_dir>\avatar\mod_avatar.py 
 - クラス : AvatarWindow(QWidget)
 - 関数
   -__init__ : コンストラクタ
 
 ## mod_load_pixmapsモジュール
 - 概要 : anime_keyごとの画像ファイルを読み込んで、QPixmapの連想配列を返す。
-- ファイル : <pkg_dir>/avatar/mod_load_pixmaps.py 
-- UnitTest : <prj_dir>/tests/avatar/test_load_pixmaps.py 
+- ファイル : <pkg_dir>\avatar\mod_load_pixmaps.py 
+- UnitTest : <prj_dir>\tests\avatar\test_load_pixmaps.py 
 - 関数 : load_pixmaps
   - 概要 : アニメーション画像を事前に読み込んでおく。
   - 引数
@@ -46,8 +46,8 @@
 
 ## mod_update_frameモジュール
 - 概要 : self.label(QLabel)の画像を差し替える。
-- ファイル : <pkg_dir>/avatar/mod_update_frame.py 
-- UnitTest : <prj_dir>/tests/avatar/test_update_frame.py 
+- ファイル : <pkg_dir>\avatar\mod_update_frame.py 
+- UnitTest : <prj_dir>\tests\avatar\test_update_frame.py 
 - 関数 : update_frame
   - 概要 : self.label(QLabel)の画像を差し替える。
   - 引数
@@ -59,8 +59,8 @@
 
 ## mod_update_positionモジュール
 - 概要 : self.app_titleで指定されたアプリケーションウィンドウの左下外側(left_out)、左下内側(left_in)、右下内側(right_in)、右下外外側(right_in)に下揃えするように、self(AvatarWindow)を移動する。
-- ファイル : <pkg_dir>/avatar/mod_update_position.py 
-- UnitTest : <prj_dir>/tests/avatar/test_update_position.py 
+- ファイル : <pkg_dir>\avatar\mod_update_position.py 
+- UnitTest : <prj_dir>\tests\avatar\test_update_position.py 
 - 関数 : update_position
   - 概要 :self.app_titleで指定されたアプリケーションウィンドウの左下外側(left_out)、左下内側(left_in)、右下内側(right_in)、右下外外側(right_in)に下揃えするように、self(AvatarWindow)を移動する。
   - 引数
@@ -72,8 +72,8 @@
 
 ## mod_right_click_context_menuモジュール
 - 概要 : アバターを右クリックした際に表示するメニューを定義する。
-- ファイル : <pkg_dir>/avatar/mod_right_click_context_menu.py 
-- UnitTest : <prj_dir>/tests/avatar/test_right_click_context_menu.py 
+- ファイル : <pkg_dir>\avatar\mod_right_click_context_menu.py 
+- UnitTest : <prj_dir>\tests\avatar\test_right_click_context_menu.py 
 - 関数 : update_position
   - 概要 :アバターを右クリックした際に表示するメニューを定義する。
   - 引数

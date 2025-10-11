@@ -139,7 +139,7 @@
       "properties": {
         "arguments": {
           "type": "string",
-          "description": "読み込むファイルのパス"
+          "description": "読み込むファイルのパス。ただし、パスセパレータは\\とし、「C:\\work\\lambda-tuber\\ai-trial\\mission16\\prj_dir」配下の相対パスを指定すること。"
         }
       },
       "required": ["arguments"]
