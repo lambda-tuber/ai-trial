@@ -4,10 +4,12 @@ mod_load_pixmaps.py
 """
 
 from PySide6.QtGui import QPixmap, QTransform
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QByteArray, QBuffer
+
 import os
 import logging
 import sys
+import base64
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -41,19 +43,32 @@ def load_pixmaps(self, image_dict: dict, scale_percent: int = 100) -> dict:
     for anime_key, image_paths in image_dict.items():
         # 各anime_keyに対して、flipのTrue/Falseの辞書を作成
         pixmap_dict[anime_key] = {False: [], True: []}
-        
-        for image_path in image_paths:
-            # ファイルの存在確認
-            if not os.path.exists(image_path):
-                logger.warning(f"Image file not found: {image_path}")
-                continue
-            
-            # QPixmapで画像を読み込む
-            pixmap_original = QPixmap(image_path)
-            
-            if pixmap_original.isNull():
-                logger.warning(f"Failed to load image: {image_path}")
-                continue
+
+        for image_source in image_paths:
+            pixmap_original = QPixmap()
+
+            if isinstance(image_source, str) and image_source.startswith("iVBOR"):
+                try:
+                    img_bytes = base64.b64decode(image_source)
+                    byte_array = QByteArray(img_bytes)
+                    buffer = QBuffer(byte_array)
+                    buffer.open(QBuffer.ReadOnly)
+                    if not pixmap_original.loadFromData(buffer.data()):
+                        logger.warning("Failed to load Base64 image for key: %s", anime_key)
+                        continue
+                except Exception as e:
+                    logger.warning("Exception decoding Base64 for key %s: %s", anime_key, e)
+                    continue
+            else:
+                # ファイルとして読み込む
+                if not os.path.exists(image_source):
+                    logger.warning(f"Image file not found: {image_source}")
+                    continue
+                pixmap_original = QPixmap(image_source)
+                if pixmap_original.isNull():
+                    logger.warning(f"Failed to load image: {image_source}")
+                    continue
+
             
             # スケーリング処理（元画像）
             if scale_percent != 100:

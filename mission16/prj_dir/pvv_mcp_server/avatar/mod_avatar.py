@@ -19,7 +19,8 @@ class AvatarWindow(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
-        QShortcut(QKeySequence("Escape"), self, QApplication.quit)
+        #QShortcut(QKeySequence("Escape"), self, QApplication.quit)
+        QShortcut(QKeySequence("Escape"), self, self.hide)
 
         self.label = QLabel(self)
         self.label.setAlignment(Qt.AlignCenter)

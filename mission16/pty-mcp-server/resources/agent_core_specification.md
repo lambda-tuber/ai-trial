@@ -22,9 +22,10 @@
 
 # プロジェクト仕様
 - アプリケーション名 : pvv-mcp-server
-- プロジェクトフォルダ : C:/work/lambda-tuber/ai-trial/mission16/prj_dir
-  - pvv_mcp_server : ソースコードの格納フォルダ
-  - tests : テストファイルの格納フォルダ
+- プロジェクトフォルダ
+  - prj_dir : C:/work/lambda-tuber/ai-trial/mission16/prj_dir
+    - pvv_mcp_server : ソースコードの格納フォルダ
+    - tests : テストファイルの格納フォルダ
 
 ---
 

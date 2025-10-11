@@ -13,11 +13,12 @@
   "support": "https://github.com/lambda-tuber/pvv-mcp-server/issues",
   "server": {
     "type": "python",
-    "entry_point": "pvv_mcp_server/main.py",
+    "entry_point": "pvv-mcp-server",
     "mcp_config": {
-      "command": "python",
+      "command": "pvv-mcp-server",
       "args": [
-        "${__dirname}/pvv_mcp_server/main.py"
+        "-y",
+        "${__dirname}/pvv-mcp-server.yaml"
       ],
       "env": {
         "PYTHONPATH": "${__dirname}",

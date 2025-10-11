@@ -36,7 +36,8 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 
 ## mod_serviceモジュール
 - 概要 : MCP Serverクラスを定義する。
-- ファイル : <pkg_dir>/mod_service.py 
+- ファイル : <pkg_dir>/mod_service.py
+- UnitTest : <prj_dir>/tests/test_service.py
 - MCP Resourdes
   - speakers
     - 概要 : MCPリソース定義。処理は、mod_speakersのspeakers関数に移譲する。
@@ -67,6 +68,7 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 ## mod_speak_モジュール
 - 概要 : voicevox web apiで音声合成し、再生する関数を実装する。
 - ファイル : <pkg_dir>/mod_speak.py 
+- UnitTest : <prj_dir>/tests/test_speak.py
 - 関数
   - speak
     - 概要 : voicevox web apiで音声合成し、音声を再生する。
@@ -81,6 +83,7 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 ## mod_speak_metan_askaモジュール
 - 概要 : 四国メタンを指定して、voicevox web apiで音声合成し、再生する関数を実装する。
 - ファイル : <pkg_dir>/mod_speak_metan_aska.py 
+- UnitTest : <prj_dir>/tests/test_speak_metan_aska.py
 - style_id : 6
 - 関数
   - speak_metan_aska
@@ -91,6 +94,7 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 ## mod_speakersモジュール
 - 概要 : voicevox web apiでspeakers情報を取得する。
 - ファイル : <pkg_dir>/mod_speakers.py 
+- UnitTest : <prj_dir>/tests/test_speakers.py
 - 関数
   - speakers
     - 概要 : voicevox web apiでspeakers情報を取得する。
@@ -99,6 +103,7 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
 ## mod_speaker_infoモジュール
 - 概要 : voicevox web apiでspeaker情報を取得する。
 - ファイル : <pkg_dir>/mod_speaker_info.py 
+- UnitTest : <prj_dir>/tests/test_speaker_info.py
 - 関数
   - speaker
     - 概要 : voicevox web apiでspeaker情報を取得する。
