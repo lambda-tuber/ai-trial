@@ -6,6 +6,7 @@ mod_update_position.py
 import pygetwindow as gw
 import logging
 import sys
+import ctypes
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -19,6 +20,19 @@ if not logger.handlers:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
+def get_windows_scaling() -> float:
+    """
+    現在のDPIスケールを取得（例: 1.25, 1.5）
+    リモートデスクトップや高DPI環境での位置ずれ補正用
+    """
+    try:
+        user32 = ctypes.windll.user32
+        user32.SetProcessDPIAware()  # DPI対応を有効化
+        dpi = user32.GetDpiForSystem()
+        return dpi / 96.0  # 96 DPI を基準にスケール計算
+    except Exception as e:
+        logger.warning(f"Failed to get DPI scaling: {e}")
+        return 1.0
 
 def update_position(self) -> None:
     """
@@ -58,7 +72,16 @@ def update_position(self) -> None:
         target_y = target_window.top
         target_width = target_window.width
         target_height = target_window.height
-        
+
+        # DPIスケーリング取得
+        scale = get_windows_scaling()
+
+        # スケーリング補正
+        target_x = int(target_x * scale)
+        target_y = int(target_y * scale)
+        target_width = int(target_width * scale)
+        target_height = int(target_height * scale)
+                
         # 自身のウィンドウサイズを取得
         avatar_width = self.width()
         avatar_height = self.height()

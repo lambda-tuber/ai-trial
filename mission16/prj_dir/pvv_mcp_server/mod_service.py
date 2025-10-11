@@ -16,6 +16,7 @@ import sys
 from threading import Thread
 import logging
 import sys
+import ctypes
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -138,6 +139,7 @@ def start_mcp_avatar(conf: dict[str, Any]):
 
     Thread(target=start_mcp, args=(conf,), daemon=True).start()
 
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
     app = QApplication(sys.argv) 
     pvv_mcp_server.mod_avatar_manager.setup(conf) 
     sys.exit(app.exec())
