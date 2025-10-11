@@ -132,17 +132,6 @@ def start(conf: dict[str, Any]):
     else:
        start_mcp_avatar_disabled(conf.get("avatar"))
 
-def start_mcp_avatar_disabled(conf: dict[str, Any]):
-    logger.info("start_mcp_avatar_disabled")
-    logger.debug(conf)
-    pvv_mcp_server.mod_avatar_manager.setup(conf) 
-    mcp.run(transport="stdio")
-
-def start_mcp(conf: dict[str, Any]):
-    logger.info("start_mcp called.")
-    logger.debug(conf)
-    mcp.run(transport="stdio")
-
 def start_mcp_avatar(conf: dict[str, Any]):
     logger.info("start_mcp_avatar called.")
     logger.debug(conf)
@@ -152,4 +141,15 @@ def start_mcp_avatar(conf: dict[str, Any]):
     app = QApplication(sys.argv) 
     pvv_mcp_server.mod_avatar_manager.setup(conf) 
     sys.exit(app.exec())
+
+def start_mcp(conf: dict[str, Any]):
+    logger.info("start_mcp called.")
+    logger.debug(conf)
+    mcp.run(transport="stdio")
+
+def start_mcp_avatar_disabled(conf: dict[str, Any]):
+    logger.info("start_mcp_avatar_disabled")
+    logger.debug(conf)
+    pvv_mcp_server.mod_avatar_manager.setup(conf) 
+    mcp.run(transport="stdio")
 

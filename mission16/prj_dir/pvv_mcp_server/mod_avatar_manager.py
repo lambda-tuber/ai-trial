@@ -41,7 +41,8 @@ def set_anime_key(style_id: int, anime_key: str):
         logger.info("unexpected function call. avatar disabled.")
         return 
 
-    get_avatar(style_id, True).set_anime_key(anime_key)
+    if style_id in _avatars:
+        get_avatar(style_id, True).set_anime_key(anime_key)
 
 
 def get_avatar(style_id: int, visible: bool) -> AvatarWindow:
