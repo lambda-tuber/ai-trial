@@ -5,6 +5,7 @@ import logging
 from typing import List
 from typing import Any
 from typing import Dict
+from PySide6.QtCore import QMetaObject, Qt, QTimer
 
 from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
 from pvv_mcp_server.mod_speaker_info import speaker_info
@@ -25,6 +26,9 @@ _avatar = None
 _avatars = None
 _avatar_cache: dict[str, AvatarWindow] = {}
 
+#
+# public
+#
 def setup(avs: dict[int, Any]):
     global _avatar
     _avatar = avs
@@ -35,13 +39,16 @@ def setup(avs: dict[int, Any]):
         for style_id, info in _avatars.items():
             get_avatar(style_id, info.get("表示"))
 
-
+#
+# public
+#
 def set_anime_key(style_id: int, anime_key: str):
     if not _avatar.get("enabled"):
         logger.info("unexpected function call. avatar disabled.")
         return 
 
     if style_id in _avatars:
+        show_widget(style_id)
         get_avatar(style_id, True).set_anime_key(anime_key)
 
 
@@ -57,7 +64,7 @@ def get_avatar(style_id: int, visible: bool) -> AvatarWindow:
         logger.info("cache instance found.")
         instance = _avatar_cache[key]
         if visible:
-            instance.show()
+            show_widget(instance)
         return instance
 
     images = get_images(avatar_conf.get("話者"), avatar_conf.get("画像", []))
@@ -95,6 +102,32 @@ def get_images(speaker_id: str, images: Dict[str, List[str]]) -> Dict[str, List[
 
     logger.debug("voicevox default portrait: " + str(ret))
     return ret
+
+
+def show_widget_id(style_id: int):
+    avatar = get_avatar(style_id)
+    if avatar:
+      show_widget(avatar)
+
+def show_widget(widget):
+    QMetaObject.invokeMethod(widget, "show", Qt.QueuedConnection)
+
+def hide_widget(style_id: int):
+    avatar = get_avatar(style_id)
+    if avatar:
+      QMetaObject.invokeMethod(widget, "hide", Qt.QueuedConnection)
+
+def show_widget_timer(style_id):
+    widget = get_avatar(style_id)
+    QTimer.singleShot(0, widget.show)
+
+def show_widget_timer_lambda(style_id):
+    widget = get_avatar(style_id)
+    QTimer.singleShot(0, lambda: show_widget_timer_func(widget))
+def show_widget_timer_func(widget):
+    widget.show()
+
+
 
 # ----------------------------
 if __name__ == "__main__":

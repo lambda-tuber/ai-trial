@@ -4,9 +4,6 @@ from PySide6.QtCore import Qt, QTimer, QPoint
 from PySide6.QtGui import QPixmap, QTransform, QShortcut, QKeySequence
 import pygetwindow as gw
 import os
-#import ctypes
-#user32 = ctypes.windll.user32
-#user32.SetProcessDPIAware()  # Pythonプロセス自体を DPI 対応
 
 import pvv_mcp_server.avatar.mod_load_pixmaps
 import pvv_mcp_server.avatar.mod_update_frame
