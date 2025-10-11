@@ -2,6 +2,7 @@ import sys
 from PySide6.QtWidgets import QApplication, QWidget, QLabel
 from PySide6.QtCore import Qt, QTimer, QPoint
 from PySide6.QtGui import QPixmap, QTransform, QShortcut, QKeySequence
+from PySide6.QtCore import Slot
 import pygetwindow as gw
 import os
 
@@ -54,6 +55,10 @@ class AvatarWindow(QWidget):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.right_click_context_menu)
 
+    @Slot()
+    def showWindow(self):
+        """スレッドセーフなshow"""
+        self.show()
 
     # 右クリックメニュー
     def right_click_context_menu(self, position: QPoint) -> None:

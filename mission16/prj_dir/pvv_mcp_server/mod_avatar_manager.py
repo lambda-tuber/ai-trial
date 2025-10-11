@@ -6,6 +6,7 @@ from typing import List
 from typing import Any
 from typing import Dict
 from PySide6.QtCore import QMetaObject, Qt, QTimer
+from PySide6.QtWidgets import QApplication
 
 from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
 from pvv_mcp_server.mod_speaker_info import speaker_info
@@ -48,7 +49,6 @@ def set_anime_key(style_id: int, anime_key: str):
         return 
 
     if style_id in _avatars:
-        show_widget(style_id)
         get_avatar(style_id, True).set_anime_key(anime_key)
 
 
@@ -104,29 +104,12 @@ def get_images(speaker_id: str, images: Dict[str, List[str]]) -> Dict[str, List[
     return ret
 
 
-def show_widget_id(style_id: int):
-    avatar = get_avatar(style_id)
-    if avatar:
-      show_widget(avatar)
-
-def show_widget(widget):
-    QMetaObject.invokeMethod(widget, "show", Qt.QueuedConnection)
-
-def hide_widget(style_id: int):
-    avatar = get_avatar(style_id)
-    if avatar:
-      QMetaObject.invokeMethod(widget, "hide", Qt.QueuedConnection)
-
-def show_widget_timer(style_id):
-    widget = get_avatar(style_id)
-    QTimer.singleShot(0, widget.show)
-
-def show_widget_timer_lambda(style_id):
-    widget = get_avatar(style_id)
-    QTimer.singleShot(0, lambda: show_widget_timer_func(widget))
-def show_widget_timer_func(widget):
-    widget.show()
-
+def show_widget(instance):
+   QMetaObject.invokeMethod(
+        instance,
+        "showWindow",
+        Qt.ConnectionType.QueuedConnection
+    )
 
 
 # ----------------------------
