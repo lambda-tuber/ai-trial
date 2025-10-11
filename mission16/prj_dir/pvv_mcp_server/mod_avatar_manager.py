@@ -9,6 +9,7 @@ import logging
 from typing import Any, Dict, Optional
 from PySide6.QtCore import QMetaObject, Qt
 from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import Q_ARG, Q_RETURN_ARG
 
 from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
 from pvv_mcp_server.mod_speaker_info import speaker_info
@@ -70,7 +71,8 @@ def set_anime_key(style_id: int, anime_key: str) -> None:
     
     avatar = _get_avatar(style_id)
     if avatar:
-        avatar.set_anime_key(anime_key)
+        QMetaObject.invokeMethod(avatar, "showWindow", Qt.ConnectionType.QueuedConnection)
+        QMetaObject.invokeMethod(avatar, "set_anime_key", Qt.ConnectionType.QueuedConnection, Q_ARG(str, anime_key))
     else:
         logger.warning(f"Avatar not found for style_id={style_id}")
 
@@ -87,21 +89,19 @@ def _create_all_avatars() -> None:
     
     for style_id, avatar_conf in _avatars_config.items():
         try:
-            visible = avatar_conf.get("表示", False)
-            _create_avatar(style_id, avatar_conf, visible)
-            logger.info(f"Created avatar for style_id={style_id}, visible={visible}")
+            _create_avatar(style_id, avatar_conf)
+            logger.info(f"Created avatar for style_id={style_id}")
         except Exception as e:
             logger.error(f"Failed to create avatar for style_id={style_id}: {e}")
 
 
-def _create_avatar(style_id: int, avatar_conf: Dict[str, Any], visible: bool) -> AvatarWindow:
+def _create_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
     """
     個別のアバターインスタンスを作成
     
     Args:
         style_id: スタイルID
         avatar_conf: アバター設定
-        visible: 表示状態
     
     Returns:
         作成されたAvatarWindowインスタンス
@@ -111,7 +111,7 @@ def _create_avatar(style_id: int, avatar_conf: Dict[str, Any], visible: bool) ->
         avatar_conf.get("話者", ""),
         avatar_conf.get("画像", {})
     )
-    
+
     # アバターインスタンスの作成
     instance = AvatarWindow(
         images,
@@ -124,13 +124,15 @@ def _create_avatar(style_id: int, avatar_conf: Dict[str, Any], visible: bool) ->
     
     # 位置更新と表示設定
     instance.update_position()
-    instance.show()  # 一旦showしておくと、後々のスレッドからshow/hideができる
-    
-    if not visible:
+    if avatar_conf.get("表示", False):
+        instance.show()
+    else:
         instance.hide()
-    
+
     # キャッシュに登録
-    _avatar_cache[style_id] = instance
+    # style_idが違っても、avatar_confは参照で同一の場合は、同一avatarとして扱う必要がある。
+    key = json.dumps(avatar_conf, sort_keys=True)
+    _avatar_cache[key] = instance
     
     return instance
 
@@ -145,7 +147,10 @@ def _get_avatar(style_id: int) -> Optional[AvatarWindow]:
     Returns:
         AvatarWindowインスタンス、存在しない場合はNone
     """
-    return _avatar_cache.get(style_id)
+
+    avatar_conf = _avatars_config.get(style_id)
+    key = json.dumps(avatar_conf, sort_keys=True)
+    return _avatar_cache.get(key)
 
 
 def _get_images(speaker_id: str, images: Dict[str, list]) -> Dict[str, list]:
@@ -178,20 +183,6 @@ def _get_images(speaker_id: str, images: Dict[str, list]) -> Dict[str, list]:
     
     logger.debug(f"Using VOICEVOX default portrait for speaker_id={speaker_id}")
     return ret
-
-
-def _show_widget(instance: AvatarWindow) -> None:
-    """
-    QMetaObjectを使用してウィジェットを表示
-    
-    Args:
-        instance: AvatarWindowインスタンス
-    """
-    QMetaObject.invokeMethod(
-        instance,
-        "showWindow",
-        Qt.ConnectionType.QueuedConnection
-    )
 
 
 # ==================== Test Entry Point ====================

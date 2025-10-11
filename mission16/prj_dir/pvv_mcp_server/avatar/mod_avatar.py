@@ -100,6 +100,7 @@ class AvatarWindow(QWidget):
         return
 
     # セッター
+    @Slot(str)
     def set_anime_key(self, anime_key):
         if anime_key in self.pixmap_dict:
             self.anime_key = anime_key
