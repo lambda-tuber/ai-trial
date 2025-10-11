@@ -65,7 +65,7 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
     - 引数
       1. msg : 発話するメッセージ
 
-## mod_speak_モジュール
+## mod_speakモジュール
 - 概要 : voicevox web apiで音声合成し、再生する関数を実装する。
 - ファイル : <pkg_dir>\mod_speak.py 
 - UnitTest : <prj_dir>\tests\test_speak.py
@@ -116,3 +116,35 @@ MCP(Model Context Protocl)をハンドルするサーバ機能を提供する。
           2. 話者名が引数に部分一致する話者を話者リストから検索抽出し、当該話者のUUIDを特定する。
           3. Voicevox APIのspeaker_infoにUUIDをリクエストし、話者情報を取得する。
 
+
+## mod_avatar_managerモジュール
+- 概要 : avatarを管理する。
+- ファイル : <pkg_dir>\mod_avatar_manager.py 
+- UnitTest : <prj_dir>\tests\test_mod_avatar_manager.py
+- 関数
+  - setup
+    - 概要 : アバターを準備する。
+    - 引数
+      1. avs : pvv-mcp-server.yamlで設定された情報
+  - set_anime_key
+    - 概要 : アバターが発話する際にコールされる、アニメーション設定関数。
+    - 引数
+      1. style_id : 発話のスタイル
+      2. anime_key: アニメーション指定キー
+  - _create_all_avatars
+    - 概要 : すべてのアバターをインスタンス化する。
+    - 引数 : なし
+  - _create_avatar
+    - 概要 : アバターをインスタンス化し、キャッシュする。
+    - 引数
+      1. style_id : 発話のスタイル
+      2. avatar_conf: pvv-mcp-server.yamlで設定された情報
+  - _get_avatar
+    - 概要 : キャッシュされたアバターインスタンスを取得する。
+    - 引数
+      1. style_id : 発話のスタイル
+  - _get_images
+    - 概要 : アニメーション画像が未設定の場合は、voicevoxからportraitを取得する。
+    - 引数
+      1. speaker_id : 話者名
+      2. images : デフォルト設定されたアニメーション画像リスト
