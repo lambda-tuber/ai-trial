@@ -10,5 +10,4 @@ pytest-tornasync
 pytest-trio
 PySide6
 pygetwindow
-opencv-python
 pyyaml
