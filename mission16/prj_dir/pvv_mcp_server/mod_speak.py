@@ -12,6 +12,7 @@ import io
 import pvv_mcp_server.mod_avatar_manager
 import logging
 import sys
+import re
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -25,6 +26,11 @@ if not logger.handlers:
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
+def remove_bracket_text(text: str) -> str:
+    # 丸括弧の中身を削除（全角・半角の両方対応）
+    text = re.sub(r'（.*?）', '', text)  # 全角括弧
+    text = re.sub(r'\(.*?\)', '', text)  # 半角括弧
+    return text.strip()
 
 def speak(
     style_id: int,
@@ -56,7 +62,7 @@ def speak(
     try:
         # 1. 音声合成用のクエリを生成
         query_params = {
-            "text": msg,
+            "text": remove_bracket_text(msg),
             "speaker": style_id
         }
         

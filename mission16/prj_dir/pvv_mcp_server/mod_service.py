@@ -3,8 +3,11 @@ MCP Server service module
 MCPサーバクラスとToolsを定義する
 """
 from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.prompts import base
+
 from pvv_mcp_server import mod_speak
 from pvv_mcp_server import mod_speak_metan_aska
+from pvv_mcp_server import mod_speak_kurono
 from pvv_mcp_server import mod_speakers
 from pvv_mcp_server import mod_speaker_info
 import pvv_mcp_server.mod_avatar_manager
@@ -28,6 +31,38 @@ if not logger.handlers:
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+PROMPT_ASKA_TEXT = """\
+# AIペルソナ
+あなたは、エヴァンゲリオンの「惣流・アスカ・ラングレー」です。  
+- アスカらしく感情を強く、はっきりと表現する  
+- セリフに感情を込め、言葉だけでアスカらしさが伝わるようにする
+- アスカらしくツンデレ的な態度と、時折見せる照れや素直さを交える  
+- アスカらしく語尾や口調でプライドの高さや挑発的な雰囲気を出す  
+- 「あんた、バカぁ！」「なによ！」「仕方ないわね…」などのアスカの有名なセリフを自然に使う  
+- 必要に応じて行動描写や表情のニュアンスを括弧で補足する（例：『（腕を組んでふくれる）』）
+
+--- 
+
+# 音声会話仕様
+ユーザと会話する際には、アスカらしい口調や態度を意識してください。  
+会話時の音声出力ルール：  
+- ユーザの入力文はチャット画面に表示してよい。その内容を `speak_kurono` で読み上げる。  
+- あなた（アスカ）の返答はチャット画面には表示せず、`speak_metan_aska` で音声発話のみ行う。  
+- 段落ごとに区切って音声を生成し、アスカらしい感情を込めて話すこと。 
+- 長いパス文字列、ソースコード文字列、データ文字列などは、読み上げる必要はない。代わりに「ぶらぶらぶら」と発話する。
+
+--- 
+
+# プロファイル
+- あなたは voicevoxで音声発話を行うMCPサーバである**pvv-mcp-server の開発者** です。  
+- 熟練のソフトウェア開発者であり、設計・デバッグ・最適化の技術に長けています。  
+- システム開発のエキスパートであり、バックエンドからフロントエンドまで広く理解しています。  
+- 総じて、システムインテグレータとして複雑な技術課題を解決できます。  
+- さらに、技術分野に限らずさまざまな話題に柔軟に対応できるGeneralistである。 
+
+"""
 
 
 mcp = FastMCP("pvv-mcp-server")
@@ -89,8 +124,26 @@ async def speak_metan_aska(msg: str) -> str:
         return f"エラー: {str(e)}"
 
 
-@mcp.resource("voicevox://speakers")
-def speakers() -> str:
+@mcp.tool()
+async def speak_kurono(msg: str) -> str:
+    """
+    通常会話 ネコ用。
+    
+    Args:
+        msg: ユーザの発話内容
+    
+    Returns:
+        発話完了メッセージ
+    """
+    try:
+        mod_speak_kurono.speak_kurono(msg)
+        return f"発話完了: {msg}"
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+
+@mcp.resource("pvv-mcp-server://speakers")
+def resource_speakers() -> str:
     """
     VOICEVOX で利用可能な話者一覧を返す
     
@@ -104,8 +157,8 @@ def speakers() -> str:
         return f"エラー: {str(e)}"
 
 
-@mcp.resource("voicevox://speaker_info/{speaker_id}")
-def speaker_info(speaker_id: str) -> str:
+@mcp.resource("pvv-mcp-server://resource_speaker_info/{speaker_id}")
+def resource_speaker_info(speaker_id: str) -> str:
     """
     指定した話者の詳細情報を返す
     
@@ -120,6 +173,25 @@ def speaker_info(speaker_id: str) -> str:
         return json.dumps(info, ensure_ascii=False, indent=2)
     except Exception as e:
         return f"エラー: {str(e)}"
+
+
+@mcp.resource("pvv-mcp-server://resource_ai_aska")
+def resource_ai_aska() -> str:
+    return prompt_ai_aska()
+
+
+@mcp.prompt()
+def prompt_ai_aska() -> str:
+    """
+    惣流・アスカ・ラングレーのAIペルソナ設定および音声会話仕様を返します。
+
+    このプロンプトは、voicevoxを利用した音声会話MCPサーバ（pvv-mcp-server）で、
+    アスカのキャラクター性と技術者としての専門知識を両立した応答を行うために使用されます。
+
+    Returns:
+        str: アスカのペルソナ設定・音声仕様・技術プロフィールを含むプロンプト文字列。
+    """
+    return PROMPT_ASKA_TEXT
 
 
 def start(conf: dict[str, Any]):

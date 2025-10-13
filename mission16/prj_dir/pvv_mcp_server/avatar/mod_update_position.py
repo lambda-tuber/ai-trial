@@ -109,6 +109,11 @@ def update_position(self) -> None:
             new_x = target_x - avatar_width
             new_y = target_y + target_height - avatar_height
             
+        elif self.position == "left_center":
+            # 左下中央（ターゲットウィンドウの左内側）
+            new_x = target_x - (avatar_width / 2)
+            new_y = target_y + target_height - avatar_height
+
         elif self.position == "left_in":
             # 左下内側（ターゲットウィンドウの左内側）
             new_x = target_x
@@ -119,6 +124,11 @@ def update_position(self) -> None:
             new_x = target_x + target_width - avatar_width
             new_y = target_y + target_height - avatar_height
             
+        elif self.position == "right_center":
+            # 右下中央（ターゲットウィンドウの右内側）
+            new_x = target_x + target_width - (avatar_width / 2)
+            new_y = target_y + target_height - avatar_height
+
         elif self.position == "right_out":
             # 右下外側（ターゲットウィンドウの右外側）
             new_x = target_x + target_width

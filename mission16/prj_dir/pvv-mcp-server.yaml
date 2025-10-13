@@ -11,7 +11,7 @@ avatar:
     #  - 以下、画像ファイル指定の例です。
     10: &style_id_10     # VOICEVOX:雨晴はう ノーマル
       "話者" : "雨晴はう"
-      "位置" : left_in  # left_out, left_in, right_in, right_out,
+      "位置" : left_in  # left_out, left_center, left_in, right_in, right_center, right_out
       "表示" : True
       "反転" : False
       "縮尺" : 50
@@ -20,7 +20,7 @@ avatar:
         "口パク": []
     14: &style_id_14     # VOICEVOX:冥鳴ひまり ノーマル
       "話者" : "冥鳴ひまり"
-      "位置" : right_in  # left_out, left_in, right_in, right_out,
+      "位置" : right_in  # left_out, left_center, left_in, right_in, right_center, right_out
       "表示" : True
       "反転" : False
       "縮尺" : 50
@@ -31,7 +31,7 @@ avatar:
     #
     # 0:  &style_id_0   # VOICEVOX:四国めたん あまあま
     #   "話者" : "四国めたん"
-    #   "位置" : right_out  # left_out, left_in, right_in, right_out,
+    #   "位置" : right_center  # left_out, left_center, left_in, right_in, right_center, right_out
     #   "表示" : True
     #   "反転" : False
     #   "縮尺" : 50
@@ -78,7 +78,7 @@ avatar:
     # 37: *style_id_0   # VOICEVOX:四国めたん ヒソヒソ
     # 11: &style_id_11     # VOICEVOX:玄野武宏 (CV: ガロ) ノーマル
     #   "話者" : "玄野武宏"
-    #   "位置" : left_out  # left_out, left_in, right_in, right_out,
+    #   "位置" : left_center  # left_out, left_center, left_in, right_in, right_center, right_out
     #   "表示" : True
     #   "反転" : True
     #   "縮尺" : 50

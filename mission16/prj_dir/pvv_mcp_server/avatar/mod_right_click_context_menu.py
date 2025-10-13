@@ -84,8 +84,10 @@ def right_click_context_menu(self, mouse_position: QPoint) -> None:
     
     positions = [
         ("左下外側", "left_out"),
+        ("左下中央", "left_center"),
         ("左下内側", "left_in"),
         ("右下内側", "right_in"),
+        ("右下中央", "right_center"),
         ("右下外側", "right_out")
     ]
     

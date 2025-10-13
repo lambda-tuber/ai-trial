@@ -89,8 +89,10 @@ def _create_all_avatars() -> None:
     
     for style_id, avatar_conf in _avatars_config.items():
         try:
-            _create_avatar(style_id, avatar_conf)
-            logger.info(f"Created avatar for style_id={style_id}")
+            avatar = _get_avatar(style_id)
+            if not avatar:
+                _create_avatar(style_id, avatar_conf)
+                logger.info(f"Created avatar for style_id={style_id}")
         except Exception as e:
             logger.error(f"Failed to create avatar for style_id={style_id}: {e}")
 
