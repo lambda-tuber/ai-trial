@@ -10,6 +10,9 @@ import logging
 import sys
 from functools import partial
 
+import pvv_mcp_server.avatar.mod_ymm_dialog
+
+
 # ロガーの設定
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
@@ -50,7 +53,11 @@ def right_click_context_menu(self, mouse_position: QPoint) -> None:
     else:
         # アニメーションが登録されていない場合
         no_anime_action = QAction("(なし)", self)
-        no_anime_action.setEnabled(False)
+        #no_anime_action.setEnabled(False)
+
+        menu.addAction(no_anime_action)
+        no_anime_action.triggered.connect(lambda _: open_avatar_layer_dialog(self))
+        #no_anime_action.triggered.connect(open_avatar_layer_dialog)
         animation_menu.addAction(no_anime_action)
     
     menu.addSeparator()
@@ -128,7 +135,6 @@ def right_click_context_menu(self, mouse_position: QPoint) -> None:
     
     menu.addSeparator()
 
-    
     # 終了アクション
     # exit_action = QAction("終了", self)
     # exit_action.triggered.connect(self.close)
@@ -136,3 +142,8 @@ def right_click_context_menu(self, mouse_position: QPoint) -> None:
     
     # メニューを表示
     menu.exec(self.mapToGlobal(mouse_position))
+    
+
+def open_avatar_layer_dialog(self):
+    dlg = pvv_mcp_server.avatar.mod_ymm_dialog.AvatarLayerDialog(self)
+    dlg.exec()
