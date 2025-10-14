@@ -3,6 +3,7 @@ from PySide6.QtGui import QPixmap, QPainter, QImage, QShortcut, QKeySequence
 from PySide6.QtCore import Qt, QTimer, QPoint
 import sys
 
+import pvv_mcp_server.avatar.mod_ymm_part
 
 class AvatarLayerDialog(QDialog):
     def __init__(self, parent=None):
@@ -32,10 +33,14 @@ class AvatarLayerDialog(QDialog):
             self.left_combos.append(combo)
 
         for cat in self.right_categories:
-            combo = QComboBox()
-            combo.addItem(f"{cat}: 01.png")
-            combo.addItem(f"{cat}: 02.png")
-            self.right_combos.append(combo)
+            if cat == "目":
+                w = pvv_mcp_server.avatar.mod_ymm_part.AvatarPartWidget(cat,["01.png","02.png","03.png","04.png"])
+                self.right_combos.append(w)
+            else:
+                combo = QComboBox()
+                combo.addItem(f"{cat}: 01.png")
+                combo.addItem(f"{cat}: 02.png")
+                self.right_combos.append(combo)
 
         # 中央プレビュー
         self.preview_label = QLabel()
@@ -58,8 +63,8 @@ class AvatarLayerDialog(QDialog):
         self.layer_images = self.generate_dummy_layers()
 
         # プルダウン変更でプレビュー更新
-        for combo in self.left_combos + self.right_combos:
-            combo.currentIndexChanged.connect(self.update_preview)
+        # for combo in self.left_combos + self.right_combos:
+        #     combo.currentIndexChanged.connect(self.update_preview)
 
         # 初期プレビュー表示
         self.update_preview()
@@ -87,12 +92,17 @@ class AvatarLayerDialog(QDialog):
         painter = QPainter(base)
 
         # 左→右の順で合成
-        for combo in self.left_combos + self.right_combos:
-            key = combo.currentText()
-            pix = self.layer_images.get(key)
-            if pix:
-                painter.drawPixmap(0, 0, pix)
+        # for combo in self.left_combos + self.right_combos:
+        #     key = combo.currentText()
+        #     pix = self.layer_images.get(key)
+        #     if pix:
+        #         painter.drawPixmap(0, 0, pix)
 
         painter.end()
         self.preview_label.setPixmap(QPixmap.fromImage(base))
 
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    dialog = AvatarLayerDialog()
+    dialog.show()
+    sys.exit(app.exec())

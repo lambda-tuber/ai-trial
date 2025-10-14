@@ -12,7 +12,7 @@ class AvatarPartWidget(QWidget):
         super().__init__()
         self.part_name = part_name
         self.image_files = image_files
-        self.base_image = None
+        self.base_image = image_files[0]
         self.selected_files = []
         self.interval_idx = 3     # 全体側が100msec、このパーツは、300msecで更新する。
         self.anime_type = "固定"
@@ -24,10 +24,21 @@ class AvatarPartWidget(QWidget):
         self.random_anime_idx = 0
         self.loop_anime_idx = 0
 
-        self.setup_gui()
+        self._setup_gui()
 
 
-    def setup_gui(self):
+    def update(self):
+        if self.anim_type == "固定":
+            return self.base_image
+
+        elif self.anim_type == "ループ":
+            return self._update_loop
+
+        elif self.anim_type == "ランダム":
+            return self._update_random
+
+
+    def _setup_gui(self):
         main_layout = QVBoxLayout(self)
 
         # 1段目: パーツ名
@@ -42,7 +53,7 @@ class AvatarPartWidget(QWidget):
         base_layout.addWidget(QLabel("ベース画像:"))    # 左列
         self.combo_base = QComboBox()
         self.combo_base.addItems(self.image_files)
-        self.combo_base.currentTextChanged.connect(self.update_base_image)
+        self.combo_base.currentTextChanged.connect(self._update_base_image)
         base_layout.addWidget(self.combo_base)             # 右列
         base_layout.addStretch(1)
         main_layout.addLayout(base_layout)
@@ -54,10 +65,10 @@ class AvatarPartWidget(QWidget):
         self.list_anim.setSelectionMode(QListWidget.MultiSelection)
         for f in self.image_files:
             self.list_anim.addItem(QListWidgetItem(f))
-        self.list_anim.itemSelectionChanged.connect(self.update_selected_files)
-
-        rows = len(self.image_files)  # 表示したい行数
-        self.list_anim.setFixedHeight(self.list_anim.sizeHintForRow(0) * rows + 2 * self.list_anim.frameWidth())
+        self.list_anim.itemSelectionChanged.connect(self._update_selected_files)
+        self.list_anim.setMaximumHeight(100)
+        #rows = len(self.image_files)  # 表示したい行数
+        #self.list_anim.setFixedHeight(self.list_anim.sizeHintForRow(0) * rows + 2 * self.list_anim.frameWidth())
 
         anim_layout.addWidget(self.list_anim)             # 右列
         main_layout.addLayout(anim_layout)
@@ -68,7 +79,7 @@ class AvatarPartWidget(QWidget):
         self.combo_interval_idx = QComboBox()
         self.combo_interval_idx.addItems(["1", "2", "3", "4", "5"])
         self.combo_interval_idx.setCurrentIndex(2)
-        self.combo_interval_idx.currentTextChanged.connect(self.update_interval_idx)
+        self.combo_interval_idx.currentTextChanged.connect(self._update_interval_idx)
         interval_layout.addWidget(self.combo_interval_idx)             # 右列
         interval_layout.addStretch(1)
         main_layout.addLayout(interval_layout)
@@ -87,7 +98,7 @@ class AvatarPartWidget(QWidget):
         self.anim_type_group.addButton(self.radio_fixed)
         self.anim_type_group.addButton(self.radio_loop)
         self.anim_type_group.addButton(self.radio_random)
-        self.anim_type_group.buttonClicked.connect(self.on_anim_type_changed)
+        self.anim_type_group.buttonClicked.connect(self._on_anim_type_changed)
 
         # 初期状態を設定（例: 固定をデフォルト選択）
         self.radio_fixed.setChecked(True)
@@ -102,19 +113,19 @@ class AvatarPartWidget(QWidget):
         main_layout.addLayout(anim_type_layout)
 
 
-    def update_selected_files(self):
+    def _update_selected_files(self):
         self.selected_files = [item.text() for item in self.list_anim.selectedItems()]
         print(f"selected_files: {self.selected_files}")
 
-    def update_base_image(self, text):
+    def _update_base_image(self, text):
         self.base_image = text
         print(f"base_image: {self.base_image}")
 
-    def update_interval_idx(self, text):
+    def _update_interval_idx(self, text):
         self.interval_idx = int(text)
         print(f"interval_idx: {self.interval_idx}")
 
-    def on_anim_type_changed(self, button):
+    def _on_anim_type_changed(self, button):
         self.anime_type = button.text()
         print(f"選択されたアニメーションタイプ: {self.anime_type}")
 
