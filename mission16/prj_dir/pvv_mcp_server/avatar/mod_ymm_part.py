@@ -14,7 +14,7 @@ class AvatarPartWidget(QWidget):
         self.image_files = image_files
         self.base_image = None
         self.selected_files = []
-        self.interval_idx = 0     # 全体側が100msec、このパーツは、300msecで更新する。
+        self.interval_idx = 3     # 全体側が100msec、このパーツは、300msecで更新する。
         self.anime_type = "固定"
                           # 固定 : base画像固定
                           # ループ : アニメ画像ループ
@@ -25,7 +25,6 @@ class AvatarPartWidget(QWidget):
         self.loop_anime_idx = 0
 
         main_layout = QVBoxLayout(self)
-
 
         # 1段目: パーツ名
         part_name_layout = QHBoxLayout()
@@ -64,15 +63,15 @@ class AvatarPartWidget(QWidget):
         interval_layout.addWidget(QLabel("インターバル:"))    # 左列
         self.combo_interval_idx = QComboBox()
         self.combo_interval_idx.addItems(["1", "2", "3", "4", "5"])
+        self.combo_interval_idx.setCurrentIndex(2)
         self.combo_interval_idx.currentTextChanged.connect(self.update_interval_idx)
         interval_layout.addWidget(self.combo_interval_idx)             # 右列
         interval_layout.addStretch(1)
         main_layout.addLayout(interval_layout)
 
-
         # 5段目: アニメーションタイプ
         anim_type_layout = QHBoxLayout()
-        anim_type_layout.addWidget(QLabel("アニメーションタイプ:"))  # 左列ラベル
+        anim_type_layout.addWidget(QLabel("アニメタイプ:"))  # 左列ラベル
 
         # ラジオボタンを作成
         self.radio_fixed = QRadioButton("固定")
