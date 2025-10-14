@@ -19,11 +19,15 @@ class AvatarPartWidget(QWidget):
                           # 固定 : base画像固定
                           # ループ : アニメ画像ループ
                           # ランダム : base画像(ランダムtick) + アニメ画像(oneshot) 
-        self.random_wait_tick = random.randint(100, 1000) 
+        self.random_wait_tick = random.randint(50, 300) 
         self.random_wait_idx = 0
         self.random_anime_idx = 0
         self.loop_anime_idx = 0
 
+        self.setup_gui()
+
+
+    def setup_gui(self):
         main_layout = QVBoxLayout(self)
 
         # 1段目: パーツ名
@@ -37,7 +41,7 @@ class AvatarPartWidget(QWidget):
         base_layout = QHBoxLayout()
         base_layout.addWidget(QLabel("ベース画像:"))    # 左列
         self.combo_base = QComboBox()
-        self.combo_base.addItems(image_files)
+        self.combo_base.addItems(self.image_files)
         self.combo_base.currentTextChanged.connect(self.update_base_image)
         base_layout.addWidget(self.combo_base)             # 右列
         base_layout.addStretch(1)
@@ -48,11 +52,11 @@ class AvatarPartWidget(QWidget):
         anim_layout.addWidget(QLabel("アニメ画像:"), alignment=Qt.AlignTop)    # 左列
         self.list_anim = QListWidget()
         self.list_anim.setSelectionMode(QListWidget.MultiSelection)
-        for f in image_files:
+        for f in self.image_files:
             self.list_anim.addItem(QListWidgetItem(f))
         self.list_anim.itemSelectionChanged.connect(self.update_selected_files)
 
-        rows = len(image_files)  # 表示したい行数
+        rows = len(self.image_files)  # 表示したい行数
         self.list_anim.setFixedHeight(self.list_anim.sizeHintForRow(0) * rows + 2 * self.list_anim.frameWidth())
 
         anim_layout.addWidget(self.list_anim)             # 右列
