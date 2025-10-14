@@ -12,9 +12,15 @@ class AvatarPartWidget(QWidget):
         super().__init__()
         self.part_name = part_name
         self.image_files = image_files
-        self.base_image = image_files[0]
+        if len(self.image_files) > 0:
+          self.base_image = image_files[0]
+        else:
+          self.base_image = None
+
+        self.current_image = self.base_image
         self.selected_files = []
-        self.interval_idx = 3     # 全体側が100msec、このパーツは、300msecで更新する。
+        self.update_idx = 0    
+        self.interval = 3     # 全体側が100msec、このパーツは、300msecで更新する。
         self.anime_type = "固定"
                           # 固定 : base画像固定
                           # ループ : アニメ画像ループ
@@ -28,15 +34,33 @@ class AvatarPartWidget(QWidget):
 
 
     def update(self):
-        if self.anim_type == "固定":
-            return self.base_image
 
-        elif self.anim_type == "ループ":
-            return self._update_loop
+        if len(self.image_files) == 0:
+            return None
 
-        elif self.anim_type == "ランダム":
-            return self._update_random
+        if self.update_idx < self.interval:
+            self.update_idx = self.update_idx + 1
+            return self.current_image
 
+        self.update_idx = 0
+
+        if self.anime_type == "固定":
+            self.current_image = self.base_image
+
+        if self.anime_type == "ループ":
+            self._update_loop()
+
+        if self.anime_type == "ランダム":
+            self._update_random()
+
+        return self.current_image
+
+    def _update_loop(self):
+        self.current_image = self.selected_files[self.loop_anime_idx]
+        self.loop_anime_idx = (self.loop_anime_idx + 1) % len(self.selected_files)
+
+    def _update_random(self):
+        pass
 
     def _setup_gui(self):
         main_layout = QVBoxLayout(self)
@@ -44,7 +68,7 @@ class AvatarPartWidget(QWidget):
         # 1段目: パーツ名
         part_name_layout = QHBoxLayout()
         part_name_layout.addWidget(QLabel("パーツ名:"))  # 左列
-        part_name_layout.addWidget(QLabel("目"))       # 右列（パーツ）
+        part_name_layout.addWidget(QLabel(self.part_name))       # 右列（パーツ）
         part_name_layout.addStretch(1)
         main_layout.addLayout(part_name_layout)
 
@@ -73,14 +97,14 @@ class AvatarPartWidget(QWidget):
         anim_layout.addWidget(self.list_anim)             # 右列
         main_layout.addLayout(anim_layout)
 
-        # 4段目: interval_idx
+        # 4段目: interval
         interval_layout = QHBoxLayout()
         interval_layout.addWidget(QLabel("インターバル:"))    # 左列
-        self.combo_interval_idx = QComboBox()
-        self.combo_interval_idx.addItems(["1", "2", "3", "4", "5"])
-        self.combo_interval_idx.setCurrentIndex(2)
-        self.combo_interval_idx.currentTextChanged.connect(self._update_interval_idx)
-        interval_layout.addWidget(self.combo_interval_idx)             # 右列
+        self.combo_interval = QComboBox()
+        self.combo_interval.addItems(["1", "2", "3", "4", "5"])
+        self.combo_interval.setCurrentIndex(2)
+        self.combo_interval.currentTextChanged.connect(self._update_interval)
+        interval_layout.addWidget(self.combo_interval)             # 右列
         interval_layout.addStretch(1)
         main_layout.addLayout(interval_layout)
 
@@ -121,9 +145,9 @@ class AvatarPartWidget(QWidget):
         self.base_image = text
         print(f"base_image: {self.base_image}")
 
-    def _update_interval_idx(self, text):
-        self.interval_idx = int(text)
-        print(f"interval_idx: {self.interval_idx}")
+    def _update_interval(self, text):
+        self.interval = int(text)
+        print(f"interval: {self.interval}")
 
     def _on_anim_type_changed(self, button):
         self.anime_type = button.text()
