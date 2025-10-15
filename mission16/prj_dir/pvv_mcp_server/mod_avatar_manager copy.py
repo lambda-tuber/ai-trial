@@ -8,9 +8,8 @@ import sys
 import logging
 import atexit
 import signal
-from pathlib import Path
 from typing import Any, Dict, Optional
-from PySide6.QtCore import QMetaObject, Qt, QTimer
+from PySide6.QtCore import QMetaObject, Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Q_ARG, Q_RETURN_ARG
 
@@ -34,7 +33,6 @@ if not logger.handlers:
 _avatar_global_config: Optional[Dict[str, Any]] = None
 _avatars_config: Optional[Dict[int, Any]] = None
 _avatar_cache: Dict[int, Any] = {}
-_auto_save_timer: Optional[QTimer] = None
 
 
 # ==================== Public API ====================
@@ -48,7 +46,6 @@ def setup(avs: Dict[int, Any]) -> None:
             - enabled: アバター機能の有効/無効
             - target: アプリケーション名
             - avatars: style_id毎のアバター設定
-            - auto_save_interval: 自動保存間隔(ミリ秒)。デフォルト5000(5秒)
     """
     global _avatar_global_config, _avatars_config
     
@@ -59,9 +56,6 @@ def setup(avs: Dict[int, Any]) -> None:
         logger.info("Avatar enabled. Creating all avatar instances...")
         _create_all_avatars()
         logger.info(f"Created {len(_avatar_cache)} avatar instance(s).")
-        
-        # 自動保存タイマーの開始
-        _start_auto_save_timer()
     else:
         logger.info("Avatar disabled.")
 
@@ -86,119 +80,7 @@ def set_anime_key(style_id: int, anime_key: str) -> None:
         logger.warning(f"Avatar not found for style_id={style_id}")
 
 
-def save_all_configs() -> Dict[str, Any]:
-    """
-    全アバターの設定を収集して辞書形式で返す
-    
-    Returns:
-        全アバターの設定を含む辞書
-    """
-    all_configs = {}
-    
-    for key, avatar in _avatar_cache.items():
-        try:
-            # YmmAvatarWindowかどうかで分岐
-            if isinstance(avatar, YmmAvatarWindow):
-                config = avatar.save_config()
-                all_configs[key] = config
-                logger.info(f"Saved config for avatar: {key}")
-            else:
-                logger.info(f"Skipping non-YMM avatar: {key}")
-        except Exception as e:
-            logger.error(f"Failed to save config for avatar {key}: {e}")
-    
-    return all_configs
-
-
-def load_all_configs(all_configs: Dict[str, Any]) -> None:
-    """
-    全アバターに設定を読み込む
-    
-    Args:
-        all_configs: save_all_configs()で保存した設定辞書
-    """
-    for key, config in all_configs.items():
-        avatar = _avatar_cache.get(key)
-        if avatar and isinstance(avatar, YmmAvatarWindow):
-            try:
-                avatar.load_config(config)
-                logger.info(f"Loaded config for avatar: {key}")
-            except Exception as e:
-                logger.error(f"Failed to load config for avatar {key}: {e}")
-        else:
-            logger.warning(f"Avatar not found or not YMM type: {key}")
-
-
 # ==================== Private Functions ====================
-
-def _start_auto_save_timer() -> None:
-    """
-    自動保存タイマーを開始
-    """
-    global _auto_save_timer
-    
-    # 既にタイマーが動いていれば停止
-    if _auto_save_timer:
-        _auto_save_timer.stop()
-    
-    # 保存間隔を取得(デフォルト5秒=5000ミリ秒)
-    interval = _avatar_global_config.get("auto_save_interval", 5000)
-    
-    _auto_save_timer = QTimer()
-    _auto_save_timer.timeout.connect(_on_auto_save)
-    _auto_save_timer.start(interval)
-    
-    logger.info(f"Auto-save timer started. Interval: {interval}ms")
-
-
-def _on_auto_save() -> None:
-    """
-    自動保存タイマーのコールバック
-    """
-    logger.info("Auto-saving all avatar configs...")
-    configs = save_all_configs()
-    logger.info(f"Auto-saved {len(configs)} avatar config(s).")
-    
-    # ファイルに保存
-    dat_file = _avatar_global_config.get("dat_file")
-    if dat_file:
-        try:
-            # ディレクトリが存在しない場合は作成
-            dat_path = Path(dat_file)
-            dat_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            # JSONファイルに保存
-            with open(dat_path, 'w', encoding='utf-8') as f:
-                json.dump(configs, f, ensure_ascii=False, indent=2)
-            
-            logger.info(f"Configs saved to: {dat_file}")
-        except Exception as e:
-            logger.error(f"Failed to save configs to file: {e}")
-    else:
-        logger.warning("dat_file not configured. Skipping file save.")
-
-def load_configs_from_file() -> None:
-    """
-    ファイルから設定を読み込んで全アバターに適用
-    """
-    dat_file = _avatar_global_config.get("dat_file")
-    if not dat_file:
-        logger.warning("dat_file not configured. Skipping file load.")
-        return
-    
-    dat_path = Path(dat_file)
-    if not dat_path.exists():
-        logger.info(f"Config file not found: {dat_file}")
-        return
-    
-    try:
-        with open(dat_path, 'r', encoding='utf-8') as f:
-            configs = json.load(f)
-        
-        load_all_configs(configs)
-        logger.info(f"Configs loaded from: {dat_file}")
-    except Exception as e:
-        logger.error(f"Failed to load configs from file: {e}")
 
 def _create_all_avatars() -> None:
     """
@@ -361,8 +243,6 @@ if __name__ == "__main__":
     test_config = {
         "enabled": True,
         "target": "Claude",
-        "auto_save_interval": 5000,  # 5秒ごとに自動保存
-        "dat_file": "C:\\work\\lambda-tuber\\ai-trial\\mission16\\prj_dir\\dat.json",
         "avatars": {
             2: {
                 "話者": "四国めたん",
@@ -386,6 +266,6 @@ if __name__ == "__main__":
     setup(test_config)
     set_anime_key(2, "口パク")
     
-    print("Test completed. Auto-save timer is running...")
+    print("Test completed.")
 
     sys.exit(app.exec())
