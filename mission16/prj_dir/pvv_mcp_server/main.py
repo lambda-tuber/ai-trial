@@ -7,6 +7,7 @@ import argparse
 import sys
 import logging
 import yaml
+import os
 from importlib.metadata import version, PackageNotFoundError
 from pvv_mcp_server import mod_service
 
@@ -58,6 +59,12 @@ def main():
             with open(args.yaml, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f) or {}
             logging.info(f"YAML設定を読み込みました: {args.yaml}")
+
+            basedir = os.path.dirname(args.yaml)
+            dat_file = os.path.join(basedir, "pvv-mcp-server.dat")
+            config["avatar"]["dat_file"] = dat_file
+            logging.info(f"DATファイル: {dat_file}")
+
         except Exception as e:
             logging.error(f"YAMLファイルの読み込みに失敗しました: {e}")
             sys.exit(1)

@@ -6,6 +6,8 @@ mod_avatar_manager.py
 import json
 import sys
 import logging
+import atexit
+import signal
 from typing import Any, Dict, Optional
 from PySide6.QtCore import QMetaObject, Qt
 from PySide6.QtWidgets import QApplication
@@ -13,6 +15,7 @@ from PySide6.QtCore import Q_ARG, Q_RETURN_ARG
 
 from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
 from pvv_mcp_server.mod_speaker_info import speaker_info
+from pvv_mcp_server.avatar.ymm.mod_avatar import YmmAvatarWindow
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -27,9 +30,9 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 # グローバル変数
-_avatar_config: Optional[Dict[str, Any]] = None
+_avatar_global_config: Optional[Dict[str, Any]] = None
 _avatars_config: Optional[Dict[int, Any]] = None
-_avatar_cache: Dict[int, AvatarWindow] = {}
+_avatar_cache: Dict[int, Any] = {}
 
 
 # ==================== Public API ====================
@@ -39,17 +42,17 @@ def setup(avs: Dict[int, Any]) -> None:
     アバターマネージャーの初期化
     
     Args:
-        avs: アバター設定の辞書
+        avs: アバター設定の辞書。全体設定の"avatar"配下。
             - enabled: アバター機能の有効/無効
             - target: アプリケーション名
             - avatars: style_id毎のアバター設定
     """
-    global _avatar_config, _avatars_config
+    global _avatar_global_config, _avatars_config
     
-    _avatar_config = avs
+    _avatar_global_config = avs
     _avatars_config = avs.get("avatars", {})
     
-    if _avatar_config.get("enabled"):
+    if _avatar_global_config.get("enabled"):
         logger.info("Avatar enabled. Creating all avatar instances...")
         _create_all_avatars()
         logger.info(f"Created {len(_avatar_cache)} avatar instance(s).")
@@ -65,7 +68,7 @@ def set_anime_key(style_id: int, anime_key: str) -> None:
         style_id: スタイルID
         anime_key: アニメーションキー（"立ち絵", "口パク"など）
     """
-    if not _avatar_config or not _avatar_config.get("enabled"):
+    if not _avatar_global_config or not _avatar_global_config.get("enabled"):
         logger.info("Avatar disabled. Skipping set_anime_key.")
         return
     
@@ -91,7 +94,13 @@ def _create_all_avatars() -> None:
         try:
             avatar = _get_avatar(style_id)
             if not avatar:
-                _create_avatar(style_id, avatar_conf)
+                zip_path = avatar_conf.get("画像")
+                if isinstance(zip_path, str) and zip_path.endswith(".zip"):
+                    logger.info(f"Created avatar from zip.")
+                    _create_ymm_avatar(style_id, avatar_conf)
+                else:
+                    logger.info(f"Created avatar.")
+                    _create_avatar(style_id, avatar_conf)
                 logger.info(f"Created avatar for style_id={style_id}")
         except Exception as e:
             logger.error(f"Failed to create avatar for style_id={style_id}: {e}")
@@ -116,11 +125,11 @@ def _create_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
 
     # アバターインスタンスの作成
     instance = AvatarWindow(
-        images,
+        images,   # ファイルパス or base6文字列列
         default_anime_key="立ち絵",
         flip=avatar_conf.get("反転", False),
         scale_percent=avatar_conf.get("縮尺", 50),
-        app_title=_avatar_config.get("target", "Claude"),
+        app_title=_avatar_global_config.get("target", "Claude"),
         position=avatar_conf.get("位置", "right_out")
     )
     
@@ -138,6 +147,42 @@ def _create_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
     
     return instance
 
+
+def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
+    """
+    個別のアバターインスタンスを作成
+    
+    Args:
+        style_id: スタイルID
+        avatar_conf: アバター設定
+    
+    Returns:
+        作成されたYMMAvatarWindowインスタンス
+    """
+
+    # アバターインスタンスの作成
+    instance = YmmAvatarWindow(
+        zip_path=avatar_conf["画像"],
+        app_title=_avatar_global_config.get("target", "Claude"),
+        anime_types=["立ち絵", "口パク"],
+        flip=avatar_conf.get("反転", False),
+        scale_percent=avatar_conf.get("縮尺", 50),
+        position=avatar_conf.get("位置", "right_out")
+    )
+    
+    # 位置更新と表示設定
+    #instance.update_position()
+    if avatar_conf.get("表示", False):
+        instance.show()
+    else:
+        instance.hide()
+
+    # キャッシュに登録
+    # style_idが違っても、avatar_confは参照で同一の場合は、同一avatarとして扱う必要がある。
+    key = json.dumps(avatar_conf, sort_keys=True)
+    _avatar_cache[key] = instance
+    
+    return instance
 
 def _get_avatar(style_id: int) -> Optional[AvatarWindow]:
     """
@@ -192,15 +237,25 @@ def _get_images(speaker_id: str, images: Dict[str, list]) -> Dict[str, list]:
 if __name__ == "__main__":
     print("Testing mod_avatar_manager...")
     
+    app = QApplication(sys.argv)
+
     # テスト用設定
     test_config = {
         "enabled": True,
-        "target": "TestApp",
+        "target": "Claude",
         "avatars": {
             2: {
                 "話者": "四国めたん",
                 "表示": True,
                 "画像": {},
+                "反転": False,
+                "縮尺": 50,
+                "位置": "right_out"
+            },
+            14: {
+                "話者": "冥鳴ひまり",
+                "表示": True,
+                "画像": "C:\\work\\lambda-tuber\\ai-trial\\mission16\\docs\\ゆっくり霊夢改.zip",
                 "反転": False,
                 "縮尺": 50,
                 "位置": "right_out"
@@ -212,3 +267,5 @@ if __name__ == "__main__":
     set_anime_key(2, "口パク")
     
     print("Test completed.")
+
+    sys.exit(app.exec())
