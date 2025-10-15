@@ -142,7 +142,8 @@ def _start_auto_save_timer() -> None:
         _auto_save_timer.stop()
     
     # 保存間隔を取得(デフォルト5秒=5000ミリ秒)
-    interval = _avatar_global_config.get("auto_save_interval", 5000)
+#    interval = _avatar_global_config.get("auto_save_interval", 5000)
+    interval = 50000
     
     _auto_save_timer = QTimer()
     _auto_save_timer.timeout.connect(_on_auto_save)
@@ -197,6 +198,31 @@ def load_configs_from_file() -> None:
         
         load_all_configs(configs)
         logger.info(f"Configs loaded from: {dat_file}")
+    except Exception as e:
+        logger.error(f"Failed to load configs from file: {e}")
+
+
+
+def _load_config():
+    """
+    ファイルから設定を読み込む。
+    """
+    dat_file = _avatar_global_config.get("dat_file")
+    if not dat_file:
+        logger.warning("dat_file not configured. Skipping file load.")
+        return
+    
+    dat_path = Path(dat_file)
+    if not dat_path.exists():
+        logger.info(f"Config file not found: {dat_file}")
+        return
+    
+    try:
+        with open(dat_path, 'r', encoding='utf-8') as f:
+            configs = json.load(f)
+        
+        logger.info(f"Configs loaded from: {dat_file}")
+        return configs
     except Exception as e:
         logger.error(f"Failed to load configs from file: {e}")
 
@@ -277,7 +303,14 @@ def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWind
     Returns:
         作成されたYMMAvatarWindowインスタンス
     """
+    # キャッシュに登録
+    # style_idが違っても、avatar_confは参照で同一の場合は、同一avatarとして扱う必要がある。
+    key = json.dumps(avatar_conf, sort_keys=True)
 
+    saved_config = _load_config()
+    if saved_config:
+        saved_config = saved_config.get(key)
+    
     # アバターインスタンスの作成
     instance = YmmAvatarWindow(
         zip_path=avatar_conf["画像"],
@@ -285,11 +318,12 @@ def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWind
         anime_types=["立ち絵", "口パク"],
         flip=avatar_conf.get("反転", False),
         scale_percent=avatar_conf.get("縮尺", 50),
-        position=avatar_conf.get("位置", "right_out")
+        position=avatar_conf.get("位置", "right_out"),
+        config=saved_config
     )
     
     # 位置更新と表示設定
-    #instance.update_position()
+    instance.update_position()
     if avatar_conf.get("表示", False):
         instance.show()
     else:
@@ -297,7 +331,6 @@ def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWind
 
     # キャッシュに登録
     # style_idが違っても、avatar_confは参照で同一の場合は、同一avatarとして扱う必要がある。
-    key = json.dumps(avatar_conf, sort_keys=True)
     _avatar_cache[key] = instance
     
     return instance

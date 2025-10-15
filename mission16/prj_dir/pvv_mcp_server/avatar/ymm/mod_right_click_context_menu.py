@@ -6,7 +6,82 @@ YMMアバター右クリックメニューモジュール
 from PySide6.QtWidgets import QMenu
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QPoint
+import logging
+import sys
 
+# ロガーの設定
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# stderrへの出力ハンドラー
+if not logger.handlers:
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+def _show_dialog_debug(self, anime_type):
+    """デバッグ用: ダイアログ表示"""
+    logger.info(f"========== 編集クリック: anime_type={anime_type} ==========")
+    logger.info(f"self.ymm_dialogs.keys() = {list(self.ymm_dialogs.keys())}")
+    if anime_type in self.ymm_dialogs:
+        try:
+            # dialog = self.ymm_dialogs[anime_type]
+            # logger.info(f"ダイアログ取得成功: {dialog}")
+            # logger.info(f"show()前 isVisible() = {dialog.isVisible()}")
+            # logger.info(f"show()前 geometry = {dialog.geometry()}")
+            # logger.info(f"show()前 size = {dialog.size()}")
+            # logger.info(f"show()前 pos = {dialog.pos()}")
+            # dialog_tachie = self.ymm_dialogs["立ち絵"]
+            # dialog_kuchipaku = self.ymm_dialogs["口パク"]
+
+            # logger.info(f"=== 立ち絵ダイアログ ===")
+            # logger.info(f"  parent: {dialog_tachie.parent()}")
+            # logger.info(f"  windowFlags: {dialog_tachie.windowFlags()}")
+            # logger.info(f"  windowTitle: {dialog_tachie.windowTitle()}")
+            # logger.info(f"  isModal: {dialog_tachie.isModal()}")
+
+            # logger.info(f"=== 口パクダイアログ ===")
+            # logger.info(f"  parent: {dialog_kuchipaku.parent()}")
+            # logger.info(f"  windowFlags: {dialog_kuchipaku.windowFlags()}")
+            # logger.info(f"  windowTitle: {dialog_kuchipaku.windowTitle()}")
+            # logger.info(f"  isModal: {dialog_kuchipaku.isModal()}")            
+
+            # ======== ここから追加・修正 ========
+            dialog.show()
+            dialog.raise_()
+            dialog.activateWindow()
+            
+            # 最前面固定を追加
+            # from PySide6.QtCore import Qt
+            # dialog.setWindowFlags(dialog.windowFlags() | Qt.WindowStaysOnTopHint)
+            # dialog.show()  # フラグ変更後に再度show
+            # ======== ここまで ========
+            
+            # logger.info(f"show()後 isVisible() = {dialog.isVisible()}")
+            # logger.info(f"show()後 geometry = {dialog.geometry()}")
+            # logger.info(f"show()後 size = {dialog.size()}")
+            # logger.info(f"show()後 pos = {dialog.pos()}")
+            # dialog_tachie = self.ymm_dialogs["立ち絵"]
+            # dialog_kuchipaku = self.ymm_dialogs["口パク"]
+
+            # logger.info(f"=== 立ち絵ダイアログ ===")
+            # logger.info(f"  parent: {dialog_tachie.parent()}")
+            # logger.info(f"  windowFlags: {dialog_tachie.windowFlags()}")
+            # logger.info(f"  windowTitle: {dialog_tachie.windowTitle()}")
+            # logger.info(f"  isModal: {dialog_tachie.isModal()}")
+
+            # logger.info(f"=== 口パクダイアログ ===")
+            # logger.info(f"  parent: {dialog_kuchipaku.parent()}")
+            # logger.info(f"  windowFlags: {dialog_kuchipaku.windowFlags()}")
+            # logger.info(f"  windowTitle: {dialog_kuchipaku.windowTitle()}")
+            # logger.info(f"  isModal: {dialog_kuchipaku.isModal()}")            
+
+        except Exception as e:
+            logger.error(f"エラー発生: {e}", exc_info=True)
+    else:
+            logger.error(f"ダイアログが見つかりません: {anime_type}")
 
 def ymm_right_click_context_menu(self, mouse_position: QPoint) -> None:
     """
@@ -35,10 +110,13 @@ def ymm_right_click_context_menu(self, mouse_position: QPoint) -> None:
         type_submenu.addAction(select_action)
         
         # 編集アクション(ダイアログを開く)
-        edit_action = QAction("画像編集...", self)
-        edit_action.triggered.connect(lambda checked=False, key=anime_type: self.ymm_dialogs[key].show())
+        edit_action = QAction("編集", self)
+        #edit_action.triggered.connect(lambda checked=False, key=anime_type: self.ymm_dialogs[key].show())
+        edit_action.triggered.connect(
+            lambda checked=False, anime_type=anime_type: _show_dialog_debug(self, anime_type)
+        )
         type_submenu.addAction(edit_action)
-    
+
     menu.addSeparator()
     
     # アニメーション速度サブメニュー

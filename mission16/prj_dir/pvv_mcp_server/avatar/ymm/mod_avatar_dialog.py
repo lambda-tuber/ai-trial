@@ -25,6 +25,9 @@ if not logger.handlers:
 class YmmAvatarDialog(QDialog):
     def __init__(self, zip_dat, scale_percent, flip, interval, config=None):
         super().__init__()
+        
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+
         self.zip_dat = zip_dat
         self.scale = scale_percent
         self.flip = flip

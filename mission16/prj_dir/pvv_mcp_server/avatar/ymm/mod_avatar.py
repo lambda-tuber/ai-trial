@@ -25,6 +25,12 @@ if not logger.handlers:
 class YmmAvatarWindow(QWidget):
     """YMMアバター表示ウィンドウ"""
     
+    def show(self):
+        """show()をオーバーライドしてログ出力"""
+        logger.info(f"YmmAvatarDialog.show() called. title={self.windowTitle()}")
+        super().show()
+        logger.info(f"YmmAvatarDialog.show() completed. isVisible={self.isVisible()}")
+
     def __init__(self, zip_path=None, app_title="Claude", anime_types=None, flip=False, scale_percent=100, position="right_out", config=None):
         """
         コンストラクタ
@@ -37,6 +43,7 @@ class YmmAvatarWindow(QWidget):
             scale_percent: 縮尺パーセント
             position: 表示位置 (left_out, left_in, right_in, right_out)
         """
+        logger.info(f"YmmAvatarDialog.__init__ 開始: config={config is not None}")
         super().__init__()
         
         # 基本設定
@@ -80,6 +87,7 @@ class YmmAvatarWindow(QWidget):
         
         # 初期表示
         ymm_update_frame(self)
+        update_position(self)
         
         # タイマー設定
         self.frame_timer = QTimer()
@@ -96,7 +104,7 @@ class YmmAvatarWindow(QWidget):
         # 右クリックメニューを有効化
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.right_click_context_menu)
-    
+        logger.info(f"YmmAvatarDialog.__init__ 完了")
     
     def save_config(self):
         """
