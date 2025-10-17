@@ -27,7 +27,7 @@ def _show_dialog_debug(self, anime_type):
     logger.info(f"self.ymm_dialogs.keys() = {list(self.ymm_dialogs.keys())}")
     if anime_type in self.ymm_dialogs:
         try:
-            # dialog = self.ymm_dialogs[anime_type]
+            dialog = self.ymm_dialogs[anime_type]
             # logger.info(f"ダイアログ取得成功: {dialog}")
             # logger.info(f"show()前 isVisible() = {dialog.isVisible()}")
             # logger.info(f"show()前 geometry = {dialog.geometry()}")

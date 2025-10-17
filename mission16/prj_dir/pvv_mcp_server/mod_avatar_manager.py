@@ -313,9 +313,11 @@ def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWind
     
     # アバターインスタンスの作成
     instance = YmmAvatarWindow(
+        style_id=style_id,
+        speaker_name=avatar_conf["話者"],
         zip_path=avatar_conf["画像"],
         app_title=_avatar_global_config.get("target", "Claude"),
-        anime_types=["立ち絵", "口パク"],
+        anime_types=["立ち絵", "口パク", "えがお", "びっくり", "がーん", "いかり"],
         flip=avatar_conf.get("反転", False),
         scale_percent=avatar_conf.get("縮尺", 50),
         position=avatar_conf.get("位置", "right_out"),
@@ -323,7 +325,7 @@ def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWind
     )
     
     # 位置更新と表示設定
-    instance.update_position()
+    #instance.update_position()
     if avatar_conf.get("表示", False):
         instance.show()
     else:

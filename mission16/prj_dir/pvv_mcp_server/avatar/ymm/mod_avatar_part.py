@@ -59,6 +59,7 @@ class AvatarPartWidget(QWidget):
         self.random_wait_idx = 0
         self.random_anime_idx = 0
         self.loop_anime_idx = 0
+        self.oneshot_idx = 0
 
     def save_config(self):
         """
@@ -153,6 +154,8 @@ class AvatarPartWidget(QWidget):
             self.radio_random_a.setChecked(True)
         elif self.anime_type == "ランダムB":
             self.radio_random_b.setChecked(True)
+        elif self.anime_type == "ワンショット":
+            self.radio_oneshot.setChecked(True)
 
     def update(self):
         if len(self.image_files) == 0:
@@ -175,6 +178,9 @@ class AvatarPartWidget(QWidget):
 
         if self.anime_type == "ランダムB":
             self._update_random_b()
+
+        if self.anime_type == "ワンショット":
+            self._update_oneshot()
 
         return self.current_image
 
@@ -239,6 +245,33 @@ class AvatarPartWidget(QWidget):
             # フォールバック
             self.current_image = self.base_image
 
+
+    def _update_oneshot(self):
+        """ワンショット: selected_filesを順番に表示→base_imageに戻る"""
+        
+        if self.oneshot_idx == 0:
+            # 待機モード: base画像を表示
+            self.current_image = self.base_image
+        
+        elif self.oneshot_idx > 0:
+            # アニメ再生モード
+            idx = self.oneshot_idx - 1
+            
+            if idx < len(self.selected_files):
+                self.current_image = self.selected_files[idx]
+                self.oneshot_idx += 1
+            else:
+                # アニメ終了: 待機モードに戻る
+                self.oneshot_idx = 0
+                self.current_image = self.base_image
+
+    def start_oneshot(self):
+        """外部からoneshotアニメを開始するトリガー"""
+        if len(self.selected_files) > 0:
+            self.oneshot_idx = 1
+
+
+
     def _setup_gui(self):
         main_layout = QVBoxLayout(self)
 
@@ -290,12 +323,14 @@ class AvatarPartWidget(QWidget):
         self.radio_loop = QRadioButton("ループ")
         self.radio_random_a = QRadioButton("ランダムA")
         self.radio_random_b = QRadioButton("ランダムB")
+        self.radio_oneshot = QRadioButton("ワンショット")
 
         self.anim_type_group = QButtonGroup(self)
         self.anim_type_group.addButton(self.radio_fixed)
         self.anim_type_group.addButton(self.radio_loop)
         self.anim_type_group.addButton(self.radio_random_a)
         self.anim_type_group.addButton(self.radio_random_b)
+        self.anim_type_group.addButton(self.radio_oneshot)
         self.anim_type_group.buttonClicked.connect(self._on_anim_type_changed)
 
         self.radio_fixed.setChecked(True)
@@ -304,6 +339,7 @@ class AvatarPartWidget(QWidget):
         anim_type_layout.addWidget(self.radio_loop)
         anim_type_layout.addWidget(self.radio_random_a)
         anim_type_layout.addWidget(self.radio_random_b)
+        anim_type_layout.addWidget(self.radio_oneshot)
         anim_type_layout.addStretch(1)
 
         main_layout.addLayout(anim_type_layout)
@@ -333,6 +369,7 @@ class AvatarPartWidget(QWidget):
         self.random_anime_idx = 0
         self.random_wait_idx = 0
         self.random_wait_tick = random.choice([10, 20, 30, 40, 50])
+        self.start_oneshot()
         logger.info(f"random_wait_tick : {self.random_wait_tick}")
 
 

@@ -23,7 +23,7 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 class YmmAvatarDialog(QDialog):
-    def __init__(self, zip_dat, scale_percent, flip, interval, config=None):
+    def __init__(self, anime_type, zip_dat, scale_percent, flip, interval, config=None):
         super().__init__()
         
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
@@ -32,7 +32,8 @@ class YmmAvatarDialog(QDialog):
         self.scale = scale_percent
         self.flip = flip
 
-        self.setWindowTitle("立ち絵画像選択ダイアログ")
+        self.setWindowTitle(f"立ち絵画像選択ダイアログ-{anime_type}")
+        self.setObjectName(f"dialog_{anime_type}")
         self.current_pixmap = None
 
         self.parts = ['後', '体', '顔', '髪', '口', '目', '眉', '他']
@@ -142,6 +143,10 @@ class YmmAvatarDialog(QDialog):
 
     def get_current_pixmap(self):
         return self.current_pixmap
+
+    def start_oneshot(self):
+        for cat, widget in self.parts.items():
+            widget.start_oneshot()
 
     def update_frame(self):
         base_image = None

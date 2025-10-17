@@ -6,7 +6,7 @@ from pvv_mcp_server.avatar.ymm.mod_load_zip import load_zip_data
 from pvv_mcp_server.avatar.ymm.mod_update_frame import ymm_update_frame
 from pvv_mcp_server.avatar.ymm.mod_right_click_context_menu import ymm_right_click_context_menu
 from pvv_mcp_server.avatar.ymm.mod_avatar_dialog import YmmAvatarDialog
-from pvv_mcp_server.avatar.mod_update_position import update_position
+import pvv_mcp_server.avatar.mod_update_position
 import logging
 
 # ロガーの設定
@@ -31,7 +31,7 @@ class YmmAvatarWindow(QWidget):
         super().show()
         logger.info(f"YmmAvatarDialog.show() completed. isVisible={self.isVisible()}")
 
-    def __init__(self, zip_path=None, app_title="Claude", anime_types=None, flip=False, scale_percent=100, position="right_out", config=None):
+    def __init__(self, style_id, speaker_name, zip_path=None, app_title="Claude", anime_types=None, flip=False, scale_percent=100, position="right_out", config=None):
         """
         コンストラクタ
         
@@ -59,6 +59,8 @@ class YmmAvatarWindow(QWidget):
         self.label.setAlignment(Qt.AlignCenter)
         
         # メンバ変数初期化
+        self.style_id = style_id
+        self.speaker_name = speaker_name
         self.zip_path = zip_path
         self.app_title = app_title
         self.position = position  # 表示位置: left_out, left_in, right_in, right_out
@@ -69,7 +71,7 @@ class YmmAvatarWindow(QWidget):
         self.follow_timer_interval = 150
         
         # zip読み込み
-        self.zip_data = load_zip_data(self.zip_path)  # [パーツ][PNGファイル[バイナリデータ]
+        self.zip_data = load_zip_data(self.zip_path,  self.style_id)  # [パーツ][PNGファイル[バイナリデータ]
 
         # アニメーション設定
         self.anime_types = anime_types or ["立ち絵", "口パク"]
@@ -82,12 +84,16 @@ class YmmAvatarWindow(QWidget):
             if config and "dialogs" in config and anime_type in config["dialogs"]:
                 conf = config["dialogs"][anime_type]
             
-            dialog = YmmAvatarDialog(self.zip_data, self.scale_percent, self.flip, self.frame_timer_interval, conf)
+            dialog = YmmAvatarDialog(anime_type, self.zip_data, self.scale_percent, self.flip, self.frame_timer_interval, conf)
             self.ymm_dialogs[anime_type] = dialog
-        
+            # ★ 初回show→hideで初期化(ウィンドウマネージャーに登録)
+            dialog.show()
+            QApplication.processEvents()  # イベント処理を強制
+            dialog.hide()
+
         # 初期表示
         ymm_update_frame(self)
-        update_position(self)
+        self.update_position()
         
         # タイマー設定
         self.frame_timer = QTimer()
@@ -95,7 +101,7 @@ class YmmAvatarWindow(QWidget):
         self.frame_timer.start(self.frame_timer_interval)
         
         self.follow_timer = QTimer()
-        self.follow_timer.timeout.connect(lambda: update_position(self))
+        self.follow_timer.timeout.connect(lambda: self.update_position())
         self.follow_timer.start(self.follow_timer_interval)
         
         # ドラッグ用変数
@@ -105,7 +111,12 @@ class YmmAvatarWindow(QWidget):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.right_click_context_menu)
         logger.info(f"YmmAvatarDialog.__init__ 完了")
-    
+
+    # Claude ウィンドウに追従
+    def update_position(self):
+        pvv_mcp_server.avatar.mod_update_position.update_position(self)
+        return
+
     def save_config(self):
         """
         設定を辞書形式で返す
@@ -229,6 +240,8 @@ class YmmAvatarWindow(QWidget):
         """アニメーションタイプを設定"""
         if anime_key in self.anime_types:
             self.anime_key = anime_key
+            self.ymm_dialogs[anime_key].start_oneshot()
+
     
     def set_frame_timer_interval(self, val):
         """フレーム更新間隔を設定"""

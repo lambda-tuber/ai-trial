@@ -10,6 +10,7 @@ from pvv_mcp_server import mod_speak_metan_aska
 from pvv_mcp_server import mod_speak_kurono
 from pvv_mcp_server import mod_speakers
 from pvv_mcp_server import mod_speaker_info
+from pvv_mcp_server import mod_emotion_metan_aska
 import pvv_mcp_server.mod_avatar_manager
 import json
 from typing import Any
@@ -119,6 +120,31 @@ async def speak_metan_aska(msg: str) -> str:
     try:
         mod_speak_metan_aska.speak_metan_aska(msg)
         return f"発話完了: {msg}"
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+
+@mcp.tool()
+async def emotion_metan_aska(emotion: str) -> str:
+    """
+    エヴァンゲリオンの「惣流・アスカ・ラングレー」のアバターに感情表現をさせるツール。
+    
+    Args:
+        emotion: 感情の種類を指定します。
+                 以下のいずれかを指定してください。
+                 ["えがお", "びっくり", "がーん", "いかり"]
+    
+    Returns:
+        感情表現完了メッセージ
+    """
+    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
+
+    if emotion not in valid_emotions:
+        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
+
+    try:
+        mod_emotion_metan_aska.emotion_metan_aska(emotion)
+        return f"感情表現完了: {emotion}"
     except Exception as e:
         return f"エラー: {str(e)}"
 
