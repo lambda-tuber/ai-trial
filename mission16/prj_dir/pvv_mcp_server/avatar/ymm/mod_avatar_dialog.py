@@ -23,8 +23,8 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 class YmmAvatarDialog(QDialog):
-    def __init__(self, anime_type, zip_dat, scale_percent, flip, interval, config=None):
-        super().__init__()
+    def __init__(self, parent, anime_type, zip_dat, scale_percent, flip, interval, config=None):
+        super().__init__(parent)
         
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
@@ -145,8 +145,8 @@ class YmmAvatarDialog(QDialog):
         return self.current_pixmap
 
     def start_oneshot(self):
-        for cat, widget in self.parts.items():
-            widget.start_oneshot()
+        for cat in self.parts:
+            self.part_widgets[cat].start_oneshot()
 
     def update_frame(self):
         base_image = None

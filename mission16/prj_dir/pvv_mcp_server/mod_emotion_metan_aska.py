@@ -8,6 +8,20 @@ import io
 import re
 
 import pvv_mcp_server.mod_avatar_manager
+import logging
+import sys
+
+# ロガーの設定
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# stderrへの出力ハンドラー
+if not logger.handlers:
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
 def emotion_metan_aska(emotion: str) -> None:
     """
@@ -15,8 +29,8 @@ def emotion_metan_aska(emotion: str) -> None:
     
     Args:
         emotion: 感情の種類を指定します。
-                 以下のいずれかを指定してください。
-                 ["えがお", "びっくり", "がーん", "いかり"]
+                 以下のいずれかを指定してください。立ち絵は、平常状態です。
+                 ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
     
     Returns:
         None
@@ -25,10 +39,13 @@ def emotion_metan_aska(emotion: str) -> None:
     style_id = 6  # 四国めたん
 
     try:
+        logger.info("emotion_metan_aska called")
         pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, emotion)
 
     except Exception as e:
-        raise Exception(f"音声再生エラー: {e}")
+        logger.warning(f"emotion error {e}")
+        raise Exception(f"emotion error {e}")
 
     finally:
-        pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, "立ち絵")
+        logger.info("emotion_metan_aska finalize")
+        #pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, "立ち絵")

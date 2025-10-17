@@ -84,12 +84,12 @@ class YmmAvatarWindow(QWidget):
             if config and "dialogs" in config and anime_type in config["dialogs"]:
                 conf = config["dialogs"][anime_type]
             
-            dialog = YmmAvatarDialog(anime_type, self.zip_data, self.scale_percent, self.flip, self.frame_timer_interval, conf)
+            dialog = YmmAvatarDialog(self, anime_type, self.zip_data, self.scale_percent, self.flip, self.frame_timer_interval, conf)
             self.ymm_dialogs[anime_type] = dialog
             # ★ 初回show→hideで初期化(ウィンドウマネージャーに登録)
-            dialog.show()
-            QApplication.processEvents()  # イベント処理を強制
-            dialog.hide()
+            #dialog.show()
+            #QApplication.processEvents()  # イベント処理を強制
+            #dialog.hide()
 
         # 初期表示
         ymm_update_frame(self)

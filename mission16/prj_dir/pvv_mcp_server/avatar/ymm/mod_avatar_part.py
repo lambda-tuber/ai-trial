@@ -268,6 +268,7 @@ class AvatarPartWidget(QWidget):
     def start_oneshot(self):
         """外部からoneshotアニメを開始するトリガー"""
         if len(self.selected_files) > 0:
+            logger.info(f"{self.part_name}: start_oneshot")
             self.oneshot_idx = 1
 
 
