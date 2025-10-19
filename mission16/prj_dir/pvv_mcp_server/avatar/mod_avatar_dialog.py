@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class AvatarDialog(QDialog):
-    def __init__(self, parent, anime_type, zip_dat, scale_percent, flip, interval, config=None):
+    def __init__(self, parent, zip_dat, scale_percent, flip, interval, config=None):
         super().__init__(parent)
         
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
@@ -24,8 +24,8 @@ class AvatarDialog(QDialog):
         self.scale = scale_percent
         self.flip = flip
 
-        self.setWindowTitle(f"立ち絵画像選択ダイアログ-{anime_type}")
-        self.setObjectName(f"dialog_{anime_type}")
+        #self.setWindowTitle(f"立ち絵画像選択ダイアログ-{anime_type}")
+        #self.setObjectName(f"dialog_{anime_type}")
         self.current_pixmap = None
 
         self.parts = ['後', '体', '顔', '髪', '口', '目', '眉', '他']

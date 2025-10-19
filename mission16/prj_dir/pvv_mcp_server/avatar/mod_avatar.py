@@ -75,7 +75,8 @@ class AvatarWindow(QWidget):
             if config and "dialogs" in config and anime_type in config["dialogs"]:
                 conf = config["dialogs"][anime_type]
             
-            dialog = AvatarDialog(self, anime_type, self.zip_data, self.scale_percent, self.flip, self.frame_timer_interval, conf)
+            dialog = AvatarDialog(self, self.zip_data, self.scale_percent, self.flip, self.frame_timer_interval, conf)
+            dialog.setWindowTitle(f"pvv-mcp-server - {self.speaker_name} - {anime_type} ダイアログ")
             self.ymm_dialogs[anime_type] = dialog
             # ★ 初回show→hideで初期化(ウィンドウマネージャーに登録)
             #dialog.show()
