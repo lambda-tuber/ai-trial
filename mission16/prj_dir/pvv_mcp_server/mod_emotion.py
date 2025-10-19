@@ -20,7 +20,8 @@ def emotion(style_id: int, emotion: str) -> None:
     アバターに感情表現をさせるツール。
     
     Args:
-        emotion: 感情の種類を指定します。
+        style_id: voicevox 発話音声を指定するID(必須)
+        emotion: 感情の種類を指定します。(必須)
                  以下のいずれかを指定してください。立ち絵は、平常状態です。
                  ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
     
