@@ -2,6 +2,13 @@
 MCP Server service module
 MCPサーバクラスとToolsを定義する
 """
+import json
+import sys
+from typing import Any
+from threading import Thread
+import logging
+from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QTimer
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.prompts import base
 
@@ -14,14 +21,6 @@ from pvv_mcp_server import mod_emotion
 from pvv_mcp_server import mod_emotion_metan_aska
 from pvv_mcp_server import mod_emotion_kurono_neko
 import pvv_mcp_server.mod_avatar_manager
-import json
-from typing import Any
-from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import QTimer
-import sys
-from threading import Thread
-import logging
-import sys
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -170,7 +169,8 @@ async def emotion(
     アバターに感情表現をさせるツール。
     
     Args:
-        emotion: 感情の種類を指定します。
+        style_id: voicevox 発話音声を指定するID(必須)
+        emotion: 感情の種類を指定します。(必須)
                  以下のいずれかを指定してください。立ち絵は、平常状態です。
                  ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
     
@@ -196,7 +196,7 @@ async def emotion_metan_aska(emotion: str) -> str:
     エヴァンゲリオンの「惣流・アスカ・ラングレー」のアバターに感情表現をさせるツール。
     
     Args:
-        emotion: 感情の種類を指定します。
+        emotion: 感情の種類を指定します。(必須)
                  以下のいずれかを指定してください。立ち絵は、平常状態です。
                  ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
     
@@ -221,7 +221,7 @@ async def emotion_kurono_neko(emotion: str) -> str:
     ユーザ(ネコ)のアバターに感情表現をさせるツール。
     
     Args:
-        emotion: 感情の種類を指定します。
+        emotion: 感情の種類を指定します。(必須)
                  以下のいずれかを指定してください。立ち絵は、平常状態です。
                  ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
     
