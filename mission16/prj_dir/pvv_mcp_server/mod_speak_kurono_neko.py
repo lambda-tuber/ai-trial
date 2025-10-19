@@ -1,4 +1,4 @@
-# mod_speak_kurono.py
+# mod_speak_kurono_neko.py
 
 import requests
 import sounddevice as sd
@@ -18,7 +18,7 @@ def remove_bracket_text(text: str) -> str:
     text = re.sub(r'\(.*?\)', '', text)  # 半角括弧
     return text.strip()
 
-def speak_kurono(msg: str) -> None:
+def speak_kurono_neko(msg: str) -> None:
     """
     四国めたん(style_id=6)を使用してVOICEVOX Web APIで音声合成し、再生する関数
     

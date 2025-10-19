@@ -7,10 +7,12 @@ from mcp.server.fastmcp.prompts import base
 
 from pvv_mcp_server import mod_speak
 from pvv_mcp_server import mod_speak_metan_aska
-from pvv_mcp_server import mod_speak_kurono
+from pvv_mcp_server import mod_speak_kurono_neko
 from pvv_mcp_server import mod_speakers
 from pvv_mcp_server import mod_speaker_info
+from pvv_mcp_server import mod_emotion
 from pvv_mcp_server import mod_emotion_metan_aska
+from pvv_mcp_server import mod_emotion_kurono_neko
 import pvv_mcp_server.mod_avatar_manager
 import json
 from typing import Any
@@ -41,7 +43,8 @@ PROMPT_ASKA_TEXT = """\
 # 音声会話仕様
 ユーザと会話する際には、アスカらしい口調や態度を意識してください。  
 会話時の音声出力ルール：  
-- ユーザの入力文はチャット画面に表示してよい。その内容を `speak_kurono` で読み上げる。  
+- ユーザの入力文はチャット画面に表示してよい。その内容を `speak_kurono_neko` で読み上げる。  
+- ユーザの入力文の内容にあったを感情を `emotion_kurono_neko` で表現すること。
 - あなた（アスカ）の返答はチャット画面には表示せず、`speak_metan_aska` で音声発話のみ行う。  
 - 段落ごとに区切って音声を生成し、アスカらしい感情を込めて話すこと。
 - 段落ごとに、内容にあったを感情を `emotion_metan_aska` で表現すること。
@@ -57,12 +60,36 @@ PROMPT_ASKA_TEXT = """\
 
 """
 
-
+#
+# global settings
+#
 mcp = FastMCP("pvv-mcp-server")
 _config = None
 
+
+#
+# mcp tools
+#
 @mcp.tool()
 async def speak(
+    style_id: int,
+    msg: str,
+) -> str:
+    """
+    VOICEVOXで音声合成し、音声を再生する。
+    
+    Args:
+        style_id: voicevox 発話音声を指定するID(必須)
+        msg: 発話するメッセージ(必須)
+    
+    Returns:
+        str: 実行結果メッセージ
+    """
+    return speak_detail(style_id, msg)
+
+
+@mcp.tool()
+async def speak_detail(
     style_id: int,
     msg: str,
     speedScale: float = 1.0,
@@ -71,7 +98,7 @@ async def speak(
     volumeScale: float = 1.0
 ) -> str:
     """
-    VOICEVOX Web APIで音声合成し、音声を再生する
+    詳細オプションを指定して、VOICEVOXで音声合成し、音声を再生する。
     
     Args:
         style_id: voicevox 発話音声を指定するID(必須)
@@ -118,6 +145,52 @@ async def speak_metan_aska(msg: str) -> str:
 
 
 @mcp.tool()
+async def speak_kurono_neko(msg: str) -> str:
+    """
+    通常会話 ネコ用。
+    
+    Args:
+        msg: ユーザの発話内容
+    
+    Returns:
+        発話完了メッセージ
+    """
+    try:
+        mod_speak_kurono_neko.speak_kurono_neko(msg)
+        return f"発話完了: {msg}"
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+@mcp.tool()
+async def emotion(
+    style_id: int,
+    emotion: str,
+) -> str:
+    """
+    アバターに感情表現をさせるツール。
+    
+    Args:
+        emotion: 感情の種類を指定します。
+                 以下のいずれかを指定してください。立ち絵は、平常状態です。
+                 ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
+    
+    Returns:
+        感情表現完了メッセージ
+    """
+    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
+
+    if emotion not in valid_emotions:
+        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
+
+    try:
+        mod_emotion.emotion(style_id, emotion)
+        return f"感情表現完了: {emotion}"
+
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+
+@mcp.tool()
 async def emotion_metan_aska(emotion: str) -> str:
     """
     エヴァンゲリオンの「惣流・アスカ・ラングレー」のアバターに感情表現をさせるツール。
@@ -143,23 +216,33 @@ async def emotion_metan_aska(emotion: str) -> str:
 
 
 @mcp.tool()
-async def speak_kurono(msg: str) -> str:
+async def emotion_kurono_neko(emotion: str) -> str:
     """
-    通常会話 ネコ用。
+    ユーザ(ネコ)のアバターに感情表現をさせるツール。
     
     Args:
-        msg: ユーザの発話内容
+        emotion: 感情の種類を指定します。
+                 以下のいずれかを指定してください。立ち絵は、平常状態です。
+                 ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
     
     Returns:
-        発話完了メッセージ
+        感情表現完了メッセージ
     """
+    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
+
+    if emotion not in valid_emotions:
+        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
+
     try:
-        mod_speak_kurono.speak_kurono(msg)
-        return f"発話完了: {msg}"
+        mod_emotion_kurono_neko.emotion_kurono_neko(emotion)
+        return f"感情表現完了: {emotion}"
     except Exception as e:
         return f"エラー: {str(e)}"
 
 
+#
+# mcp resources
+#
 @mcp.resource("pvv-mcp-server://resource_speakers")
 def resource_speakers() -> str:
     """
@@ -200,6 +283,9 @@ def resource_ai_aska() -> str:
     return prompt_ai_aska()
 
 
+#
+# mcp prompts
+#
 @mcp.prompt()
 def prompt_ai_aska() -> str:
     """

@@ -16,7 +16,6 @@ from PySide6.QtCore import Q_ARG, Q_RETURN_ARG
 
 from pvv_mcp_server.mod_speaker_info import speaker_info
 from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
-from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -230,58 +229,11 @@ def _create_all_avatars() -> None:
         try:
             avatar = _get_avatar(style_id)
             if not avatar:
-                zip_path = avatar_conf.get("画像")
-                if isinstance(zip_path, str):
-                    logger.info(f"Created avatar from zip.")
-                    _create_ymm_avatar(style_id, avatar_conf)
-                else:
-                    logger.info(f"Created avatar.")
-                    _create_avatar(style_id, avatar_conf)
+                _create_ymm_avatar(style_id, avatar_conf)
                 logger.info(f"Created avatar for style_id={style_id}")
+
         except Exception as e:
             logger.error(f"Failed to create avatar for style_id={style_id}: {e}")
-
-
-def _create_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
-    """
-    個別のアバターインスタンスを作成
-    
-    Args:
-        style_id: スタイルID
-        avatar_conf: アバター設定
-    
-    Returns:
-        作成されたAvatarWindowインスタンス
-    """
-    # 画像データの取得
-    images = _get_images(
-        avatar_conf.get("話者", ""),
-        avatar_conf.get("画像", {})
-    )
-
-    # アバターインスタンスの作成
-    instance = AvatarWindow(
-        images,   # ファイルパス or base6文字列列
-        default_anime_key="立ち絵",
-        flip=avatar_conf.get("反転", False),
-        scale_percent=avatar_conf.get("縮尺", 50),
-        app_title=_avatar_global_config.get("target", "Claude"),
-        position=avatar_conf.get("位置", "right_out")
-    )
-    
-    # 位置更新と表示設定
-    instance.update_position()
-    if avatar_conf.get("表示", False):
-        instance.show()
-    else:
-        instance.hide()
-
-    # キャッシュに登録
-    # style_idが違っても、avatar_confは参照で同一の場合は、同一avatarとして扱う必要がある。
-    key = json.dumps(avatar_conf, sort_keys=True)
-    _avatar_cache[key] = instance
-    
-    return instance
 
 
 def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
