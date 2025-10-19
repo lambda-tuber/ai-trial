@@ -7,22 +7,14 @@ import zipfile
 import io
 from collections import defaultdict
 
-import pvv_mcp_server.avatar.ymm.mod_avatar_part
+import pvv_mcp_server.avatar.mod_avatar_part
 import logging
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
-# stderrへの出力ハンドラー
-if not logger.handlers:
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
 
-class YmmAvatarDialog(QDialog):
+class AvatarDialog(QDialog):
     def __init__(self, parent, anime_type, zip_dat, scale_percent, flip, interval, config=None):
         super().__init__(parent)
         
@@ -43,7 +35,7 @@ class YmmAvatarDialog(QDialog):
             conf = None
             if config and "parts" in config and cat in config["parts"]:
                 conf = config["parts"][cat]
-            part_widget = pvv_mcp_server.avatar.ymm.mod_avatar_part.AvatarPartWidget(cat, file_names, conf)
+            part_widget = pvv_mcp_server.avatar.mod_avatar_part.AvatarPartWidget(cat, file_names, conf)
             self.part_widgets[cat] = part_widget
 
         # if config:
@@ -78,7 +70,7 @@ class YmmAvatarDialog(QDialog):
             part_config = self.part_widgets[cat].save_config()
             config["parts"][cat] = part_config
         
-        logger.info(f"save_config [YmmAvatarDialog]: scale={self.scale}, flip={self.flip}")
+        logger.info(f"save_config [AvatarDialog]: scale={self.scale}, flip={self.flip}")
         logger.info(f"  parts count: {len(config['parts'])}")
         
         return config
@@ -90,7 +82,7 @@ class YmmAvatarDialog(QDialog):
         Args:
             config: save_config()で保存した辞書
         """
-        logger.info(f"load_config [YmmAvatarDialog]")
+        logger.info(f"load_config [AvatarDialog]")
         
 
                 # ダイアログ自体の設定
@@ -257,17 +249,17 @@ if __name__ == "__main__":
 
 
     app = QApplication(sys.argv)
-    dialog1 = YmmAvatarDialog(png_dat, 100, False, 100)
+    dialog1 = AvatarDialog(png_dat, 100, False, 100)
     dialog1.show()
 
     conf = dialog1.save_config()
 
     conf["parts"]["顔"]["base_image"] = "05a.png"
-    dialog2 = YmmAvatarDialog(png_dat, 100, False, 100, conf)
+    dialog2 = AvatarDialog(png_dat, 100, False, 100, conf)
     dialog2.show()
 
     conf["parts"]["顔"]["base_image"] = "06b.png"
-    dialog3 = YmmAvatarDialog(png_dat, 100, False, 100)
+    dialog3 = AvatarDialog(png_dat, 100, False, 100)
     dialog3.load_config(conf)
     dialog3.show()
 

@@ -3,14 +3,19 @@ pvv-mcp-server のエントリポイント
 
 MCPサーバを起動し、コマンドライン引数を処理する
 """
+
 import argparse
 import sys
 import logging
 import yaml
 import os
 from importlib.metadata import version, PackageNotFoundError
+
 from pvv_mcp_server import mod_service
-import sys
+
+#
+# global setting.
+#
 sys.stdout.reconfigure(encoding='utf-8')
 sys.stderr.reconfigure(encoding='utf-8')
 
@@ -21,6 +26,9 @@ logging.basicConfig(
     datefmt='%H:%M:%S',
 )
 
+#
+# utility
+#
 def get_version():
     """
     パッケージのバージョン情報を取得する
@@ -34,6 +42,9 @@ def get_version():
         return "development"
 
 
+#
+# main
+#
 def main():
     """
     MCPサーバを起動する

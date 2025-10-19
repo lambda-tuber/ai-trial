@@ -6,8 +6,11 @@ import soundfile as sf
 import numpy as np
 import io
 import re
+import logging
 
 import pvv_mcp_server.mod_avatar_manager
+
+logger = logging.getLogger(__name__)
 
 def remove_bracket_text(text: str) -> str:
     # 丸括弧の中身を削除（全角・半角の両方対応）

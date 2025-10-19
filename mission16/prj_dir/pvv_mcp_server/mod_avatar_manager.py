@@ -14,21 +14,13 @@ from PySide6.QtCore import QMetaObject, Qt, QTimer
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Q_ARG, Q_RETURN_ARG
 
-from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
 from pvv_mcp_server.mod_speaker_info import speaker_info
-from pvv_mcp_server.avatar.ymm.mod_avatar import YmmAvatarWindow
+from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
+from pvv_mcp_server.avatar.mod_avatar import AvatarWindow
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
-# stderrへの出力ハンドラー
-if not logger.handlers:
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
 
 # グローバル変数
 _avatar_global_config: Optional[Dict[str, Any]] = None
@@ -97,8 +89,8 @@ def save_all_configs() -> Dict[str, Any]:
     
     for key, avatar in _avatar_cache.items():
         try:
-            # YmmAvatarWindowかどうかで分岐
-            if isinstance(avatar, YmmAvatarWindow):
+            # AvatarWindowかどうかで分岐
+            if isinstance(avatar, AvatarWindow):
                 config = avatar.save_config()
                 all_configs[key] = config
                 logger.info(f"Saved config for avatar: {key}")
@@ -119,7 +111,7 @@ def load_all_configs(all_configs: Dict[str, Any]) -> None:
     """
     for key, config in all_configs.items():
         avatar = _avatar_cache.get(key)
-        if avatar and isinstance(avatar, YmmAvatarWindow):
+        if avatar and isinstance(avatar, AvatarWindow):
             try:
                 avatar.load_config(config)
                 logger.info(f"Loaded config for avatar: {key}")
@@ -312,7 +304,7 @@ def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWind
         saved_config = saved_config.get(key)
     
     # アバターインスタンスの作成
-    instance = YmmAvatarWindow(
+    instance = AvatarWindow(
         style_id=style_id,
         speaker_name=avatar_conf["話者"],
         zip_path=avatar_conf["画像"],

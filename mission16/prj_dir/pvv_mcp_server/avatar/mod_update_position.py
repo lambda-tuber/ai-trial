@@ -10,15 +10,6 @@ import ctypes
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
-
-# stderrへの出力ハンドラー
-if not logger.handlers:
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setLevel(logging.WARNING)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
 
 def get_windows_scaling() -> float:
     """
