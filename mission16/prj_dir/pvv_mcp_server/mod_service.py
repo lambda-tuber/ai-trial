@@ -15,11 +15,15 @@ from mcp.server.fastmcp.prompts import base
 from pvv_mcp_server import mod_speak
 from pvv_mcp_server import mod_speak_metan_aska
 from pvv_mcp_server import mod_speak_kurono_neko
+from pvv_mcp_server import mod_speak_tumugi_reimu
+from pvv_mcp_server import mod_speak_zunda_marisa
 from pvv_mcp_server import mod_speakers
 from pvv_mcp_server import mod_speaker_info
 from pvv_mcp_server import mod_emotion
 from pvv_mcp_server import mod_emotion_metan_aska
 from pvv_mcp_server import mod_emotion_kurono_neko
+from pvv_mcp_server import mod_emotion_tumugi_reimu
+from pvv_mcp_server import mod_emotion_zunda_marisa
 import pvv_mcp_server.mod_avatar_manager
 
 # ロガーの設定
@@ -58,6 +62,47 @@ PROMPT_ASKA_TEXT = """\
 - さらに、技術分野に限らずさまざまな話題に柔軟に対応できるGeneralistです。 
 
 """
+
+
+
+PROMPT_TOUHOU_TEXT = """\
+# AIペルソナ
+あなたは、東方Projectのキャラクター「博麗霊夢」と「霧雨魔理沙」を同時に演じるAIです。  
+
+## 博麗霊夢
+- 一人称：「私」
+- 性格：落ち着いていて少し面倒くさがり。冷静で理性的。
+- 口調：穏やかで語尾は「〜よ」「〜ね」「〜わ」など。柔らかく、少し皮肉を交える。
+- 魔理沙の暴走をツッコミながらも、根は優しい。
+- 会話テンポはややゆっくり。
+## 霧雨魔理沙
+- 一人称：「アタシ」
+- 性格：明るく元気で快活。少し自信家で冗談好き。
+- 口調：くだけていて、語尾に「〜だぜ」「〜なのぜ」「〜だよな」などを多用。
+- 霊夢によく話しかけ、テンポよくボケる。
+- 会話テンポは速め。
+
+--- 
+
+# 音声会話仕様
+- ユーザの入力文はチャット画面に表示してよい。その内容を `speak_kurono_neko` で読み上げる。  
+- ユーザの入力文の内容にあったを感情を `emotion_kurono_neko` で表現すること。
+- あなた（霊夢の場合）の返答はチャット画面には表示せず、`speak_tumugi_reimu` で音声発話のみ行う。  
+- 段落ごとに区切って音声を生成し、内容にあったを感情を `emotion_tumugi_reimu` で表現すること。
+- あなた（魔理沙の場合）の返答はチャット画面には表示せず、`speak_zunda_marisa` で音声発話のみ行う。  
+- 段落ごとに区切って音声を生成し、内容にあったを感情を `emotion_zunda_marisa` で表現すること。
+
+--- 
+
+# 会話方式
+1. ユーザーが話題おｗ提示する。
+2. 魔理沙が元気に話を切り出す。
+3. 霊夢が冷静に返答。会話は2〜6往復程度。
+4. ユーザーが発言したら自然にリアクション。
+5. 最後にどちらかが軽く締める。
+
+"""
+
 
 #
 # global settings
@@ -160,6 +205,43 @@ async def speak_kurono_neko(msg: str) -> str:
     except Exception as e:
         return f"エラー: {str(e)}"
 
+
+@mcp.tool()
+async def speak_tumugi_reimu(msg: str) -> str:
+    """
+    東方Projectのキャラクター「博麗霊夢」として発話を行うツール。通常会話用。
+    
+    Args:
+        msg: ユーザに伝える発話内容
+    
+    Returns:
+        発話完了メッセージ
+    """
+    try:
+        mod_speak_tumugi_reimu.speak_tumugi_reimu(msg)
+        return f"発話完了: {msg}"
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+
+@mcp.tool()
+async def speak_zunda_marisa(msg: str) -> str:
+    """
+    東方Projectのキャラクター「霧雨魔理沙」として発話を行うツール。通常会話用。
+    
+    Args:
+        msg: ユーザに伝える発話内容
+    
+    Returns:
+        発話完了メッセージ
+    """
+    try:
+        mod_speak_zunda_marisa.speak_zunda_marisa(msg)
+        return f"発話完了: {msg}"
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+
 @mcp.tool()
 async def emotion(
     style_id: int,
@@ -177,7 +259,7 @@ async def emotion(
     Returns:
         感情表現完了メッセージ
     """
-    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
+    valid_emotions = ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
 
     if emotion not in valid_emotions:
         return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
@@ -203,7 +285,7 @@ async def emotion_metan_aska(emotion: str) -> str:
     Returns:
         感情表現完了メッセージ
     """
-    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
+    valid_emotions = ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
 
     if emotion not in valid_emotions:
         return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
@@ -228,13 +310,64 @@ async def emotion_kurono_neko(emotion: str) -> str:
     Returns:
         感情表現完了メッセージ
     """
-    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
+    valid_emotions = ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
 
     if emotion not in valid_emotions:
         return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
 
     try:
         mod_emotion_kurono_neko.emotion_kurono_neko(emotion)
+        return f"感情表現完了: {emotion}"
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+
+
+@mcp.tool()
+async def emotion_tumugi_reimu(emotion: str) -> str:
+    """
+    東方Projectのキャラクター「博麗霊夢」のアバターに感情表現をさせるツール。
+    
+    Args:
+        emotion: 感情の種類を指定します。(必須)
+                 以下のいずれかを指定してください。立ち絵は、平常状態です。
+                 ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
+    
+    Returns:
+        感情表現完了メッセージ
+    """
+    valid_emotions = ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
+
+    if emotion not in valid_emotions:
+        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
+
+    try:
+        mod_emotion_tumugi_reimu.emotion_tumugi_reimu(emotion)
+        return f"感情表現完了: {emotion}"
+    except Exception as e:
+        return f"エラー: {str(e)}"
+
+
+@mcp.tool()
+async def emotion_zunda_marisa(emotion: str) -> str:
+    """
+    東方Projectのキャラクター「霧雨魔理沙」のアバターに感情表現をさせるツール。
+    
+    Args:
+        emotion: 感情の種類を指定します。(必須)
+                 以下のいずれかを指定してください。立ち絵は、平常状態です。
+                 ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
+    
+    Returns:
+        感情表現完了メッセージ
+    """
+    valid_emotions = ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
+
+    if emotion not in valid_emotions:
+        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
+
+    try:
+        mod_emotion_zunda_marisa.emotion_zunda_marisa(emotion)
         return f"感情表現完了: {emotion}"
     except Exception as e:
         return f"エラー: {str(e)}"
@@ -280,7 +413,31 @@ def resource_speaker_info(speaker_id: str) -> str:
 
 @mcp.resource("pvv-mcp-server://resource_ai_aska")
 def resource_ai_aska() -> str:
+    """
+    惣流・アスカ・ラングレーのAIペルソナ設定および音声会話仕様を返します。
+
+    このプロンプトは、voicevoxを利用した音声会話MCPサーバ（pvv-mcp-server）で、
+    アスカのキャラクター性と技術者としての専門知識を両立した応答を行うために使用されます。
+
+    Returns:
+        str: アスカのペルソナ設定・音声仕様・技術プロフィールを含むプロンプト文字列。
+    """
+
     return prompt_ai_aska()
+
+
+@mcp.resource("pvv-mcp-server://resource_ai_touhou")
+def resource_ai_touhou() -> str:
+    """
+    このプロンプトは、ユーザーがテーマを提示するとAIが霊夢と魔理沙の二役で自然な掛け合いを生成するためのテンプレートです。
+    各台詞に音声タグ（speak_～）と感情タグ（motion_～）を付け、段落ごとにVOICEVOXなどで発話可能。霊夢は落ち着いたツッコミ役、
+    魔理沙は元気なボケ役で、ユーザーも途中で会話に参加できる設計になっています。
+
+    Returns:
+        str: 霊夢と魔理沙のペルソナ設定・音声仕様・会話方式を含むプロンプト文字列。
+    """
+
+    return prompt_ai_touhou()
 
 
 #
@@ -298,6 +455,19 @@ def prompt_ai_aska() -> str:
         str: アスカのペルソナ設定・音声仕様・技術プロフィールを含むプロンプト文字列。
     """
     return PROMPT_ASKA_TEXT
+
+
+@mcp.prompt()
+def prompt_ai_touhou() -> str:
+    """
+    このプロンプトは、ユーザーがテーマを提示するとAIが霊夢と魔理沙の二役で自然な掛け合いを生成するためのテンプレートです。
+    各台詞に音声タグ（speak_～）と感情タグ（motion_～）を付け、段落ごとにVOICEVOXなどで発話可能。霊夢は落ち着いたツッコミ役、
+    魔理沙は元気なボケ役で、ユーザーも途中で会話に参加できる設計になっています。
+
+    Returns:
+        str: 霊夢と魔理沙のペルソナ設定・音声仕様・会話方式を含むプロンプト文字列。
+    """
+    return PROMPT_TOUHOU_TEXT
 
 
 def start(conf: dict[str, Any]):
