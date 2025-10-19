@@ -25,6 +25,7 @@ def _show_dialog_debug(self, anime_type):
     """デバッグ用: ダイアログ表示"""
     logger.info(f"========== 編集クリック: anime_type={anime_type} ==========")
     logger.info(f"self.ymm_dialogs.keys() = {list(self.ymm_dialogs.keys())}")
+    self.set_anime_key(anime_type)
     if anime_type in self.ymm_dialogs:
         try:
             dialog = self.ymm_dialogs[anime_type]

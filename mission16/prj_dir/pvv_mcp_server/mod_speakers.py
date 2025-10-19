@@ -4,14 +4,30 @@ VOICEVOX APIから話者一覧を取得する
 """
 import requests
 from typing import List, Dict, Any
+import logging
+import sys
+import json
 
-_cache = None
+# ロガーの設定
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# stderrへの出力ハンドラー
+if not logger.handlers:
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+_speakers_cache = None
 
 # VOICEVOX APIのベースURL
 VOICEVOX_URL = "http://localhost:50021"
 
 
-def speakers() -> List[Dict[str, Any]]:
+#def speakers() -> List[Dict[str, Any]]:
+def speakers():
     """
     VOICEVOX APIから話者一覧を取得する
     
@@ -25,18 +41,28 @@ def speakers() -> List[Dict[str, Any]]:
     Raises:
         requests.exceptions.RequestException: API呼び出しに失敗した場合
     """
-    global _cache
+    global _speakers_cache
 
-    if _cache:
-      return _cache
+    if _speakers_cache:
+        logger.info(f"return _speakers_cache.")
+        return _speakers_cache
 
+    logger.info(f"get speakers from voicevox.")
     endpoint = f"{VOICEVOX_URL}/speakers"
     
     response = requests.get(endpoint)
     response.raise_for_status()
-    
-    _cache = response.json()
-    return _cache
+    logger.info(f"encoding : {response.encoding}")
+    logger.info(f"headers : {response.headers}")
+    logger.info(f"content : {response.content[:100]}")
+    logger.info(f"text : {response.text[:200]}")
+
+    #_speakers_cache = json.loads(response.content.decode("utf-8"))
+    _speakers_cache = response.content
+    #response.encoding = "utf-8"
+    #_speakers_cache = response.json()
+    return _speakers_cache
+
 
 if __name__ == "__main__":
     ret = speakers()

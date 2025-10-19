@@ -35,6 +35,7 @@ def ymm_update_frame(self):
         return
     
     try:
+        dialog.update_frame()
         pixmap = dialog.get_current_pixmap()
 
         if not pixmap:

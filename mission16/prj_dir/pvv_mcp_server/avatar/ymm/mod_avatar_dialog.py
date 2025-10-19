@@ -51,13 +51,6 @@ class YmmAvatarDialog(QDialog):
           
         self.setup_gui()
 
-        # タイマー
-        self.frame_timer_interval = interval
-        self.frame_timer = QTimer()
-        self.frame_timer.timeout.connect(self.update_frame)
-        self.frame_timer.start(self.frame_timer_interval)
-
-
     def closeEvent(self, event):
         """×ボタンが押された時の処理をオーバーライド"""
         # closeイベントを無視して、hideだけ実行
@@ -72,7 +65,6 @@ class YmmAvatarDialog(QDialog):
         Returns:
             dict: 設定辞書
         """
-        self.frame_timer.stop()
 
         config = {
             # "scale": self.scale,
@@ -86,11 +78,9 @@ class YmmAvatarDialog(QDialog):
             part_config = self.part_widgets[cat].save_config()
             config["parts"][cat] = part_config
         
-        logger.info(f"save_config [YmmAvatarDialog]: scale={self.scale}, flip={self.flip}, interval={self.frame_timer_interval}")
+        logger.info(f"save_config [YmmAvatarDialog]: scale={self.scale}, flip={self.flip}")
         logger.info(f"  parts count: {len(config['parts'])}")
         
-        self.frame_timer.start(self.frame_timer_interval)
-
         return config
 
     def load_config(self, config):
@@ -102,7 +92,6 @@ class YmmAvatarDialog(QDialog):
         """
         logger.info(f"load_config [YmmAvatarDialog]")
         
-        self.frame_timer.stop()
 
                 # ダイアログ自体の設定
         # if "scale" in config:
@@ -126,13 +115,7 @@ class YmmAvatarDialog(QDialog):
                 else:
                     logger.warning(f"  unknown part: {cat}")
 
-        self.frame_timer.start(self.frame_timer_interval)
 
-    def set_frame_timer_interval(self, val):
-        """フレーム更新間隔を設定"""
-        self.frame_timer_interval = val
-        self.frame_timer.setInterval(self.frame_timer_interval)
-    
     def set_flip(self, val):
         """左右反転を設定"""
         self.flip = val

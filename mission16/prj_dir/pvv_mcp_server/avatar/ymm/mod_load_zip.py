@@ -1,5 +1,6 @@
 import logging
 import io
+import os
 import sys
 from collections import defaultdict
 import zipfile
@@ -39,7 +40,7 @@ def load_zip_data(source, speaker_id=None):
     parts_folder = ['後', '体', '顔', '髪', '口', '目', '眉', '他']
     
     # 1. 空文字列 → VOICEVOXのポートレート
-    if not source or source == "":
+    if source == "portrait":
         return _load_voicevox_portrait(speaker_id)
     
     # 2. URL → ダウンロードしてZIP展開
@@ -47,9 +48,9 @@ def load_zip_data(source, speaker_id=None):
         if source.endswith(".zip"):
             return _load_zip_from_url(source, parts_folder)
     
-    # 3. PNGファイル → 「他」カテゴリに設定
-    if source.lower().endswith(".png"):
-        return _load_single_png(source)
+    # 3. sourceがフォルダの場合
+    if os.path.isdir(source):
+        return _load_folder(source, parts_folder)
     
     # 4. ローカルZIPファイル → 既存の処理
     if source.lower().endswith(".zip"):
@@ -58,6 +59,57 @@ def load_zip_data(source, speaker_id=None):
     # 不明な形式
     logger.error(f"不明なsource形式: {source}")
     return _create_empty_zip_data()
+
+
+def _load_folder(source, parts_folder):
+    """指定フォルダ配下のPNGファイルを再帰的に読み込む"""
+    
+    try:
+        folder_path = Path(source)
+        
+        if not folder_path.exists():
+            logger.error(f"フォルダが存在しません: {source}")
+            return _create_empty_zip_data()
+        
+        zip_data = defaultdict(dict)
+        
+        # 再帰的にPNGファイルを探索
+        png_files = list(folder_path.rglob("*.png"))
+        
+        if not png_files:
+            logger.warning(f"PNGファイルが見つかりません: {source}")
+            return _create_empty_zip_data()
+        
+        for png_file in png_files:
+            try:
+                # ファイルを読み込む
+                with open(png_file, "rb") as f:
+                    file_content_bytes = f.read()
+                
+                # 親フォルダ名をカテゴリとする
+                cat = png_file.parent.name
+                
+                # カテゴリがparts_folderに含まれていない場合は「他」
+                if cat not in parts_folder:
+                    cat = "他"
+                
+                # ファイル名
+                fname = png_file.name
+                
+                # 登録
+                zip_data[cat][fname] = file_content_bytes
+                logger.info(f"読み込み: {cat}/{fname}")
+                
+            except Exception as e:
+                logger.error(f"ファイル読み込みエラー: {png_file}, {e}")
+                continue
+        
+        logger.info(f"フォルダからPNGファイルを読み込みました: {source}")
+        return zip_data
+        
+    except Exception as e:
+        logger.error(f"フォルダ読み込みエラー: {e}")
+        return _create_empty_zip_data()
 
 
 def _load_local_zip(zip_path, parts_folder):
@@ -172,25 +224,41 @@ def _load_zip_from_url(url, parts_folder):
         return defaultdict(dict)
 
 
-def _load_single_png(png_path):
-    """単一PNGファイルを「他」カテゴリに読み込む"""
+def _load_voicevox_portrait(speaker_id: str):
+    """VOICEVOXのポートレートを取得"""
     try:
-        with open(png_path, "rb") as f:
-            png_bytes = f.read()
+        from pvv_mcp_server.mod_speaker_info import speaker_info
+        
+        if not speaker_id:
+            logger.warning("speaker_idが指定されていません")
+            return _create_empty_zip_data()
+        
+        logger.info(f"call speaker_info with {speaker_id}")
+        info = speaker_info(speaker_id)
+        portrait_url = info.get("portrait")
+        logger.info(f"portrait_url : {portrait_url}")
+        
+        if not portrait_url:
+            logger.warning(f"speaker_id={speaker_id}のポートレートが見つかりません")
+            return _create_empty_zip_data()
+        
+        # URLから画像をダウンロード
+        logger.info(f"ポートレートをダウンロード中: {portrait_url}")
+        with urllib.request.urlopen(portrait_url) as response:
+            png_bytes = response.read()
         
         zip_data = _create_empty_zip_data()
-        filename = Path(png_path).name
-        zip_data["他"][filename] = png_bytes
+        zip_data["他"]["portrait.png"] = png_bytes
         
-        logger.info(f"PNGファイルを読み込みました: {png_path}")
+        logger.info(f"VOICEVOXポートレートを読み込みました: speaker_id={speaker_id}")
         return zip_data
 
     except Exception as e:
-        logger.error(f"PNGファイル読み込みエラー: {e}")
+        logger.error(f"VOICEVOXポートレート読み込みエラー: {e}")
         return _create_empty_zip_data()
 
 
-def _load_voicevox_portrait(speaker_id):
+def _load_voicevox_portrait_b64(speaker_id):
     """VOICEVOXのポートレートを取得"""
     try:
         from pvv_mcp_server.mod_speaker_info import speaker_info

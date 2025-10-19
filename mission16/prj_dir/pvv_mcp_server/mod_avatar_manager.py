@@ -239,7 +239,7 @@ def _create_all_avatars() -> None:
             avatar = _get_avatar(style_id)
             if not avatar:
                 zip_path = avatar_conf.get("画像")
-                if isinstance(zip_path, str) and zip_path.endswith(".zip"):
+                if isinstance(zip_path, str):
                     logger.info(f"Created avatar from zip.")
                     _create_ymm_avatar(style_id, avatar_conf)
                 else:

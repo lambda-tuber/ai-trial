@@ -168,7 +168,7 @@ async def speak_kurono(msg: str) -> str:
         return f"エラー: {str(e)}"
 
 
-@mcp.resource("pvv-mcp-server://speakers")
+@mcp.resource("pvv-mcp-server://resource_speakers")
 def resource_speakers() -> str:
     """
     VOICEVOX で利用可能な話者一覧を返す
@@ -176,9 +176,11 @@ def resource_speakers() -> str:
     Returns:
         話者情報のJSON文字列
     """
+    logger.info("resource_speakers called.")
     try:
         speaker_list = mod_speakers.speakers()
-        return json.dumps(speaker_list, ensure_ascii=False, indent=2)
+        logger.info(f"speaker_list : {speaker_list}")
+        return speaker_list
     except Exception as e:
         return f"エラー: {str(e)}"
 

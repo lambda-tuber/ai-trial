@@ -3,6 +3,7 @@ mod_speaker_info.py
 voicevox web apiでspeaker情報を取得する。
 """
 import requests
+import json
 from typing import Dict, Any
 from pvv_mcp_server.mod_speakers import speakers
 
@@ -29,8 +30,9 @@ def speaker_info(speaker_id: str) -> Dict[str, Any]:
         uuid = speaker_id
     else:
         # 話者名の場合、speakers関数で話者リストを取得して検索
-        speakers_list = speakers()
-        
+        content = speakers()
+        speakers_list = json.loads(content.decode("utf-8"))
+
         # 話者名が部分一致する話者を検索
         matched_speaker = None
         for speaker in speakers_list:
@@ -45,7 +47,7 @@ def speaker_info(speaker_id: str) -> Dict[str, Any]:
     
     # speaker_info APIをリクエスト
     url = f"{VOICEVOX_API_BASE}/speaker_info"
-    params = {"speaker_uuid": uuid}
+    params = {"speaker_uuid": uuid, "resource_format":"url"}
     #print(params)
     try:
         response = requests.get(url, params=params, timeout=10)

@@ -10,6 +10,9 @@ import yaml
 import os
 from importlib.metadata import version, PackageNotFoundError
 from pvv_mcp_server import mod_service
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
 
 logging.basicConfig(
     stream=sys.stderr,

@@ -71,7 +71,7 @@ class YmmAvatarWindow(QWidget):
         self.follow_timer_interval = 150
         
         # zip読み込み
-        self.zip_data = load_zip_data(self.zip_path,  self.style_id)  # [パーツ][PNGファイル[バイナリデータ]
+        self.zip_data = load_zip_data(self.zip_path,  self.speaker_name)  # [パーツ][PNGファイル[バイナリデータ]
 
         # アニメーション設定
         self.anime_types = anime_types or ["立ち絵", "口パク"]
