@@ -6,6 +6,7 @@ import soundfile as sf
 import numpy as np
 import io
 import re
+import time
 
 import pvv_mcp_server.mod_avatar_manager
 import logging
@@ -23,7 +24,7 @@ def emotion(style_id: int, emotion: str) -> None:
         style_id: voicevox 発話音声を指定するID(必須)
         emotion: 感情の種類を指定します。(必須)
                  以下のいずれかを指定してください。立ち絵は、平常状態です。
-                 ["立ち絵", "えがお", "びっくり", "がーん", "いかり"]
+                 ["えがお", "びっくり", "がーん", "いかり"]
     
     Returns:
         None
@@ -33,6 +34,7 @@ def emotion(style_id: int, emotion: str) -> None:
     try:
         logger.info(f"emotion called. {style_id}, {emotion}")
         pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, emotion)
+        time.sleep(0.3)
 
     except Exception as e:
         logger.warning(f"emotion error {e}")

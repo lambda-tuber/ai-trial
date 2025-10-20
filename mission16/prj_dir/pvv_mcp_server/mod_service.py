@@ -7,6 +7,7 @@ import sys
 from typing import Any
 from threading import Thread
 import logging
+import time
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QTimer
 from mcp.server.fastmcp import FastMCP
@@ -110,31 +111,11 @@ PROMPT_TOUHOU_TEXT = """\
 #
 mcp = FastMCP("pvv-mcp-server")
 _config = None
+_avatar_enbled = False
 
 
-#
-# mcp tools
-#
 @mcp.tool()
 async def speak(
-    style_id: int,
-    msg: str,
-) -> str:
-    """
-    VOICEVOXで音声合成し、音声を再生する。
-    
-    Args:
-        style_id: voicevox 発話音声を指定するID(必須)
-        msg: 発話するメッセージ(必須)
-    
-    Returns:
-        str: 実行結果メッセージ
-    """
-    return speak_detail(style_id, msg)
-
-
-@mcp.tool()
-async def speak_detail(
     style_id: int,
     msg: str,
     speedScale: float = 1.0,
@@ -166,7 +147,7 @@ async def speak_detail(
             intonationScale=intonationScale,
             volumeScale=volumeScale
         )
-        return f"音声合成・再生が完了しました。(style_id={style_id}, msg='{msg}')"
+        return f"音声合成・再生が完了しました。(style_id={style_id})"
     except Exception as e:
         return f"エラーが発生しました: {str(e)}"
 
@@ -182,12 +163,11 @@ async def speak_metan_aska(msg: str) -> str:
     Returns:
         発話完了メッセージ
     """
-    try:
-        mod_speak_metan_aska.speak_metan_aska(msg)
-        return f"発話完了: {msg}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
 
+    style_id = 6
+    pitch_scale=0.02
+    ret = await speak(style_id=style_id, msg=msg, pitchScale=pitch_scale)
+    return ret
 
 @mcp.tool()
 async def speak_kurono_neko(msg: str) -> str:
@@ -200,11 +180,10 @@ async def speak_kurono_neko(msg: str) -> str:
     Returns:
         発話完了メッセージ
     """
-    try:
-        mod_speak_kurono_neko.speak_kurono_neko(msg)
-        return f"発話完了: {msg}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
+
+    style_id = 11
+    ret = await speak(style_id=style_id, msg=msg)
+    return ret
 
 
 @mcp.tool()
@@ -218,11 +197,9 @@ async def speak_tumugi_reimu(msg: str) -> str:
     Returns:
         発話完了メッセージ
     """
-    try:
-        mod_speak_tumugi_reimu.speak_tumugi_reimu(msg)
-        return f"発話完了: {msg}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
+    style_id = 8
+    pitch_scale=-0.04
+    return await speak(style_id=style_id, msg=msg, pitchScale=pitch_scale)
 
 
 @mcp.tool()
@@ -236,11 +213,10 @@ async def speak_zunda_marisa(msg: str) -> str:
     Returns:
         発話完了メッセージ
     """
-    try:
-        mod_speak_zunda_marisa.speak_zunda_marisa(msg)
-        return f"発話完了: {msg}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
+    style_id = 3
+    pitch_scale=-0.06
+    speedScale=1.3
+    return await speak(style_id=style_id, msg=msg, pitchScale=pitch_scale, speedScale=speedScale)
 
 
 @mcp.tool()
@@ -260,6 +236,10 @@ async def emotion(
     Returns:
         感情表現完了メッセージ
     """
+
+    if not _avatar_enbled
+        return "avatar disabled."
+
     valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
 
     if emotion not in valid_emotions:
@@ -274,7 +254,7 @@ async def emotion(
 
 
 @mcp.tool()
-async def emotion_metan_aska(emotion: str) -> str:
+async def emotion_metan_aska(emo: str) -> str:
     """
     エヴァンゲリオンの「惣流・アスカ・ラングレー」のアバターに感情表現をさせるツール。
     
@@ -286,20 +266,12 @@ async def emotion_metan_aska(emotion: str) -> str:
     Returns:
         感情表現完了メッセージ
     """
-    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
-
-    if emotion not in valid_emotions:
-        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
-
-    try:
-        mod_emotion_metan_aska.emotion_metan_aska(emotion)
-        return f"感情表現完了: {emotion}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
+    style_id = 6
+    return await emotion(style_id, emo)
 
 
 @mcp.tool()
-async def emotion_kurono_neko(emotion: str) -> str:
+async def emotion_kurono_neko(emo: str) -> str:
     """
     ユーザ(ネコ)のアバターに感情表現をさせるツール。
     
@@ -311,16 +283,8 @@ async def emotion_kurono_neko(emotion: str) -> str:
     Returns:
         感情表現完了メッセージ
     """
-    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
-
-    if emotion not in valid_emotions:
-        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
-
-    try:
-        mod_emotion_kurono_neko.emotion_kurono_neko(emotion)
-        return f"感情表現完了: {emotion}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
+    style_id = 11
+    return await emotion(style_id, emo)
 
 
 
@@ -337,20 +301,12 @@ async def emotion_tumugi_reimu(emotion: str) -> str:
     Returns:
         感情表現完了メッセージ
     """
-    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
-
-    if emotion not in valid_emotions:
-        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
-
-    try:
-        mod_emotion_tumugi_reimu.emotion_tumugi_reimu(emotion)
-        return f"感情表現完了: {emotion}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
+    style_id = 8
+    return await emotion(style_id, emo)
 
 
 @mcp.tool()
-async def emotion_zunda_marisa(emotion: str) -> str:
+async def emotion_zunda_marisa(emo: str) -> str:
     """
     東方Projectのキャラクター「霧雨魔理沙」のアバターに感情表現をさせるツール。
     
@@ -362,16 +318,8 @@ async def emotion_zunda_marisa(emotion: str) -> str:
     Returns:
         感情表現完了メッセージ
     """
-    valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
-
-    if emotion not in valid_emotions:
-        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
-
-    try:
-        mod_emotion_zunda_marisa.emotion_zunda_marisa(emotion)
-        return f"感情表現完了: {emotion}"
-    except Exception as e:
-        return f"エラー: {str(e)}"
+    style_id = 3
+    return await emotion(style_id, emo)
 
 
 #
@@ -476,10 +424,13 @@ def start(conf: dict[str, Any]):
     global _config 
     _config = conf
 
+
     if conf.get("avatar", {}).get("enabled"):
-       start_mcp_avatar(conf.get("avatar"))
+        _avatar_enbled = True
+        start_mcp_avatar(conf.get("avatar"))
     else:
-       start_mcp_avatar_disabled(conf.get("avatar"))
+        _avatar_enbled = False
+        start_mcp_avatar_disabled(conf.get("avatar"))
 
 def start_mcp_avatar(conf: dict[str, Any]):
     logger.info("start_mcp_avatar called.")

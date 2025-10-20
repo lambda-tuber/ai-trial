@@ -7,7 +7,7 @@ import numpy as np
 import io
 import re
 import logging
-
+import time
 import pvv_mcp_server.mod_avatar_manager
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,8 @@ def speak_metan_aska(msg: str) -> None:
         python -c "from pvv_mcp_server.mod_speak_metan_aska import speak_metan_aska; speak_metan_aska('あんた、バカぁ！？')"
 
     """
+    start = time.perf_counter()
+    
     # VOICEVOXのデフォルトURL
     pvv_url = "http://127.0.0.1:50021"
     style_id = 6  # 四国めたん
@@ -48,7 +50,14 @@ def speak_metan_aska(msg: str) -> None:
     query_response = requests.post(query_url, params=query_params)
     query_response.raise_for_status()
     query_data = query_response.json()
-    
+
+    end = time.perf_counter()
+    elapsed = end - start
+    logger.info(f"mod_speak 1: {elapsed:.3f} 秒")
+
+    start = time.perf_counter()
+
+
     # 調整
     query_data["pitchScale"] = pitch_scale
 
@@ -63,13 +72,18 @@ def speak_metan_aska(msg: str) -> None:
         json=query_data
     )
     synthesis_response.raise_for_status()
-    
+    end = time.perf_counter()
+    elapsed = end - start
+    logger.info(f"mod_speak 2: {elapsed:.3f} 秒")
     try:
+        start = time.perf_counter()
         pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, "口パク")
         audio_data, samplerate = sf.read(io.BytesIO(synthesis_response.content), dtype='float32', always_2d=True)
         with sd.OutputStream(samplerate=samplerate, channels=audio_data.shape[1], dtype='float32') as stream:
             stream.write(audio_data)
-
+        end = time.perf_counter()
+        elapsed = end - start
+        logger.info(f"mod_speak 3: {elapsed:.3f} 秒")
     except Exception as e:
         raise Exception(f"音声再生エラー: {e}")
 

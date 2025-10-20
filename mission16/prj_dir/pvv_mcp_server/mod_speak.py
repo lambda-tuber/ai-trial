@@ -13,6 +13,7 @@ import pvv_mcp_server.mod_avatar_manager
 import logging
 import sys
 import re
+import time
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -47,9 +48,9 @@ def speak(
         requests.exceptions.RequestException: API通信エラー
         Exception: 音声再生エラー
     """
-    
+
     # VOICEVOX APIのエンドポイント
-    BASE_URL = "http://localhost:50021"
+    BASE_URL = "http://127.0.0.1:50021"
 
     try:
         # 1. 音声合成用のクエリを生成
