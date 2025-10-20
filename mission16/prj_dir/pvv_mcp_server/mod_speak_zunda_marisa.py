@@ -34,7 +34,7 @@ def speak_zunda_marisa(msg: str) -> None:
     pvv_url = "http://127.0.0.1:50021"
     style_id = 3
     pitch_scale=-0.06
-    speedScale=1.04
+    speedScale=1.5
     # style_id = 12  # 白上虎太郎
     # pitch_scale=0
 
