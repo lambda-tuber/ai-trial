@@ -12,7 +12,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def load_zip_data(source, speaker_id=None):
+def load_image(source, speaker_id=None):
     """
     画像データを読み込む
     
@@ -295,22 +295,22 @@ if __name__ == "__main__":
     # テスト1: ローカルZIP
     print("=== テスト1: ローカルZIP ===")
     zip_file = "C:\\work\\lambda-tuber\\ai-trial\\mission16\\docs\\ゆっくり霊夢改.zip"
-    png_dat = load_zip_data(zip_file)
+    png_dat = load_image(zip_file)
     print(f"カテゴリ: {list(png_dat.keys())}")
     
     # テスト2: PNG
     print("\n=== テスト2: PNG ===")
     png_file = "C:\\work\\lambda-tuber\\ai-trial\\mission16\\docs\\josei_20_pw\\josei_20_a.png"
-    png_dat = load_zip_data(png_file)
+    png_dat = load_image(png_file)
     print(f"カテゴリ: {list(png_dat.keys())}")
     
     # テスト3: VOICEVOX
     #print("\n=== テスト3: VOICEVOX ===")
-    #png_dat = load_zip_data("", speaker_id="四国めたん")
+    #png_dat = load_image("", speaker_id="四国めたん")
     #print(f"カテゴリ: {list(png_dat.keys())}")
     
     # テスト4: URL
     print("\n=== テスト4: URL ===")
     url = "http://www.nicotalk.com/sozai/きつねゆっくり/れいむ.zip"
-    png_dat = load_zip_data(url)
+    png_dat = load_image(url)
     print(f"カテゴリ: {list(png_dat.keys())}")

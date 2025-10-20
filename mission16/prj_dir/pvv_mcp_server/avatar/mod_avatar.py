@@ -2,7 +2,7 @@ import sys
 from PySide6.QtWidgets import QWidget, QLabel, QApplication
 from PySide6.QtCore import Qt, QTimer, QPoint, Slot
 from PySide6.QtGui import QPixmap, QShortcut, QKeySequence
-from pvv_mcp_server.avatar.mod_load_image import load_zip_data
+from pvv_mcp_server.avatar.mod_load_image import load_image
 from pvv_mcp_server.avatar.mod_update_frame import ymm_update_frame
 from pvv_mcp_server.avatar.mod_right_click_context_menu import ymm_right_click_context_menu
 from pvv_mcp_server.avatar.mod_avatar_dialog import AvatarDialog
@@ -42,8 +42,8 @@ class AvatarWindow(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         
         # Escキーで非表示
-        #QShortcut(QKeySequence("Escape"), self, self.hide)
-        QShortcut(QKeySequence("Escape"), self, QApplication.quit)
+        QShortcut(QKeySequence("Escape"), self, self.hide)
+        #QShortcut(QKeySequence("Escape"), self, QApplication.quit)
         
         # UI初期化
         self.label = QLabel(self)
@@ -62,7 +62,7 @@ class AvatarWindow(QWidget):
         self.follow_timer_interval = 150
         
         # zip読み込み
-        self.zip_data = load_zip_data(self.zip_path,  self.speaker_name)  # [パーツ][PNGファイル[バイナリデータ]
+        self.zip_data = load_image(self.zip_path,  self.speaker_name)  # [パーツ][PNGファイル[バイナリデータ]
 
         # アニメーション設定
         self.anime_types = anime_types or ["立ち絵", "口パク"]
@@ -231,8 +231,10 @@ class AvatarWindow(QWidget):
     def set_anime_key(self, anime_key):
         """アニメーションタイプを設定"""
         if anime_key in self.anime_types:
+            self.frame_timer.stop()
             self.anime_key = anime_key
             self.ymm_dialogs[anime_key].start_oneshot()
+            self.frame_timer.start()
 
     
     def set_frame_timer_interval(self, val):

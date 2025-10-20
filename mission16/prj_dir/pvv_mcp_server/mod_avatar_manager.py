@@ -5,6 +5,7 @@ mod_avatar_manager.py
 
 import json
 import sys
+import os
 import logging
 import atexit
 import signal
@@ -152,28 +153,29 @@ def _on_auto_save() -> None:
     logger.info(f"Auto-saved {len(configs)} avatar config(s).")
     
     # ファイルに保存
-    dat_file = _avatar_global_config.get("dat_file")
-    if dat_file:
-        try:
-            # ディレクトリが存在しない場合は作成
-            dat_path = Path(dat_file)
-            dat_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            # JSONファイルに保存
-            with open(dat_path, 'w', encoding='utf-8') as f:
-                json.dump(configs, f, ensure_ascii=False, indent=2)
-            
-            logger.info(f"Configs saved to: {dat_file}")
-        except Exception as e:
-            logger.error(f"Failed to save configs to file: {e}")
-    else:
-        logger.warning("dat_file not configured. Skipping file save.")
+    dat_file = _avatar_global_config.get("save_file", None)
+    if not dat_file:
+        logger.warning(f"dat_file not configured. Skipping file save.")
+        return
+
+    if not os.path.exists(dat_file):
+        logger.warning(f"dat_file not exists. {dat_file}")
+        return
+
+    try:
+        with open(dat_file, 'w', encoding='utf-8') as f:
+            json.dump(configs, f, ensure_ascii=False, indent=2)
+        
+        logger.info(f"Configs saved to: {dat_file}")
+    except Exception as e:
+        logger.error(f"Failed to save configs to file: {e}")
+
 
 def load_configs_from_file() -> None:
     """
     ファイルから設定を読み込んで全アバターに適用
     """
-    dat_file = _avatar_global_config.get("dat_file")
+    dat_file = _avatar_global_config.get("save_file")
     if not dat_file:
         logger.warning("dat_file not configured. Skipping file load.")
         return
@@ -198,7 +200,7 @@ def _load_config():
     """
     ファイルから設定を読み込む。
     """
-    dat_file = _avatar_global_config.get("dat_file")
+    dat_file = _avatar_global_config.get("save_file")
     if not dat_file:
         logger.warning("dat_file not configured. Skipping file load.")
         return

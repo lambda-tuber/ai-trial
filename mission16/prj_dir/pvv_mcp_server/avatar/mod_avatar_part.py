@@ -299,7 +299,7 @@ class AvatarPartWidget(QWidget):
         interval_layout = QHBoxLayout()
         interval_layout.addWidget(QLabel("インターバル:"))
         self.combo_interval = QComboBox()
-        self.combo_interval.addItems(["1", "2", "3", "4", "5"])
+        self.combo_interval.addItems(["1", "2", "4", "8", "10","12", "14", "16", "18", "20", "22", "24", "26", "28", "30"])
         self.combo_interval.setCurrentIndex(2)
         self.combo_interval.currentTextChanged.connect(self._update_interval)
         interval_layout.addWidget(self.combo_interval)
