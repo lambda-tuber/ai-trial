@@ -222,31 +222,32 @@ async def speak_zunda_marisa(msg: str) -> str:
 @mcp.tool()
 async def emotion(
     style_id: int,
-    emotion: str,
+    emo: str,
 ) -> str:
     """
     アバターに感情表現をさせるツール。
     
     Args:
         style_id: voicevox 発話音声を指定するID(必須)
-        emotion: 感情の種類を指定します。(必須)
-                 以下のいずれかを指定してください。
+        emo: 感情の種類を指定します。(必須)
+             以下のいずれかを指定してください。
                  ["えがお", "びっくり", "がーん", "いかり"]
     
     Returns:
         感情表現完了メッセージ
     """
+
     if not _avatar_enbled:
         return "avatar disabled."
 
     valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
 
-    if emotion not in valid_emotions:
-        return f"エラー: emotion は {valid_emotions} のいずれかを指定してください。"
+    if emo not in valid_emotions:
+        return f"エラー: emo は {valid_emotions} のいずれかを指定してください。"
 
     try:
-        mod_emotion.emotion(style_id, emotion)
-        return f"感情表現完了: {emotion}"
+        mod_emotion.emotion(style_id, emo)
+        return f"感情表現完了: {emo}"
 
     except Exception as e:
         return f"エラー: {str(e)}"
@@ -288,7 +289,7 @@ async def emotion_kurono_neko(emo: str) -> str:
 
 
 @mcp.tool()
-async def emotion_tumugi_reimu(emotion: str) -> str:
+async def emotion_tumugi_reimu(emo: str) -> str:
     """
     東方Projectのキャラクター「博麗霊夢」のアバターに感情表現をさせるツール。
     
@@ -421,7 +422,8 @@ def prompt_ai_touhou() -> str:
 def start(conf: dict[str, Any]):
     """stdio モードで FastMCP を起動"""
     global _config 
-    global _avatar_enbled 
+    global _avatar_enbled
+
     _config = conf
 
 
