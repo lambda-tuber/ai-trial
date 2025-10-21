@@ -236,8 +236,7 @@ async def emotion(
     Returns:
         感情表現完了メッセージ
     """
-
-    if not _avatar_enbled
+    if not _avatar_enbled:
         return "avatar disabled."
 
     valid_emotions = ["えがお", "びっくり", "がーん", "いかり"]
@@ -422,6 +421,7 @@ def prompt_ai_touhou() -> str:
 def start(conf: dict[str, Any]):
     """stdio モードで FastMCP を起動"""
     global _config 
+    global _avatar_enbled 
     _config = conf
 
 
