@@ -1,4 +1,4 @@
-# pvv_mcp_server/ymm_avatar/mod_ymm_right_click_context_menu.py 完全版
+# pvv_mcp_server/avatar/mod_right_click_context_menu.py 完全版
 
 """
 YMMアバター右クリックメニューモジュール
@@ -16,18 +16,18 @@ logger = logging.getLogger(__name__)
 def _show_dialog_debug(self, anime_type):
     """デバッグ用: ダイアログ表示"""
     logger.info(f"========== 編集クリック: anime_type={anime_type} ==========")
-    logger.info(f"self.ymm_dialogs.keys() = {list(self.ymm_dialogs.keys())}")
-    self.set_anime_key(anime_type)
-    if anime_type in self.ymm_dialogs:
+    logger.info(f"self.dialogs.keys() = {list(self.dialogs.keys())}")
+    self.set_anime_type(anime_type)
+    if anime_type in self.dialogs:
         try:
-            dialog = self.ymm_dialogs[anime_type]
+            dialog = self.dialogs[anime_type]
             # logger.info(f"ダイアログ取得成功: {dialog}")
             # logger.info(f"show()前 isVisible() = {dialog.isVisible()}")
             # logger.info(f"show()前 geometry = {dialog.geometry()}")
             # logger.info(f"show()前 size = {dialog.size()}")
             # logger.info(f"show()前 pos = {dialog.pos()}")
-            # dialog_tachie = self.ymm_dialogs["立ち絵"]
-            # dialog_kuchipaku = self.ymm_dialogs["口パク"]
+            # dialog_tachie = self.dialogs["立ち絵"]
+            # dialog_kuchipaku = self.dialogs["口パク"]
 
             # logger.info(f"=== 立ち絵ダイアログ ===")
             # logger.info(f"  parent: {dialog_tachie.parent()}")
@@ -56,8 +56,8 @@ def _show_dialog_debug(self, anime_type):
             # logger.info(f"show()後 geometry = {dialog.geometry()}")
             # logger.info(f"show()後 size = {dialog.size()}")
             # logger.info(f"show()後 pos = {dialog.pos()}")
-            # dialog_tachie = self.ymm_dialogs["立ち絵"]
-            # dialog_kuchipaku = self.ymm_dialogs["口パク"]
+            # dialog_tachie = self.dialogs["立ち絵"]
+            # dialog_kuchipaku = self.dialogs["口パク"]
 
             # logger.info(f"=== 立ち絵ダイアログ ===")
             # logger.info(f"  parent: {dialog_tachie.parent()}")
@@ -76,7 +76,7 @@ def _show_dialog_debug(self, anime_type):
     else:
             logger.error(f"ダイアログが見つかりません: {anime_type}")
 
-def ymm_right_click_context_menu(self, mouse_position: QPoint) -> None:
+def right_click_context_menu(self, mouse_position: QPoint) -> None:
     """
     右クリックメニューを表示
     
@@ -94,17 +94,16 @@ def ymm_right_click_context_menu(self, mouse_position: QPoint) -> None:
         type_submenu = animation_menu.addMenu(anime_type)
         
         # チェックマーク表示(現在選択中かどうか)
-        if self.anime_key == anime_type:
+        if self.anime_type == anime_type:
             type_submenu.setTitle(f"✓ {anime_type}")
         
         # 選択アクション
         select_action = QAction("選択", self)
-        select_action.triggered.connect(lambda checked=False, key=anime_type: self.set_anime_key(key))
+        select_action.triggered.connect(lambda checked=False, key=anime_type: self.set_anime_type(key))
         type_submenu.addAction(select_action)
         
         # 編集アクション(ダイアログを開く)
         edit_action = QAction("編集", self)
-        #edit_action.triggered.connect(lambda checked=False, key=anime_type: self.ymm_dialogs[key].show())
         edit_action.triggered.connect(
             lambda checked=False, anime_type=anime_type: _show_dialog_debug(self, anime_type)
         )

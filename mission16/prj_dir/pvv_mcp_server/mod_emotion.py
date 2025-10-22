@@ -33,8 +33,8 @@ def emotion(style_id: int, emotion: str) -> None:
 
     try:
         logger.info(f"emotion called. {style_id}, {emotion}")
-        pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, emotion)
-        time.sleep(0.3)
+        pvv_mcp_server.mod_avatar_manager.set_anime_type(style_id, emotion)
+        time.sleep(0.1)
 
     except Exception as e:
         logger.warning(f"emotion error {e}")
@@ -42,4 +42,4 @@ def emotion(style_id: int, emotion: str) -> None:
 
     finally:
         logger.info("emotion_metan_aska finalize")
-        #pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, "立ち絵")
+        #pvv_mcp_server.mod_avatar_manager.set_anime_type(style_id, "立ち絵")

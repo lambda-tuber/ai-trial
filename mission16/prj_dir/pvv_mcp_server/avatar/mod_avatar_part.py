@@ -12,6 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class AvatarPartWidget(QWidget):
+
     def __init__(self, part_name, image_files, config=None):
         """
         Args:
@@ -51,6 +52,10 @@ class AvatarPartWidget(QWidget):
         self.loop_anime_idx = 0
         self.oneshot_idx = 0
 
+
+    #
+    # save/load confg
+    #
     def save_config(self):
         """
         現在の設定を辞書形式で返す
@@ -100,6 +105,85 @@ class AvatarPartWidget(QWidget):
         # GUIが既に構築されていれば、GUIにも反映
         if hasattr(self, 'combo_base'):
             self._apply_config_to_gui()
+
+    #
+    # GUI
+    #
+    def _setup_gui(self):
+        main_layout = QVBoxLayout(self)
+
+        # 1段目: パーツ名
+        part_name_layout = QHBoxLayout()
+        part_name_layout.addWidget(QLabel("パーツ名:"))
+        part_name_layout.addWidget(QLabel(self.part_name))
+        part_name_layout.addStretch(1)
+        main_layout.addLayout(part_name_layout)
+
+        # 2段目: ベース画像
+        base_layout = QHBoxLayout()
+        base_layout.addWidget(QLabel("ベース画像:"))
+        self.combo_base = QComboBox()
+        self.combo_base.addItems(self.image_files)
+        self.combo_base.currentTextChanged.connect(self._update_base_image)
+        base_layout.addWidget(self.combo_base)
+        base_layout.addStretch(1)
+        main_layout.addLayout(base_layout)
+
+        # 3段目: アニメ画像
+        anim_layout = QHBoxLayout()
+        anim_layout.addWidget(QLabel("アニメ画像:"), alignment=Qt.AlignTop)
+        self.list_anim = QListWidget()
+        self.list_anim.setSelectionMode(QListWidget.MultiSelection)
+        for f in self.image_files:
+            self.list_anim.addItem(QListWidgetItem(f))
+        self.list_anim.itemSelectionChanged.connect(self._update_selected_files)
+        self.list_anim.setMaximumHeight(100)
+        anim_layout.addWidget(self.list_anim)
+        main_layout.addLayout(anim_layout)
+
+        # 4段目: interval
+        interval_layout = QHBoxLayout()
+        interval_layout.addWidget(QLabel("インターバル:"))
+        self.combo_interval = QComboBox()
+        self.combo_interval.addItems(["1", "2", "4", "8", "10","12", "14", "16", "18", "20", "22", "24", "26", "28", "30"])
+        self.combo_interval.setCurrentIndex(2)
+        self.combo_interval.currentTextChanged.connect(self._update_interval)
+        interval_layout.addWidget(self.combo_interval)
+        interval_layout.addStretch(1)
+        main_layout.addLayout(interval_layout)
+
+        # 5段目: アニメーションタイプ
+        anim_type_layout = QHBoxLayout()
+        anim_type_layout.addWidget(QLabel("アニメタイプ:"))
+
+        self.radio_fixed = QRadioButton("固定")
+        self.radio_loop = QRadioButton("ループ")
+        self.radio_random_a = QRadioButton("ランダムA")
+        self.radio_random_b = QRadioButton("ランダムB")
+        self.radio_oneshot = QRadioButton("ワンショット")
+
+        self.anim_type_group = QButtonGroup(self)
+        self.anim_type_group.addButton(self.radio_fixed)
+        self.anim_type_group.addButton(self.radio_loop)
+        self.anim_type_group.addButton(self.radio_random_a)
+        self.anim_type_group.addButton(self.radio_random_b)
+        self.anim_type_group.addButton(self.radio_oneshot)
+        self.anim_type_group.buttonClicked.connect(self._on_anim_type_changed)
+
+        self.radio_fixed.setChecked(True)
+
+        anim_type_layout.addWidget(self.radio_fixed)
+        anim_type_layout.addWidget(self.radio_loop)
+        anim_type_layout.addWidget(self.radio_random_a)
+        anim_type_layout.addWidget(self.radio_random_b)
+        anim_type_layout.addWidget(self.radio_oneshot)
+        anim_type_layout.addStretch(1)
+
+        main_layout.addLayout(anim_type_layout)
+        
+        # 最後に設定をGUIに反映
+        self._apply_config_to_gui()
+
     
     def _apply_config_to_gui(self):
         """設定値をGUIウィジェットに反映"""
@@ -146,6 +230,46 @@ class AvatarPartWidget(QWidget):
             self.radio_random_b.setChecked(True)
         elif self.anime_type == "ワンショット":
             self.radio_oneshot.setChecked(True)
+
+
+    #
+    # gui handlers
+    #
+    def _update_selected_files(self):
+        self.selected_files = [item.text() for item in self.list_anim.selectedItems()]
+        logger.info(f"selected_files: {self.selected_files}")
+
+    def _update_base_image(self, text):
+        self.base_image = text
+        logger.info(f"base_image: {self.base_image}")
+
+    def _update_interval(self, text):
+        self.interval = int(text)
+        logger.info(f"interval: {self.interval}")
+
+    def _on_anim_type_changed(self, button):
+        self.anime_type = button.text()
+        logger.info(f"選択されたアニメーションタイプ: {self.anime_type}")
+
+        # 共通のカウンタをリセット
+        self.update_idx = 0
+        self.loop_anime_idx = 0
+        self.random_anime_idx = 0
+        self.random_wait_idx = 0
+        self.random_wait_tick = random.choice([10, 20, 30, 40, 50])
+        self.start_oneshot()
+        logger.info(f"random_wait_tick : {self.random_wait_tick}")
+
+
+    #
+    # animation
+    #
+    def start_oneshot(self):
+        """外部からoneshotアニメを開始するトリガー"""
+        if len(self.selected_files) > 0:
+            logger.info(f"{self.part_name}: start_oneshot")
+            self.oneshot_idx = 1
+            
 
     def update(self):
         if len(self.image_files) == 0:
@@ -255,113 +379,6 @@ class AvatarPartWidget(QWidget):
                 self.oneshot_idx = 0
                 self.current_image = self.base_image
 
-    def start_oneshot(self):
-        """外部からoneshotアニメを開始するトリガー"""
-        if len(self.selected_files) > 0:
-            logger.info(f"{self.part_name}: start_oneshot")
-            self.oneshot_idx = 1
-
-
-
-    def _setup_gui(self):
-        main_layout = QVBoxLayout(self)
-
-        # 1段目: パーツ名
-        part_name_layout = QHBoxLayout()
-        part_name_layout.addWidget(QLabel("パーツ名:"))
-        part_name_layout.addWidget(QLabel(self.part_name))
-        part_name_layout.addStretch(1)
-        main_layout.addLayout(part_name_layout)
-
-        # 2段目: ベース画像
-        base_layout = QHBoxLayout()
-        base_layout.addWidget(QLabel("ベース画像:"))
-        self.combo_base = QComboBox()
-        self.combo_base.addItems(self.image_files)
-        self.combo_base.currentTextChanged.connect(self._update_base_image)
-        base_layout.addWidget(self.combo_base)
-        base_layout.addStretch(1)
-        main_layout.addLayout(base_layout)
-
-        # 3段目: アニメ画像
-        anim_layout = QHBoxLayout()
-        anim_layout.addWidget(QLabel("アニメ画像:"), alignment=Qt.AlignTop)
-        self.list_anim = QListWidget()
-        self.list_anim.setSelectionMode(QListWidget.MultiSelection)
-        for f in self.image_files:
-            self.list_anim.addItem(QListWidgetItem(f))
-        self.list_anim.itemSelectionChanged.connect(self._update_selected_files)
-        self.list_anim.setMaximumHeight(100)
-        anim_layout.addWidget(self.list_anim)
-        main_layout.addLayout(anim_layout)
-
-        # 4段目: interval
-        interval_layout = QHBoxLayout()
-        interval_layout.addWidget(QLabel("インターバル:"))
-        self.combo_interval = QComboBox()
-        self.combo_interval.addItems(["1", "2", "4", "8", "10","12", "14", "16", "18", "20", "22", "24", "26", "28", "30"])
-        self.combo_interval.setCurrentIndex(2)
-        self.combo_interval.currentTextChanged.connect(self._update_interval)
-        interval_layout.addWidget(self.combo_interval)
-        interval_layout.addStretch(1)
-        main_layout.addLayout(interval_layout)
-
-        # 5段目: アニメーションタイプ
-        anim_type_layout = QHBoxLayout()
-        anim_type_layout.addWidget(QLabel("アニメタイプ:"))
-
-        self.radio_fixed = QRadioButton("固定")
-        self.radio_loop = QRadioButton("ループ")
-        self.radio_random_a = QRadioButton("ランダムA")
-        self.radio_random_b = QRadioButton("ランダムB")
-        self.radio_oneshot = QRadioButton("ワンショット")
-
-        self.anim_type_group = QButtonGroup(self)
-        self.anim_type_group.addButton(self.radio_fixed)
-        self.anim_type_group.addButton(self.radio_loop)
-        self.anim_type_group.addButton(self.radio_random_a)
-        self.anim_type_group.addButton(self.radio_random_b)
-        self.anim_type_group.addButton(self.radio_oneshot)
-        self.anim_type_group.buttonClicked.connect(self._on_anim_type_changed)
-
-        self.radio_fixed.setChecked(True)
-
-        anim_type_layout.addWidget(self.radio_fixed)
-        anim_type_layout.addWidget(self.radio_loop)
-        anim_type_layout.addWidget(self.radio_random_a)
-        anim_type_layout.addWidget(self.radio_random_b)
-        anim_type_layout.addWidget(self.radio_oneshot)
-        anim_type_layout.addStretch(1)
-
-        main_layout.addLayout(anim_type_layout)
-        
-        # 最後に設定をGUIに反映
-        self._apply_config_to_gui()
-
-    def _update_selected_files(self):
-        self.selected_files = [item.text() for item in self.list_anim.selectedItems()]
-        logger.info(f"selected_files: {self.selected_files}")
-
-    def _update_base_image(self, text):
-        self.base_image = text
-        logger.info(f"base_image: {self.base_image}")
-
-    def _update_interval(self, text):
-        self.interval = int(text)
-        logger.info(f"interval: {self.interval}")
-
-    def _on_anim_type_changed(self, button):
-        self.anime_type = button.text()
-        logger.info(f"選択されたアニメーションタイプ: {self.anime_type}")
-
-        # 共通のカウンタをリセット
-        self.update_idx = 0
-        self.loop_anime_idx = 0
-        self.random_anime_idx = 0
-        self.random_wait_idx = 0
-        self.random_wait_tick = random.choice([10, 20, 30, 40, 50])
-        self.start_oneshot()
-        logger.info(f"random_wait_tick : {self.random_wait_tick}")
 
 
 if __name__ == "__main__":

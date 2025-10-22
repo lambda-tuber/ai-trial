@@ -88,7 +88,7 @@ def speak(
         raise Exception(f"VOICEVOX API通信エラー: {e}")
 
     try:
-        pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, "口パク")
+        pvv_mcp_server.mod_avatar_manager.set_anime_type(style_id, "口パク")
         audio_data, samplerate = sf.read(io.BytesIO(synthesis_response.content), dtype='float32', always_2d=True)
         with sd.OutputStream(samplerate=samplerate, channels=audio_data.shape[1], dtype='float32') as stream:
             stream.write(audio_data)
@@ -97,4 +97,4 @@ def speak(
         raise Exception(f"音声再生エラー: {e}")
 
     finally:
-        pvv_mcp_server.mod_avatar_manager.set_anime_key(style_id, "立ち絵")
+        pvv_mcp_server.mod_avatar_manager.set_anime_type(style_id, "立ち絵")

@@ -144,37 +144,37 @@ class TestAvatarManager:
     
     @patch('pvv_mcp_server.mod_avatar_manager._get_avatar')
     @patch('pvv_mcp_server.mod_avatar_manager.QMetaObject')
-    def test_set_anime_key_enabled(self, mock_qmeta, mock_get_avatar):
-        """アバター有効時のset_anime_keyテスト"""
+    def test_set_anime_type_enabled(self, mock_qmeta, mock_get_avatar):
+        """アバター有効時のset_anime_typeテスト"""
         mock_avatar = MagicMock()
         mock_get_avatar.return_value = mock_avatar
         
         mod_avatar_manager._avatar_config = {"enabled": True}
         
-        mod_avatar_manager.set_anime_key(2, "口パク")
+        mod_avatar_manager.set_anime_type(2, "口パク")
         
         mock_get_avatar.assert_called_once_with(2)
         assert mock_qmeta.invokeMethod.call_count == 2
     
     @patch('pvv_mcp_server.mod_avatar_manager._get_avatar')
-    def test_set_anime_key_disabled(self, mock_get_avatar):
-        """アバター無効時のset_anime_keyテスト"""
+    def test_set_anime_type_disabled(self, mock_get_avatar):
+        """アバター無効時のset_anime_typeテスト"""
         mod_avatar_manager._avatar_config = {"enabled": False}
         
-        mod_avatar_manager.set_anime_key(2, "口パク")
+        mod_avatar_manager.set_anime_type(2, "口パク")
         
         mock_get_avatar.assert_not_called()
     
     @patch('pvv_mcp_server.mod_avatar_manager._get_avatar')
     @patch('pvv_mcp_server.mod_avatar_manager.QMetaObject')
-    def test_set_anime_key_avatar_not_found(self, mock_qmeta, mock_get_avatar):
+    def test_set_anime_type_avatar_not_found(self, mock_qmeta, mock_get_avatar):
         """アバターが見つからない場合のテスト"""
         mock_get_avatar.return_value = None
         
         mod_avatar_manager._avatar_config = {"enabled": True}
         
         # 例外が発生しないことを確認
-        mod_avatar_manager.set_anime_key(999, "口パク")
+        mod_avatar_manager.set_anime_type(999, "口パク")
         
         mock_qmeta.invokeMethod.assert_not_called()
     

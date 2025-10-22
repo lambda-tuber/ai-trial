@@ -20,8 +20,8 @@ def load_image(source, speaker_id=None):
         source: 以下のいずれかの形式
             - ローカルZIPファイルパス (例: "C:\\path\\to\\file.zip")
             - URL (例: "https://example.com/avatar.zip")
-            - PNGファイルパス (例: "C:\\path\\to\\image.png")
-            - 空文字列 ("") - VOICEVOXのポートレートを使用
+            - フォルダパス (例: "C:\\path\\to\\image")
+            - 文字列 ("portrait") - VOICEVOXのポートレートを使用
         speaker_id: VOICEVOXの話者ID (sourceが空文字列の場合に使用)
     
     Returns:
@@ -135,43 +135,6 @@ def _load_local_zip(zip_path, parts_folder):
         return _create_empty_zip_data()
 
 
-def _load_zip_from_url2(url, parts_folder):
-    """URLからZIPファイルをダウンロードして読み込む"""
-    try:
-        logger.info(f"ZIPファイルをダウンロード中: {url}")
-        
-        # URLからダウンロード
-        with urllib.request.urlopen(url) as response:
-            zip_bytes = response.read()
-        
-        logger.info(f"ダウンロード完了: {len(zip_bytes)} bytes")
-
-        # メモリ上で展開
-        zip_buffer = io.BytesIO(zip_bytes)
-        zip_data = defaultdict(dict)
-        with zipfile.ZipFile(zip_buffer, 'r', metadata_encoding='cp932') as zf:
-            for info in zf.infolist():
-                with zf.open(info) as file:
-                    if not info.filename.endswith(".png"):
-                        continue
-                    parts = info.filename.split("/")
-                    if len(parts) >= 3:
-                        file_content_bytes = file.read()
-                        cat = parts[-2]
-                        if cat not in parts_folder:
-                            cat = "他"
-                        fname = parts[-1]
-                        zip_data[cat][fname] = file_content_bytes
-
-        logger.info(f"URLからZIPファイルを読み込みました: {url}")
-        return zip_data
-
-    except Exception as e:
-        logger.error(f"URL ZIPファイル読み込みエラー: {e}")
-        return _create_empty_zip_data()
-
-
-
 def _load_zip_from_url(url, parts_folder):
     """URLからZIPファイルをダウンロードして読み込む"""
     try:
@@ -237,36 +200,6 @@ def _load_voicevox_portrait(speaker_id: str):
         logger.info(f"ポートレートをダウンロード中: {portrait_url}")
         with urllib.request.urlopen(portrait_url) as response:
             png_bytes = response.read()
-        
-        zip_data = _create_empty_zip_data()
-        zip_data["他"]["portrait.png"] = png_bytes
-        
-        logger.info(f"VOICEVOXポートレートを読み込みました: speaker_id={speaker_id}")
-        return zip_data
-
-    except Exception as e:
-        logger.error(f"VOICEVOXポートレート読み込みエラー: {e}")
-        return _create_empty_zip_data()
-
-
-def _load_voicevox_portrait_b64(speaker_id):
-    """VOICEVOXのポートレートを取得"""
-    try:
-        from pvv_mcp_server.mod_speaker_info import speaker_info
-        
-        if not speaker_id:
-            logger.warning("speaker_idが指定されていません")
-            return _create_empty_zip_data()
-        
-        info = speaker_info(speaker_id)
-        portrait_base64 = info.get("portrait")
-        
-        if not portrait_base64:
-            logger.warning(f"speaker_id={speaker_id}のポートレートが見つかりません")
-            return _create_empty_zip_data()
-        
-        # Base64デコード
-        png_bytes = base64.b64decode(portrait_base64)
         
         zip_data = _create_empty_zip_data()
         zip_data["他"]["portrait.png"] = png_bytes

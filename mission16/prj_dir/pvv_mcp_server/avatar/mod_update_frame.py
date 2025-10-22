@@ -9,7 +9,7 @@ import logging
 # ロガーの設定
 logger = logging.getLogger(__name__)
 
-def ymm_update_frame(self):
+def update_frame(self):
     """
     フレームを更新(画像合成)
     
@@ -20,7 +20,7 @@ def ymm_update_frame(self):
         return
     
     # 現在のアニメタイプのダイアログを取得
-    dialog = self.ymm_dialogs.get(self.anime_key)
+    dialog = self.dialogs.get(self.anime_type)
     if not dialog:
         return
     

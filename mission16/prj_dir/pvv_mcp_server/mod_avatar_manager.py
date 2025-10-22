@@ -58,22 +58,22 @@ def setup(avs: Dict[int, Any]) -> None:
         logger.info("Avatar disabled.")
 
 
-def set_anime_key(style_id: int, anime_key: str) -> None:
+def set_anime_type(style_id: int, anime_type: str) -> None:
     """
     指定されたアバターのアニメーションキーを設定
     
     Args:
         style_id: スタイルID
-        anime_key: アニメーションキー（"立ち絵", "口パク"など）
+        anime_type: アニメーションキー（"立ち絵", "口パク"など）
     """
     if not _avatar_global_config or not _avatar_global_config.get("enabled"):
-        logger.info("Avatar disabled. Skipping set_anime_key.")
+        logger.info("Avatar disabled. Skipping set_anime_type.")
         return
     
     avatar = _get_avatar(style_id)
     if avatar:
         QMetaObject.invokeMethod(avatar, "showWindow", Qt.ConnectionType.QueuedConnection)
-        QMetaObject.invokeMethod(avatar, "set_anime_key", Qt.ConnectionType.QueuedConnection, Q_ARG(str, anime_key))
+        QMetaObject.invokeMethod(avatar, "set_anime_type", Qt.ConnectionType.QueuedConnection, Q_ARG(str, anime_type))
     else:
         logger.warning(f"Avatar not found for style_id={style_id}")
 
@@ -123,6 +123,9 @@ def load_all_configs(all_configs: Dict[str, Any]) -> None:
 
 # ==================== Private Functions ====================
 
+#
+# auto save
+#
 def _start_auto_save_timer() -> None:
     """
     自動保存タイマーを開始
@@ -171,54 +174,9 @@ def _on_auto_save() -> None:
         logger.error(f"Failed to save configs to file: {e}")
 
 
-def load_configs_from_file() -> None:
-    """
-    ファイルから設定を読み込んで全アバターに適用
-    """
-    dat_file = _avatar_global_config.get("save_file")
-    if not dat_file:
-        logger.warning("dat_file not configured. Skipping file load.")
-        return
-    
-    dat_path = Path(dat_file)
-    if not dat_path.exists():
-        logger.info(f"Config file not found: {dat_file}")
-        return
-    
-    try:
-        with open(dat_path, 'r', encoding='utf-8') as f:
-            configs = json.load(f)
-        
-        load_all_configs(configs)
-        logger.info(f"Configs loaded from: {dat_file}")
-    except Exception as e:
-        logger.error(f"Failed to load configs from file: {e}")
-
-
-
-def _load_config():
-    """
-    ファイルから設定を読み込む。
-    """
-    dat_file = _avatar_global_config.get("save_file")
-    if not dat_file:
-        logger.warning("dat_file not configured. Skipping file load.")
-        return
-    
-    dat_path = Path(dat_file)
-    if not dat_path.exists():
-        logger.info(f"Config file not found: {dat_file}")
-        return
-    
-    try:
-        with open(dat_path, 'r', encoding='utf-8') as f:
-            configs = json.load(f)
-        
-        logger.info(f"Configs loaded from: {dat_file}")
-        return configs
-    except Exception as e:
-        logger.error(f"Failed to load configs from file: {e}")
-
+#
+# avatar
+#
 def _create_all_avatars() -> None:
     """
     設定に登録されているすべてのアバターインスタンスを作成
@@ -231,14 +189,14 @@ def _create_all_avatars() -> None:
         try:
             avatar = _get_avatar(style_id)
             if not avatar:
-                _create_ymm_avatar(style_id, avatar_conf)
+                _create_avatar(style_id, avatar_conf)
                 logger.info(f"Created avatar for style_id={style_id}")
 
         except Exception as e:
             logger.error(f"Failed to create avatar for style_id={style_id}: {e}")
 
 
-def _create_ymm_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
+def _create_avatar(style_id: int, avatar_conf: Dict[str, Any]) -> AvatarWindow:
     """
     個別のアバターインスタンスを作成
     
@@ -299,36 +257,28 @@ def _get_avatar(style_id: int) -> Optional[AvatarWindow]:
     return _avatar_cache.get(key)
 
 
-def _get_images(speaker_id: str, images: Dict[str, list]) -> Dict[str, list]:
+def _load_config():
     """
-    アバター画像データの取得
-    
-    Args:
-        speaker_id: 話者ID
-        images: 画像設定辞書
-    
-    Returns:
-        画像データ辞書
+    ファイルから設定を読み込む。
     """
-    # 既に画像が設定されている場合はそのまま返す
-    if images.get("立ち絵"):
-        return images
+    dat_file = _avatar_global_config.get("save_file")
+    if not dat_file:
+        logger.warning("dat_file not configured. Skipping file load.")
+        return
     
-    # speaker_infoからポートレートを取得
-    info = speaker_info(speaker_id)
-    b64dat = info.get("portrait")
+    dat_path = Path(dat_file)
+    if not dat_path.exists():
+        logger.info(f"Config file not found: {dat_file}")
+        return
     
-    if not b64dat:
-        logger.warning(f"speaker_id={speaker_id}: portrait not found in speaker_info")
-        return images
-    
-    # デフォルトポートレートを設定
-    ret = images.copy()
-    ret["立ち絵"] = [b64dat]
-    ret["口パク"] = [b64dat]
-    
-    logger.debug(f"Using VOICEVOX default portrait for speaker_id={speaker_id}")
-    return ret
+    try:
+        with open(dat_path, 'r', encoding='utf-8') as f:
+            configs = json.load(f)
+        
+        logger.info(f"Configs loaded from: {dat_file}")
+        return configs
+    except Exception as e:
+        logger.error(f"Failed to load configs from file: {e}")
 
 
 # ==================== Test Entry Point ====================
@@ -365,7 +315,7 @@ if __name__ == "__main__":
     }
     
     setup(test_config)
-    set_anime_key(2, "口パク")
+    set_anime_type(2, "口パク")
     
     print("Test completed. Auto-save timer is running...")
 

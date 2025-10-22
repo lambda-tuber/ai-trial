@@ -114,6 +114,9 @@ _config = None
 _avatar_enbled = False
 
 
+#
+# MCP I/F
+#
 @mcp.tool()
 async def speak(
     style_id: int,
@@ -419,6 +422,9 @@ def prompt_ai_touhou() -> str:
     return PROMPT_TOUHOU_TEXT
 
 
+#
+# public function
+#
 def start(conf: dict[str, Any]):
     """stdio モードで FastMCP を起動"""
     global _config 
@@ -432,7 +438,7 @@ def start(conf: dict[str, Any]):
         start_mcp_avatar(conf.get("avatar"))
     else:
         _avatar_enbled = False
-        start_mcp_avatar_disabled(conf.get("avatar"))
+        start_mcp(conf)
 
 def start_mcp_avatar(conf: dict[str, Any]):
     logger.info("start_mcp_avatar called.")
@@ -449,9 +455,4 @@ def start_mcp(conf: dict[str, Any]):
     logger.debug(conf)
     mcp.run(transport="stdio")
 
-def start_mcp_avatar_disabled(conf: dict[str, Any]):
-    logger.info("start_mcp_avatar_disabled")
-    logger.debug(conf)
-    pvv_mcp_server.mod_avatar_manager.setup(conf) 
-    mcp.run(transport="stdio")
 

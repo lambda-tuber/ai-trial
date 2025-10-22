@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, mock_open, patch
-from pvv_mcp_server.ymm_avatar.mod_load_image_data import load_zip_data
+from pvv_mcp_server.avatar.mod_load_image_data import load_zip_data
 
 
 class TestLoadZipData:

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class AvatarDialog(QDialog):
+
     def __init__(self, parent, zip_dat, scale_percent, flip, interval, config=None):
         super().__init__(parent)
         
@@ -43,129 +44,9 @@ class AvatarDialog(QDialog):
           
         self.setup_gui()
 
-    def closeEvent(self, event):
-        """×ボタンが押された時の処理をオーバーライド"""
-        # closeイベントを無視して、hideだけ実行
-        event.ignore()
-        self.hide()
-
-    
-    def save_config(self):
-        """
-        ダイアログ全体の設定を辞書形式で返す
-        
-        Returns:
-            dict: 設定辞書
-        """
-
-        config = {
-            # "scale": self.scale,
-            # "flip": self.flip,
-            # "frame_timer_interval": self.frame_timer_interval,
-            "parts": {}
-        }
-        
-        # 各パーツの設定を収集
-        for cat in self.parts:
-            part_config = self.part_widgets[cat].save_config()
-            config["parts"][cat] = part_config
-        
-        logger.info(f"save_config [AvatarDialog]: scale={self.scale}, flip={self.flip}")
-        logger.info(f"  parts count: {len(config['parts'])}")
-        
-        return config
-
-    def load_config(self, config):
-        """
-        設定辞書からダイアログ全体の設定を読み込む
-        
-        Args:
-            config: save_config()で保存した辞書
-        """
-        logger.info(f"load_config [AvatarDialog]")
-        
-
-                # ダイアログ自体の設定
-        # if "scale" in config:
-        #     self.set_scale(config["scale"])
-        #     logger.info(f"  scale: {config['scale']}")
-        
-        # if "flip" in config:
-        #     self.set_flip(config["flip"])
-        #     logger.info(f"  flip: {config['flip']}")
-        
-        # if "frame_timer_interval" in config:
-        #     self.set_frame_timer_interval(config["frame_timer_interval"])
-        #     logger.info(f"  frame_timer_interval: {config['frame_timer_interval']}")
-        
-        # 各パーツの設定を読み込み
-        if "parts" in config:
-            for cat, part_config in config["parts"].items():
-                if cat in self.part_widgets:
-                    logger.info(f"  loading part: {cat}")
-                    self.part_widgets[cat].load_config(part_config)
-                else:
-                    logger.warning(f"  unknown part: {cat}")
-
-
-    def set_flip(self, val):
-        """左右反転を設定"""
-        self.flip = val
-
-    def set_scale(self, val):
-        """スケール設定"""
-        self.scale = val
-
-    def get_current_pixmap(self):
-        return self.current_pixmap
-
-    def start_oneshot(self):
-        for cat in self.parts:
-            self.part_widgets[cat].start_oneshot()
-
-    def update_frame(self):
-        base_image = None
-        painter = None
-        
-        for cat in self.parts:
-            png_file = self.part_widgets[cat].update()
-            if png_file:
-                png_dat = self.zip_dat[cat][png_file]
-                
-                # バイトデータからQImageを作成
-                part_image = QImage()
-                part_image.loadFromData(png_dat)
-                
-                # 最初のパーツでベース画像を作成
-                if base_image is None:
-                    base_width = part_image.width()
-                    base_height = part_image.height()
-                    base_image = QImage(base_width, base_height, QImage.Format_ARGB32)
-                    base_image.fill(Qt.transparent)
-                    painter = QPainter(base_image)
-                
-                # パーツを中央揃えで描画
-                x = (base_image.width() - part_image.width()) // 2
-                y = (base_image.height() - part_image.height()) // 2
-                painter.drawImage(x, y, part_image)
-        
-        # ベース画像が作成されていればラベルに設定
-        if base_image is not None and painter is not None:
-            painter.end()
-
-            pixmap_org = QPixmap.fromImage(base_image)
-
-            if self.flip:
-                transform = QTransform()
-                transform.scale(-1, 1)
-                pixmap_org = pixmap_org.transformed(transform)
-
-            new_width = int(pixmap_org.width() * self.scale / 100)
-            new_height = int(pixmap_org.height() * self.scale / 100)
-            self.current_pixmap = pixmap_org.scaled(new_width, new_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.center_label.setPixmap(self.current_pixmap)
-
-
+    #
+    # GUI
+    #
     def setup_gui(self):
 
         # ----------------------------------------------------
@@ -218,6 +99,122 @@ class AvatarDialog(QDialog):
         main_layout.addWidget(grid_widget)
         
         self.setLayout(main_layout)
+
+    def closeEvent(self, event):
+        """×ボタンが押された時の処理をオーバーライド"""
+        # closeイベントを無視して、hideだけ実行
+        event.ignore()
+        self.hide()
+
+    #
+    # save/load config
+    #
+    def save_config(self):
+        """
+        ダイアログ全体の設定を辞書形式で返す
+        
+        Returns:
+            dict: 設定辞書
+        """
+
+        config = {
+            # "scale": self.scale,
+            # "flip": self.flip,
+            # "frame_timer_interval": self.frame_timer_interval,
+            "parts": {}
+        }
+        
+        # 各パーツの設定を収集
+        for cat in self.parts:
+            part_config = self.part_widgets[cat].save_config()
+            config["parts"][cat] = part_config
+        
+        logger.info(f"save_config [AvatarDialog]: scale={self.scale}, flip={self.flip}")
+        logger.info(f"  parts count: {len(config['parts'])}")
+        
+        return config
+
+    def load_config(self, config):
+        """
+        設定辞書からダイアログ全体の設定を読み込む
+        
+        Args:
+            config: save_config()で保存した辞書
+        """
+        logger.info(f"load_config [AvatarDialog]")
+        
+        # 各パーツの設定を読み込み
+        if "parts" in config:
+            for cat, part_config in config["parts"].items():
+                if cat in self.part_widgets:
+                    logger.info(f"  loading part: {cat}")
+                    self.part_widgets[cat].load_config(part_config)
+                else:
+                    logger.warning(f"  unknown part: {cat}")
+
+    #
+    # setter
+    #
+    def set_flip(self, val):
+        """左右反転を設定"""
+        self.flip = val
+
+    def set_scale(self, val):
+        """スケール設定"""
+        self.scale = val
+
+    #
+    # public function
+    #
+    def get_current_pixmap(self):
+        return self.current_pixmap
+
+    def start_oneshot(self):
+        for cat in self.parts:
+            self.part_widgets[cat].start_oneshot()
+
+    def update_frame(self):
+        base_image = None
+        painter = None
+        
+        for cat in self.parts:
+            png_file = self.part_widgets[cat].update()
+            if png_file:
+                png_dat = self.zip_dat[cat][png_file]
+                
+                # バイトデータからQImageを作成
+                part_image = QImage()
+                part_image.loadFromData(png_dat)
+                
+                # 最初のパーツでベース画像を作成
+                if base_image is None:
+                    base_width = part_image.width()
+                    base_height = part_image.height()
+                    base_image = QImage(base_width, base_height, QImage.Format_ARGB32)
+                    base_image.fill(Qt.transparent)
+                    painter = QPainter(base_image)
+                
+                # パーツを中央揃えで描画
+                x = (base_image.width() - part_image.width()) // 2
+                y = (base_image.height() - part_image.height()) // 2
+                painter.drawImage(x, y, part_image)
+        
+        # ベース画像が作成されていればラベルに設定
+        if base_image is not None and painter is not None:
+            painter.end()
+
+            pixmap_org = QPixmap.fromImage(base_image)
+
+            if self.flip:
+                transform = QTransform()
+                transform.scale(-1, 1)
+                pixmap_org = pixmap_org.transformed(transform)
+
+            new_width = int(pixmap_org.width() * self.scale / 100)
+            new_height = int(pixmap_org.height() * self.scale / 100)
+            self.current_pixmap = pixmap_org.scaled(new_width, new_height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.center_label.setPixmap(self.current_pixmap)
+
 
 
 if __name__ == "__main__":

@@ -937,21 +937,21 @@
           },
           "口": {
             "part_name": "口",
-            "base_image": "07.png",
+            "base_image": "00.png",
             "selected_files": [
               "07.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "目": {
             "part_name": "目",
-            "base_image": "02.png",
+            "base_image": "00.png",
             "selected_files": [
               "02.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "眉": {
             "part_name": "眉",
@@ -987,11 +987,11 @@
           },
           "顔": {
             "part_name": "顔",
-            "base_image": "06b.png",
+            "base_image": "00a.png",
             "selected_files": [
               "06b.png"
             ],
-            "interval": 1,
+            "interval": 10,
             "anime_type": "ワンショット"
           },
           "髪": {
@@ -1003,20 +1003,20 @@
           },
           "口": {
             "part_name": "口",
-            "base_image": "03.png",
+            "base_image": "00.png",
             "selected_files": [
               "03.png"
             ],
-            "interval": 1,
+            "interval": 10,
             "anime_type": "ワンショット"
           },
           "目": {
             "part_name": "目",
-            "base_image": "32.png",
+            "base_image": "00.png",
             "selected_files": [
               "32.png"
             ],
-            "interval": 1,
+            "interval": 10,
             "anime_type": "ワンショット"
           },
           "眉": {
@@ -1053,12 +1053,12 @@
           },
           "顔": {
             "part_name": "顔",
-            "base_image": "07b.png",
+            "base_image": "00a.png",
             "selected_files": [
               "07b.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "髪": {
             "part_name": "髪",
@@ -1069,21 +1069,21 @@
           },
           "口": {
             "part_name": "口",
-            "base_image": "20.png",
+            "base_image": "00.png",
             "selected_files": [
               "20.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "目": {
             "part_name": "目",
-            "base_image": "06.png",
+            "base_image": "00.png",
             "selected_files": [
               "06.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "眉": {
             "part_name": "眉",
@@ -1119,12 +1119,12 @@
           },
           "顔": {
             "part_name": "顔",
-            "base_image": "08b.png",
+            "base_image": "00a.png",
             "selected_files": [
               "08b.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "髪": {
             "part_name": "髪",
@@ -1135,21 +1135,21 @@
           },
           "口": {
             "part_name": "口",
-            "base_image": "17.png",
+            "base_image": "00.png",
             "selected_files": [
               "17.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "目": {
             "part_name": "目",
-            "base_image": "08.png",
+            "base_image": "00.png",
             "selected_files": [
               "08.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "眉": {
             "part_name": "眉",
@@ -1354,12 +1354,12 @@
           },
           "目": {
             "part_name": "目",
-            "base_image": "10.png",
+            "base_image": "00.png",
             "selected_files": [
               "10.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "眉": {
             "part_name": "眉",
@@ -1395,12 +1395,12 @@
           },
           "顔": {
             "part_name": "顔",
-            "base_image": "02a.png",
+            "base_image": "01a.png",
             "selected_files": [
               "02a.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "髪": {
             "part_name": "髪",
@@ -1411,21 +1411,21 @@
           },
           "口": {
             "part_name": "口",
-            "base_image": "14.png",
+            "base_image": "00.png",
             "selected_files": [
               "14.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "目": {
             "part_name": "目",
-            "base_image": "20.png",
+            "base_image": "00.png",
             "selected_files": [
               "20.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "眉": {
             "part_name": "眉",
@@ -1461,12 +1461,12 @@
           },
           "顔": {
             "part_name": "顔",
-            "base_image": "04b.png",
+            "base_image": "01a.png",
             "selected_files": [
               "04b.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "髪": {
             "part_name": "髪",
@@ -1477,21 +1477,21 @@
           },
           "口": {
             "part_name": "口",
-            "base_image": "12.png",
+            "base_image": "00.png",
             "selected_files": [
               "12.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "目": {
             "part_name": "目",
-            "base_image": "01.png",
+            "base_image": "00.png",
             "selected_files": [
               "01.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "眉": {
             "part_name": "眉",
@@ -1527,12 +1527,12 @@
           },
           "顔": {
             "part_name": "顔",
-            "base_image": "05b.png",
+            "base_image": "01a.png",
             "selected_files": [
               "05b.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "髪": {
             "part_name": "髪",
@@ -1543,21 +1543,21 @@
           },
           "口": {
             "part_name": "口",
-            "base_image": "24.png",
+            "base_image": "00.png",
             "selected_files": [
               "24.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "目": {
             "part_name": "目",
-            "base_image": "22.png",
+            "base_image": "00.png",
             "selected_files": [
               "22.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           },
           "眉": {
             "part_name": "眉",
@@ -1772,12 +1772,12 @@
           },
           "他": {
             "part_name": "他",
-            "base_image": "josei_20_g.png",
+            "base_image": "josei_20_a.png",
             "selected_files": [
               "josei_20_g.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           }
         }
       },
@@ -1834,12 +1834,12 @@
           },
           "他": {
             "part_name": "他",
-            "base_image": "josei_20_e.png",
+            "base_image": "josei_20_a.png",
             "selected_files": [
               "josei_20_e.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           }
         }
       },
@@ -1962,7 +1962,7 @@
             "selected_files": [
               "josei_20_c.png"
             ],
-            "interval": 10,
+            "interval": 5,
             "anime_type": "固定"
           }
         }
@@ -2164,12 +2164,12 @@
           },
           "他": {
             "part_name": "他",
-            "base_image": "animal_01_f.png",
+            "base_image": "animal_01_g.png",
             "selected_files": [
               "animal_01_f.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           }
         }
       },
@@ -2226,12 +2226,12 @@
           },
           "他": {
             "part_name": "他",
-            "base_image": "animal_01_h.png",
+            "base_image": "animal_01_g.png",
             "selected_files": [
               "animal_01_h.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           }
         }
       },
@@ -2288,12 +2288,12 @@
           },
           "他": {
             "part_name": "他",
-            "base_image": "animal_01_d.png",
+            "base_image": "animal_01_g.png",
             "selected_files": [
               "animal_01_d.png"
             ],
             "interval": 10,
-            "anime_type": "固定"
+            "anime_type": "ワンショット"
           }
         }
       },
