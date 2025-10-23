@@ -14,17 +14,9 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.prompts import base
 
 from pvv_mcp_server import mod_speak
-from pvv_mcp_server import mod_speak_metan_aska
-from pvv_mcp_server import mod_speak_kurono_neko
-from pvv_mcp_server import mod_speak_tumugi_reimu
-from pvv_mcp_server import mod_speak_zunda_marisa
 from pvv_mcp_server import mod_speakers
 from pvv_mcp_server import mod_speaker_info
 from pvv_mcp_server import mod_emotion
-from pvv_mcp_server import mod_emotion_metan_aska
-from pvv_mcp_server import mod_emotion_kurono_neko
-from pvv_mcp_server import mod_emotion_tumugi_reimu
-from pvv_mcp_server import mod_emotion_zunda_marisa
 import pvv_mcp_server.mod_avatar_manager
 
 # ロガーの設定

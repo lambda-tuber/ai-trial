@@ -168,7 +168,7 @@ class AvatarWindow(QWidget):
             logger.info(f"  scale: {config['scale']}")
         
         if "anime_types" in config:
-            self.app_title = config["anime_types"]
+            self.anime_types = config["anime_types"]
             logger.info(f"  anime_types: {config['anime_types']}")
         
         if "frame_timer_interval" in config:
@@ -176,7 +176,7 @@ class AvatarWindow(QWidget):
             logger.info(f"  frame_timer_interval: {config['frame_timer_interval']}")
         
         if "follow_timer_interval" in config:
-            self.app_title = config["follow_timer_interval"]
+            self.follow_timer_interval = config["follow_timer_interval"]
             logger.info(f"  follow_timer_interval: {config['follow_timer_interval']}")
         
 
@@ -265,9 +265,9 @@ class AvatarWindow(QWidget):
 
     def set_scale(self, val):
         """スケール設定"""
-        self.scale = val
+        self.scale_percent = val
         for animetype, dialog in self.dialogs.items():
-          dialog.set_scale(self.scale)
+          dialog.set_scale(self.scale_percent)
 
 
 if __name__ == "__main__":
