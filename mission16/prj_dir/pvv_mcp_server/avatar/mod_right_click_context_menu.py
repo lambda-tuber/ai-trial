@@ -181,7 +181,7 @@ def right_click_context_menu(self, mouse_position: QPoint) -> None:
         ("200%", 200)
     ]
     
-    current_scale = getattr(self, 'scale', 50)
+    current_scale = getattr(self, 'scale_percent', 50)
     
     for label, pos_key in scales:
         action = QAction(label, self)

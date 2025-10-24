@@ -177,7 +177,8 @@ async def speak_kurono_neko(msg: str) -> str:
     """
 
     style_id = 11
-    ret = await speak(style_id=style_id, msg=msg)
+    volumeScale = 0.8
+    ret = await speak(style_id=style_id, msg=msg, volumeScale=volumeScale)
     return ret
 
 
@@ -210,7 +211,7 @@ async def speak_zunda_marisa(msg: str) -> str:
     """
     style_id = 3
     pitch_scale=-0.06
-    speedScale=1.3
+    speedScale=1.25
     return await speak(style_id=style_id, msg=msg, pitchScale=pitch_scale, speedScale=speedScale)
 
 
