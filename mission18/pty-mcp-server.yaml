@@ -1,0 +1,49 @@
+logDir : "pty-mcp-server/logs"
+logLevel : "Debug"
+toolsDir : "pty-mcp-server/tools"
+promptsDir : "pty-mcp-server/prompts"
+resourcesDir : "pty-mcp-server/resources"
+sandboxDir : "C:\\work\\lambda-tuber\\ai-trial\\mission18"
+prompts:
+  - '>>>'
+  - ']#'
+  - ']$'
+  - ')?'
+  - 'Password:'
+  - 'password:'
+  - '--More--'
+  - '(END)'
+  - 'lines '
+  - 'ghci>'
+
+
+# not yet implemented parameters.
+environment:
+  ProgramData: "C:\\ProgramData"
+  SystemRoot: "C:\\Windows"
+timeoutMicrosec: 1000000
+invalidChars:
+  - '&&'
+  - '||'
+  - '..'
+invalidCmds:
+  - del
+  - erase
+  - rmdir
+  - format
+  - shutdown
+  - restart
+  - taskkill
+  - rm
+  - shutdown
+  - reboot
+  - kill
+serial:
+  device: "COM3"
+  commSpeed: 9600
+  bitsPerWord: 8
+  stopb: 1
+  parity: "NoParity"
+  flowControl: "NoFlowControl"
+  timeout: 1
+
