@@ -65,7 +65,6 @@
       ]
     }
   },
-
   {
     "name": "proc-ssh",
     "description": "`proc-ssh` launches an SSH client (`ssh`) as a subprocess using `runProcess`. It enables the AI to initiate remote connections to other systems via the Secure Shell protocol. The tool can be used to execute remote commands, access remote shells, or tunnel services over SSH. The required `arguments` field allows specifying the target user, host, and any SSH options (e.g., `-p`, `-i`, `-L`).",
@@ -85,8 +84,6 @@
       ]
     }
   },
-
-  
   {
     "name": "pms-list-dir",
     "description": "List the contents of a directory at the specified path.",
